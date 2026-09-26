@@ -7,4 +7,4 @@
 - [x] QA NEEDS_FIX 27/09: Ngân sách chi tiết, ngôn từ, nội dung thiệp, CSV, Event/RSVP, bộ lọc khách và dữ liệu xuyên trang trên 320/375/420/desktop.
 
 - [x] QA cuối Phase 1: tiền phát sinh, Home, số khách, CSV, RSVP chọn từng buổi, Event phiên trong form; kiểm 320/375/420/desktop.
-- [ ] QA liên kết Event Phase 1: cảnh báo và xử lý tham chiếu khi bỏ buổi, mẫu việc hợp lệ, kiểm mobile/desktop.
+- [x] QA liên kết Event Phase 1: cảnh báo và xử lý tham chiếu khi bỏ buổi, mẫu việc hợp lệ, kiểm mobile/desktop.
