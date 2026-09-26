@@ -3,6 +3,7 @@ export type ID = string;
 export type EventSide = 'chung' | 'nha-trai' | 'nha-gai';
 export type EventStatus = 'tentative' | 'confirmed';
 export interface Wedding { id: ID; ownerId: ID; partnerName: string; ownerName: string; plannedDate?: string; status: 'draft' | 'active'; }
+export interface WeddingMembership { weddingId: ID; email: string; role: 'co-manager'; status: 'pending' | 'accepted'; } // Only one partner slot; owner is recorded on Wedding.
 export interface Event { id: ID; weddingId: ID; name: string; side: EventSide; date?: string; time?: string; venue?: string; address?: string; status: EventStatus; }
 export interface Task { id: ID; weddingId: ID; eventId?: ID; title: string; assigneeId?: ID; dueAt?: string; status: 'todo' | 'doing' | 'done'; source: 'suggested' | 'manual'; }
 export interface Budget { id: ID; weddingId: ID; eventId?: ID; label: string; committed: number; paid: number; installments?: { dueAt: string; amount: number }[]; }
