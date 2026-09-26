@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useRouterState } from '@tanstack/react-router';
 import { Home, ListChecks, Mail, UsersRound, MoreHorizontal, CalendarDays, ChevronRight, ArrowLeft, ArrowRight, Wallet, Heart, MapPin, Clock3, Check, AlertCircle, Upload, Plus, ExternalLink, FileText, Settings, ShieldCheck, LogIn, Download, Pencil, Eye, CircleHelp, CreditCard, Link2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 type ScreenName = 'start'|'new'|'events'|'home'|'tasks'|'budget'|'guests'|'import'|'batch'|'content'|'variants'|'preview'|'plans'|'checkout'|'status'|'publish'|'rsvpOwner'|'changes'|'team'|'data'|'login'|'register'|'account'|'admin'|'guest'|'guestRsvp'|'receipt'|'expired';
 const paths = { start:'/start', new:'/wedding/new', events:'/wedding/events', home:'/home', tasks:'/plan/tasks', budget:'/plan/budget', guests:'/guests', import:'/guests/import', content:'/invitation/content', variants:'/invitation/variants', preview:'/invitation/preview', plans:'/plans', checkout:'/checkout', publish:'/publish', rsvpOwner:'/rsvp', changes:'/invitation/changes', team:'/settings/team', data:'/settings/data', login:'/login', register:'/register', account:'/account', admin:'/admin' } as const;
