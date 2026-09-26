@@ -10,3 +10,4 @@
 - [x] QA liên kết Event Phase 1: cảnh báo và xử lý tham chiếu khi bỏ buổi, mẫu việc hợp lệ, kiểm mobile/desktop.
 - [x] Phase 1: giới hạn hai người quản lý, mời/rút quyền minh họa, ma trận quyền, dữ liệu demo và QA các cỡ màn.
 - [x] Phase 1 ngân sách: chi tiết nhóm Khác, nhãn buổi dễ hiểu, phân cấp tổng hợp; kiểm form, số liệu và 320/375/420/desktop.
+- [ ] Phase 1 điều hướng và gói Wedding: nhóm sidebar theo tác vụ, copy /plans và checkout nhất quán; QA desktop/mobile.
