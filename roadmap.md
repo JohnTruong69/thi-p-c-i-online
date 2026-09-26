@@ -4,3 +4,4 @@
 - [x] Kiểm tra mobile 320/375/420px và desktop, ghi sai lệch còn lại.
 - [x] QA Phase 1: sửa C04, chuỗi preview → gói → đơn → tình huống công bố, RSVP theo từng Event và chữ hoàn tiền.
 - [x] Kiểm tra desktop/mobile, hai Event và ghi mã phiên bản cho chủ duyệt.
+- [x] QA NEEDS_FIX 27/09: Ngân sách chi tiết, ngôn từ, nội dung thiệp, CSV, Event/RSVP, bộ lọc khách và dữ liệu xuyên trang trên 320/375/420/desktop.
