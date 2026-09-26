@@ -8,3 +8,4 @@
 
 - [x] QA cuối Phase 1: tiền phát sinh, Home, số khách, CSV, RSVP chọn từng buổi, Event phiên trong form; kiểm 320/375/420/desktop.
 - [x] QA liên kết Event Phase 1: cảnh báo và xử lý tham chiếu khi bỏ buổi, mẫu việc hợp lệ, kiểm mobile/desktop.
+- [ ] Phase 1: giới hạn hai người quản lý, mời/rút quyền minh họa, ma trận quyền, dữ liệu demo và QA các cỡ màn.
