@@ -2,13 +2,13 @@ import { createFileRoute } from "@tanstack/react-router";
 import { PhaseOne } from "@/components/PhaseOne";
 export const Route = createFileRoute("/")({
   head: () => ({ meta: [
-    { title: "Tổng quan | Thiệp Cưới Online Việt" },
-    { name: "description", content: "Tổng quan — trải nghiệm minh họa Thiệp Cưới Online Việt, Phase 1." },
-    { property: "og:title", content: "Tổng quan | Thiệp Cưới Online Việt" },
-    { property: "og:description", content: "Tổng quan — trải nghiệm minh họa Thiệp Cưới Online Việt, Phase 1." },
+    { title: "Bắt đầu | Thiệp Cưới Online Việt" },
+    { name: "description", content: "Bắt đầu — trải nghiệm minh họa Thiệp Cưới Online Việt, Phase 1." },
+    { property: "og:title", content: "Bắt đầu | Thiệp Cưới Online Việt" },
+    { property: "og:description", content: "Bắt đầu — trải nghiệm minh họa Thiệp Cưới Online Việt, Phase 1." },
     { property: "og:type", content: "website" },
     { name: "twitter:card", content: "summary" },
   ] }),
   component: Screen,
 });
-function Screen() { return <PhaseOne screen="home" />; }
+function Screen() { return <PhaseOne screen="start" />; }
