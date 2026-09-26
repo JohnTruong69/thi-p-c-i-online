@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PhaseOne } from "@/components/PhaseOne";
-export const Route = createFileRoute("/i/$token/expired")({
+export const Route = createFileRoute("/i/$token_/expired")({
   head: () => ({ meta: [
     { title: "expired | Thiệp Cưới Online Việt" },
     { name: "description", content: "expired — trải nghiệm minh họa Thiệp Cưới Online Việt, Phase 1." },

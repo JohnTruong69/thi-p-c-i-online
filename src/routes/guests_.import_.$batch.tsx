@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PhaseOne } from "@/components/PhaseOne";
-export const Route = createFileRoute("/guests/import/$batch")({
+export const Route = createFileRoute("/guests_/import_/$batch")({
   head: () => ({ meta: [
     { title: "batch | Thiệp Cưới Online Việt" },
     { name: "description", content: "batch — trải nghiệm minh họa Thiệp Cưới Online Việt, Phase 1." },
