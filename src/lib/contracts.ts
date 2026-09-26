@@ -2,8 +2,9 @@
 export type ID = string;
 export type EventSide = 'chung' | 'nha-trai' | 'nha-gai';
 export type EventStatus = 'tentative' | 'confirmed';
-export interface Wedding { id: ID; ownerId: ID; partnerName: string; ownerName: string; plannedDate?: string; status: 'draft' | 'active'; }
-export interface WeddingMembership { weddingId: ID; email: string; role: 'co-manager'; status: 'pending' | 'accepted'; } // Only one partner slot; owner is recorded on Wedding.
+export interface Wedding { id: ID; /** Creator only: metadata / contact / audit, NOT a privileged role. */ creatorId: ID; partnerName: string; creatorName: string; plannedDate?: string; status: 'draft' | 'active'; }
+export interface WeddingMembership { weddingId: ID; email: string; role: 'manager'; status: 'pending' | 'accepted'; }
+/* Backend rules (later phase): max 2 accepted/pending members per Wedding; both managers have identical rights in every module incl. payment, publish, export, deletion. Authorize server-side by Wedding membership, never by creatorId. Revoke/delete require confirmation + audit log. Never leave a Wedding with zero managers. No dual-approval unless product owner requests it. Pending = no access yet. */
 export interface Event { id: ID; weddingId: ID; name: string; side: EventSide; date?: string; time?: string; venue?: string; address?: string; status: EventStatus; }
 export interface Task { id: ID; weddingId: ID; eventId?: ID; title: string; assigneeId?: ID; dueAt?: string; status: 'todo' | 'doing' | 'done'; source: 'suggested' | 'manual'; }
 export interface Budget { id: ID; weddingId: ID; eventId?: ID; label: string; committed: number; paid: number; installments?: { dueAt: string; amount: number }[]; }
@@ -17,7 +18,7 @@ export interface Payment { id: ID; orderId: ID; providerReference: string; verif
 export interface Entitlement { id: ID; weddingId: ID; paidAt: string; expiresAt: string; maxLinks: 3; maxPhotos: 50; status: 'active' | 'expired'; }
 /** Future API boundary shapes. These are types, not active requests. */
 export interface ApiResult<T> { data?: T; error?: { code: string; message: string; field?: string }; }
-export interface WeddingDraftInput { ownerName: string; partnerName: string; plannedDate?: string; }
+export interface WeddingDraftInput { creatorName: string; partnerName: string; plannedDate?: string; }
 export interface EventInput { name: string; side: EventSide; date?: string; time?: string; venue?: string; address?: string; status: EventStatus; }
 export interface CsvPreviewInput { filename: string; columnMap: Record<'name'|'phone'|'side', string>; eventIds: ID[]; }
 export interface CsvPreviewResult { batch: CsvBatch; rowErrors: { row: number; reason: string }[]; suspectedDuplicates: { row: number; guestId: ID }[]; }

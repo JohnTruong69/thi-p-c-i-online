@@ -7,4 +7,4 @@
 - Budget planned totals use agreed price when available, otherwise estimates, once per item; supplier payments and schedules are separate from Wedding checkout.
 
 - Ceremony removal previews affected demo records and reassigns task/cost links while removing guest invitations; session writes occur outside React state updaters so replay cannot duplicate records.
-- V1 membership is one owner plus at most one partner; invitation and role states are browser-tab-only demos, never evidence of email delivery or actual access.
+- V1 membership is at most two equal managers (creator is metadata only; server auth by Wedding membership, audit revoke/delete, never zero managers); invitation and role states are browser-tab-only demos, never evidence of email delivery or actual access.
