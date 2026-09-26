@@ -2,3 +2,5 @@
 - [x] Dựng hệ màu/chữ, shell desktop/mobile/khách và hợp đồng typed.
 - [x] Tạo toàn bộ route Phase 1, trạng thái demo và liên kết thao tác.
 - [x] Kiểm tra mobile 320/375/420px và desktop, ghi sai lệch còn lại.
+- [ ] QA Phase 1: sửa C04, chuỗi preview → gói → đơn → tình huống công bố, RSVP theo từng Event và chữ hoàn tiền.
+- [ ] Kiểm tra desktop/mobile, hai Event và ghi mã phiên bản cho chủ duyệt.
