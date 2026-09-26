@@ -15,6 +15,7 @@
   --color-border: var(--border); --color-input: var(--border); --color-ring: var(--primary);
   --color-sage: var(--sage); --color-sage-strong: var(--sage-strong);
   --color-warm: var(--warm); --color-copper-soft: var(--copper-soft);
+  --color-stat-blue-soft: var(--stat-blue-soft);
   --color-destructive: var(--destructive); --color-destructive-foreground: var(--card);
   --radius-sm: 4px; --radius-md: 6px; --radius-lg: 8px;
 }
@@ -26,6 +27,7 @@
   --accent: oklch(0.898 0.036 151); --border: oklch(0.877 0.018 77);
   --sage: oklch(0.905 0.037 151); --sage-strong: oklch(0.49 0.057 155);
   --warm: oklch(0.955 0.041 77); --copper-soft: oklch(0.931 0.032 29);
+  --stat-blue-soft: oklch(0.93 0.018 230);
   --destructive: oklch(0.504 0.096 28);
 }
 @layer base {
