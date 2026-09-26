@@ -10,33 +10,401 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AccountRouteImport } from './routes/account'
+import { Route as AdminRouteImport } from './routes/admin'
+import { Route as CheckoutRouteImport } from './routes/checkout'
+import { Route as GuestsRouteImport } from './routes/guests'
+import { Route as HomeRouteImport } from './routes/home'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as PlansRouteImport } from './routes/plans'
+import { Route as PublishRouteImport } from './routes/publish'
+import { Route as RegisterRouteImport } from './routes/register'
+import { Route as RsvpRouteImport } from './routes/rsvp'
+import { Route as StartRouteImport } from './routes/start'
+import { Route as GuestsImportRouteImport } from './routes/guests_.import'
+import { Route as ITokenRouteImport } from './routes/i.$token'
+import { Route as InvitationChangesRouteImport } from './routes/invitation.changes'
+import { Route as InvitationContentRouteImport } from './routes/invitation.content'
+import { Route as InvitationPreviewRouteImport } from './routes/invitation.preview'
+import { Route as InvitationVariantsRouteImport } from './routes/invitation.variants'
+import { Route as PlanBudgetRouteImport } from './routes/plan.budget'
+import { Route as PlanTasksRouteImport } from './routes/plan.tasks'
+import { Route as SettingsDataRouteImport } from './routes/settings.data'
+import { Route as SettingsTeamRouteImport } from './routes/settings.team'
+import { Route as WeddingEventsRouteImport } from './routes/wedding.events'
+import { Route as WeddingNewRouteImport } from './routes/wedding.new'
+import { Route as CheckoutStatusIdRouteImport } from './routes/checkout_.status.$id'
+import { Route as GuestsImportBatchRouteImport } from './routes/guests_.import_.$batch'
+import { Route as ITokenExpiredRouteImport } from './routes/i.$token_.expired'
+import { Route as ITokenRsvpRouteImport } from './routes/i.$token_.rsvp'
+import { Route as ITokenRsvpReceiptRouteImport } from './routes/i.$token_.rsvp_.receipt'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AccountRoute = AccountRouteImport.update({
+  id: '/account',
+  path: '/account',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CheckoutRoute = CheckoutRouteImport.update({
+  id: '/checkout',
+  path: '/checkout',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GuestsRoute = GuestsRouteImport.update({
+  id: '/guests',
+  path: '/guests',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HomeRoute = HomeRouteImport.update({
+  id: '/home',
+  path: '/home',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PlansRoute = PlansRouteImport.update({
+  id: '/plans',
+  path: '/plans',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PublishRoute = PublishRouteImport.update({
+  id: '/publish',
+  path: '/publish',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RegisterRoute = RegisterRouteImport.update({
+  id: '/register',
+  path: '/register',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RsvpRoute = RsvpRouteImport.update({
+  id: '/rsvp',
+  path: '/rsvp',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StartRoute = StartRouteImport.update({
+  id: '/start',
+  path: '/start',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GuestsImportRoute = GuestsImportRouteImport.update({
+  id: '/guests_/import',
+  path: '/guests/import',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ITokenRoute = ITokenRouteImport.update({
+  id: '/i/$token',
+  path: '/i/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InvitationChangesRoute = InvitationChangesRouteImport.update({
+  id: '/invitation/changes',
+  path: '/invitation/changes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InvitationContentRoute = InvitationContentRouteImport.update({
+  id: '/invitation/content',
+  path: '/invitation/content',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InvitationPreviewRoute = InvitationPreviewRouteImport.update({
+  id: '/invitation/preview',
+  path: '/invitation/preview',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InvitationVariantsRoute = InvitationVariantsRouteImport.update({
+  id: '/invitation/variants',
+  path: '/invitation/variants',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PlanBudgetRoute = PlanBudgetRouteImport.update({
+  id: '/plan/budget',
+  path: '/plan/budget',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PlanTasksRoute = PlanTasksRouteImport.update({
+  id: '/plan/tasks',
+  path: '/plan/tasks',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsDataRoute = SettingsDataRouteImport.update({
+  id: '/settings/data',
+  path: '/settings/data',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsTeamRoute = SettingsTeamRouteImport.update({
+  id: '/settings/team',
+  path: '/settings/team',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WeddingEventsRoute = WeddingEventsRouteImport.update({
+  id: '/wedding/events',
+  path: '/wedding/events',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WeddingNewRoute = WeddingNewRouteImport.update({
+  id: '/wedding/new',
+  path: '/wedding/new',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CheckoutStatusIdRoute = CheckoutStatusIdRouteImport.update({
+  id: '/checkout_/status/$id',
+  path: '/checkout/status/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GuestsImportBatchRoute = GuestsImportBatchRouteImport.update({
+  id: '/guests_/import_/$batch',
+  path: '/guests/import/$batch',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ITokenExpiredRoute = ITokenExpiredRouteImport.update({
+  id: '/i/$token_/expired',
+  path: '/i/$token/expired',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ITokenRsvpRoute = ITokenRsvpRouteImport.update({
+  id: '/i/$token_/rsvp',
+  path: '/i/$token/rsvp',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ITokenRsvpReceiptRoute = ITokenRsvpReceiptRouteImport.update({
+  id: '/i/$token_/rsvp_/receipt',
+  path: '/i/$token/rsvp/receipt',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/account': typeof AccountRoute
+  '/admin': typeof AdminRoute
+  '/checkout': typeof CheckoutRoute
+  '/guests': typeof GuestsRoute
+  '/home': typeof HomeRoute
+  '/login': typeof LoginRoute
+  '/plans': typeof PlansRoute
+  '/publish': typeof PublishRoute
+  '/register': typeof RegisterRoute
+  '/rsvp': typeof RsvpRoute
+  '/start': typeof StartRoute
+  '/guests/import': typeof GuestsImportRoute
+  '/i/$token': typeof ITokenRoute
+  '/invitation/changes': typeof InvitationChangesRoute
+  '/invitation/content': typeof InvitationContentRoute
+  '/invitation/preview': typeof InvitationPreviewRoute
+  '/invitation/variants': typeof InvitationVariantsRoute
+  '/plan/budget': typeof PlanBudgetRoute
+  '/plan/tasks': typeof PlanTasksRoute
+  '/settings/data': typeof SettingsDataRoute
+  '/settings/team': typeof SettingsTeamRoute
+  '/wedding/events': typeof WeddingEventsRoute
+  '/wedding/new': typeof WeddingNewRoute
+  '/checkout/status/$id': typeof CheckoutStatusIdRoute
+  '/guests/import/$batch': typeof GuestsImportBatchRoute
+  '/i/$token/expired': typeof ITokenExpiredRoute
+  '/i/$token/rsvp': typeof ITokenRsvpRoute
+  '/i/$token/rsvp/receipt': typeof ITokenRsvpReceiptRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/account': typeof AccountRoute
+  '/admin': typeof AdminRoute
+  '/checkout': typeof CheckoutRoute
+  '/guests': typeof GuestsRoute
+  '/home': typeof HomeRoute
+  '/login': typeof LoginRoute
+  '/plans': typeof PlansRoute
+  '/publish': typeof PublishRoute
+  '/register': typeof RegisterRoute
+  '/rsvp': typeof RsvpRoute
+  '/start': typeof StartRoute
+  '/guests/import': typeof GuestsImportRoute
+  '/i/$token': typeof ITokenRoute
+  '/invitation/changes': typeof InvitationChangesRoute
+  '/invitation/content': typeof InvitationContentRoute
+  '/invitation/preview': typeof InvitationPreviewRoute
+  '/invitation/variants': typeof InvitationVariantsRoute
+  '/plan/budget': typeof PlanBudgetRoute
+  '/plan/tasks': typeof PlanTasksRoute
+  '/settings/data': typeof SettingsDataRoute
+  '/settings/team': typeof SettingsTeamRoute
+  '/wedding/events': typeof WeddingEventsRoute
+  '/wedding/new': typeof WeddingNewRoute
+  '/checkout/status/$id': typeof CheckoutStatusIdRoute
+  '/guests/import/$batch': typeof GuestsImportBatchRoute
+  '/i/$token/expired': typeof ITokenExpiredRoute
+  '/i/$token/rsvp': typeof ITokenRsvpRoute
+  '/i/$token/rsvp/receipt': typeof ITokenRsvpReceiptRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/account': typeof AccountRoute
+  '/admin': typeof AdminRoute
+  '/checkout': typeof CheckoutRoute
+  '/guests': typeof GuestsRoute
+  '/home': typeof HomeRoute
+  '/login': typeof LoginRoute
+  '/plans': typeof PlansRoute
+  '/publish': typeof PublishRoute
+  '/register': typeof RegisterRoute
+  '/rsvp': typeof RsvpRoute
+  '/start': typeof StartRoute
+  '/guests_/import': typeof GuestsImportRoute
+  '/i/$token': typeof ITokenRoute
+  '/invitation/changes': typeof InvitationChangesRoute
+  '/invitation/content': typeof InvitationContentRoute
+  '/invitation/preview': typeof InvitationPreviewRoute
+  '/invitation/variants': typeof InvitationVariantsRoute
+  '/plan/budget': typeof PlanBudgetRoute
+  '/plan/tasks': typeof PlanTasksRoute
+  '/settings/data': typeof SettingsDataRoute
+  '/settings/team': typeof SettingsTeamRoute
+  '/wedding/events': typeof WeddingEventsRoute
+  '/wedding/new': typeof WeddingNewRoute
+  '/checkout_/status/$id': typeof CheckoutStatusIdRoute
+  '/guests_/import_/$batch': typeof GuestsImportBatchRoute
+  '/i/$token_/expired': typeof ITokenExpiredRoute
+  '/i/$token_/rsvp': typeof ITokenRsvpRoute
+  '/i/$token_/rsvp_/receipt': typeof ITokenRsvpReceiptRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/account'
+    | '/admin'
+    | '/checkout'
+    | '/guests'
+    | '/home'
+    | '/login'
+    | '/plans'
+    | '/publish'
+    | '/register'
+    | '/rsvp'
+    | '/start'
+    | '/guests/import'
+    | '/i/$token'
+    | '/invitation/changes'
+    | '/invitation/content'
+    | '/invitation/preview'
+    | '/invitation/variants'
+    | '/plan/budget'
+    | '/plan/tasks'
+    | '/settings/data'
+    | '/settings/team'
+    | '/wedding/events'
+    | '/wedding/new'
+    | '/checkout/status/$id'
+    | '/guests/import/$batch'
+    | '/i/$token/expired'
+    | '/i/$token/rsvp'
+    | '/i/$token/rsvp/receipt'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/account'
+    | '/admin'
+    | '/checkout'
+    | '/guests'
+    | '/home'
+    | '/login'
+    | '/plans'
+    | '/publish'
+    | '/register'
+    | '/rsvp'
+    | '/start'
+    | '/guests/import'
+    | '/i/$token'
+    | '/invitation/changes'
+    | '/invitation/content'
+    | '/invitation/preview'
+    | '/invitation/variants'
+    | '/plan/budget'
+    | '/plan/tasks'
+    | '/settings/data'
+    | '/settings/team'
+    | '/wedding/events'
+    | '/wedding/new'
+    | '/checkout/status/$id'
+    | '/guests/import/$batch'
+    | '/i/$token/expired'
+    | '/i/$token/rsvp'
+    | '/i/$token/rsvp/receipt'
+  id:
+    | '__root__'
+    | '/'
+    | '/account'
+    | '/admin'
+    | '/checkout'
+    | '/guests'
+    | '/home'
+    | '/login'
+    | '/plans'
+    | '/publish'
+    | '/register'
+    | '/rsvp'
+    | '/start'
+    | '/guests_/import'
+    | '/i/$token'
+    | '/invitation/changes'
+    | '/invitation/content'
+    | '/invitation/preview'
+    | '/invitation/variants'
+    | '/plan/budget'
+    | '/plan/tasks'
+    | '/settings/data'
+    | '/settings/team'
+    | '/wedding/events'
+    | '/wedding/new'
+    | '/checkout_/status/$id'
+    | '/guests_/import_/$batch'
+    | '/i/$token_/expired'
+    | '/i/$token_/rsvp'
+    | '/i/$token_/rsvp_/receipt'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AccountRoute: typeof AccountRoute
+  AdminRoute: typeof AdminRoute
+  CheckoutRoute: typeof CheckoutRoute
+  GuestsRoute: typeof GuestsRoute
+  HomeRoute: typeof HomeRoute
+  LoginRoute: typeof LoginRoute
+  PlansRoute: typeof PlansRoute
+  PublishRoute: typeof PublishRoute
+  RegisterRoute: typeof RegisterRoute
+  RsvpRoute: typeof RsvpRoute
+  StartRoute: typeof StartRoute
+  GuestsImportRoute: typeof GuestsImportRoute
+  ITokenRoute: typeof ITokenRoute
+  InvitationChangesRoute: typeof InvitationChangesRoute
+  InvitationContentRoute: typeof InvitationContentRoute
+  InvitationPreviewRoute: typeof InvitationPreviewRoute
+  InvitationVariantsRoute: typeof InvitationVariantsRoute
+  PlanBudgetRoute: typeof PlanBudgetRoute
+  PlanTasksRoute: typeof PlanTasksRoute
+  SettingsDataRoute: typeof SettingsDataRoute
+  SettingsTeamRoute: typeof SettingsTeamRoute
+  WeddingEventsRoute: typeof WeddingEventsRoute
+  WeddingNewRoute: typeof WeddingNewRoute
+  CheckoutStatusIdRoute: typeof CheckoutStatusIdRoute
+  GuestsImportBatchRoute: typeof GuestsImportBatchRoute
+  ITokenExpiredRoute: typeof ITokenExpiredRoute
+  ITokenRsvpRoute: typeof ITokenRsvpRoute
+  ITokenRsvpReceiptRoute: typeof ITokenRsvpReceiptRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +416,235 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/account': {
+      id: '/account'
+      path: '/account'
+      fullPath: '/account'
+      preLoaderRoute: typeof AccountRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/checkout': {
+      id: '/checkout'
+      path: '/checkout'
+      fullPath: '/checkout'
+      preLoaderRoute: typeof CheckoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/guests': {
+      id: '/guests'
+      path: '/guests'
+      fullPath: '/guests'
+      preLoaderRoute: typeof GuestsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/home': {
+      id: '/home'
+      path: '/home'
+      fullPath: '/home'
+      preLoaderRoute: typeof HomeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/plans': {
+      id: '/plans'
+      path: '/plans'
+      fullPath: '/plans'
+      preLoaderRoute: typeof PlansRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/publish': {
+      id: '/publish'
+      path: '/publish'
+      fullPath: '/publish'
+      preLoaderRoute: typeof PublishRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/register': {
+      id: '/register'
+      path: '/register'
+      fullPath: '/register'
+      preLoaderRoute: typeof RegisterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/rsvp': {
+      id: '/rsvp'
+      path: '/rsvp'
+      fullPath: '/rsvp'
+      preLoaderRoute: typeof RsvpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/start': {
+      id: '/start'
+      path: '/start'
+      fullPath: '/start'
+      preLoaderRoute: typeof StartRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/guests_/import': {
+      id: '/guests_/import'
+      path: '/guests/import'
+      fullPath: '/guests/import'
+      preLoaderRoute: typeof GuestsImportRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/i/$token': {
+      id: '/i/$token'
+      path: '/i/$token'
+      fullPath: '/i/$token'
+      preLoaderRoute: typeof ITokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/invitation/changes': {
+      id: '/invitation/changes'
+      path: '/invitation/changes'
+      fullPath: '/invitation/changes'
+      preLoaderRoute: typeof InvitationChangesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/invitation/content': {
+      id: '/invitation/content'
+      path: '/invitation/content'
+      fullPath: '/invitation/content'
+      preLoaderRoute: typeof InvitationContentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/invitation/preview': {
+      id: '/invitation/preview'
+      path: '/invitation/preview'
+      fullPath: '/invitation/preview'
+      preLoaderRoute: typeof InvitationPreviewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/invitation/variants': {
+      id: '/invitation/variants'
+      path: '/invitation/variants'
+      fullPath: '/invitation/variants'
+      preLoaderRoute: typeof InvitationVariantsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/plan/budget': {
+      id: '/plan/budget'
+      path: '/plan/budget'
+      fullPath: '/plan/budget'
+      preLoaderRoute: typeof PlanBudgetRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/plan/tasks': {
+      id: '/plan/tasks'
+      path: '/plan/tasks'
+      fullPath: '/plan/tasks'
+      preLoaderRoute: typeof PlanTasksRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings/data': {
+      id: '/settings/data'
+      path: '/settings/data'
+      fullPath: '/settings/data'
+      preLoaderRoute: typeof SettingsDataRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings/team': {
+      id: '/settings/team'
+      path: '/settings/team'
+      fullPath: '/settings/team'
+      preLoaderRoute: typeof SettingsTeamRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/wedding/events': {
+      id: '/wedding/events'
+      path: '/wedding/events'
+      fullPath: '/wedding/events'
+      preLoaderRoute: typeof WeddingEventsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/wedding/new': {
+      id: '/wedding/new'
+      path: '/wedding/new'
+      fullPath: '/wedding/new'
+      preLoaderRoute: typeof WeddingNewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/checkout_/status/$id': {
+      id: '/checkout_/status/$id'
+      path: '/checkout/status/$id'
+      fullPath: '/checkout/status/$id'
+      preLoaderRoute: typeof CheckoutStatusIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/guests_/import_/$batch': {
+      id: '/guests_/import_/$batch'
+      path: '/guests/import/$batch'
+      fullPath: '/guests/import/$batch'
+      preLoaderRoute: typeof GuestsImportBatchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/i/$token_/expired': {
+      id: '/i/$token_/expired'
+      path: '/i/$token/expired'
+      fullPath: '/i/$token/expired'
+      preLoaderRoute: typeof ITokenExpiredRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/i/$token_/rsvp': {
+      id: '/i/$token_/rsvp'
+      path: '/i/$token/rsvp'
+      fullPath: '/i/$token/rsvp'
+      preLoaderRoute: typeof ITokenRsvpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/i/$token_/rsvp_/receipt': {
+      id: '/i/$token_/rsvp_/receipt'
+      path: '/i/$token/rsvp/receipt'
+      fullPath: '/i/$token/rsvp/receipt'
+      preLoaderRoute: typeof ITokenRsvpReceiptRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AccountRoute: AccountRoute,
+  AdminRoute: AdminRoute,
+  CheckoutRoute: CheckoutRoute,
+  GuestsRoute: GuestsRoute,
+  HomeRoute: HomeRoute,
+  LoginRoute: LoginRoute,
+  PlansRoute: PlansRoute,
+  PublishRoute: PublishRoute,
+  RegisterRoute: RegisterRoute,
+  RsvpRoute: RsvpRoute,
+  StartRoute: StartRoute,
+  GuestsImportRoute: GuestsImportRoute,
+  ITokenRoute: ITokenRoute,
+  InvitationChangesRoute: InvitationChangesRoute,
+  InvitationContentRoute: InvitationContentRoute,
+  InvitationPreviewRoute: InvitationPreviewRoute,
+  InvitationVariantsRoute: InvitationVariantsRoute,
+  PlanBudgetRoute: PlanBudgetRoute,
+  PlanTasksRoute: PlanTasksRoute,
+  SettingsDataRoute: SettingsDataRoute,
+  SettingsTeamRoute: SettingsTeamRoute,
+  WeddingEventsRoute: WeddingEventsRoute,
+  WeddingNewRoute: WeddingNewRoute,
+  CheckoutStatusIdRoute: CheckoutStatusIdRoute,
+  GuestsImportBatchRoute: GuestsImportBatchRoute,
+  ITokenExpiredRoute: ITokenExpiredRoute,
+  ITokenRsvpRoute: ITokenRsvpRoute,
+  ITokenRsvpReceiptRoute: ITokenRsvpReceiptRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
