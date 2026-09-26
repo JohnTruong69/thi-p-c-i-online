@@ -21,7 +21,7 @@ import { Route as PublishRouteImport } from './routes/publish'
 import { Route as RegisterRouteImport } from './routes/register'
 import { Route as RsvpRouteImport } from './routes/rsvp'
 import { Route as StartRouteImport } from './routes/start'
-import { Route as GuestsImportRouteImport } from './routes/guests.import'
+import { Route as GuestsImportRouteImport } from './routes/guests_.import'
 import { Route as ITokenRouteImport } from './routes/i.$token'
 import { Route as InvitationChangesRouteImport } from './routes/invitation.changes'
 import { Route as InvitationContentRouteImport } from './routes/invitation.content'
@@ -33,11 +33,11 @@ import { Route as SettingsDataRouteImport } from './routes/settings.data'
 import { Route as SettingsTeamRouteImport } from './routes/settings.team'
 import { Route as WeddingEventsRouteImport } from './routes/wedding.events'
 import { Route as WeddingNewRouteImport } from './routes/wedding.new'
-import { Route as CheckoutStatusIdRouteImport } from './routes/checkout.status.$id'
-import { Route as GuestsImportBatchRouteImport } from './routes/guests.import.$batch'
-import { Route as ITokenExpiredRouteImport } from './routes/i.$token.expired'
-import { Route as ITokenRsvpRouteImport } from './routes/i.$token.rsvp'
-import { Route as ITokenRsvpReceiptRouteImport } from './routes/i.$token.rsvp.receipt'
+import { Route as CheckoutStatusIdRouteImport } from './routes/checkout_.status.$id'
+import { Route as GuestsImportBatchRouteImport } from './routes/guests_.import_.$batch'
+import { Route as ITokenExpiredRouteImport } from './routes/i.$token_.expired'
+import { Route as ITokenRsvpRouteImport } from './routes/i.$token_.rsvp'
+import { Route as ITokenRsvpReceiptRouteImport } from './routes/i.$token_.rsvp_.receipt'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -100,9 +100,9 @@ const StartRoute = StartRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const GuestsImportRoute = GuestsImportRouteImport.update({
-  id: '/import',
-  path: '/import',
-  getParentRoute: () => GuestsRoute,
+  id: '/guests_/import',
+  path: '/guests/import',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ITokenRoute = ITokenRouteImport.update({
   id: '/i/$token',
@@ -160,37 +160,37 @@ const WeddingNewRoute = WeddingNewRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const CheckoutStatusIdRoute = CheckoutStatusIdRouteImport.update({
-  id: '/status/$id',
-  path: '/status/$id',
-  getParentRoute: () => CheckoutRoute,
+  id: '/checkout_/status/$id',
+  path: '/checkout/status/$id',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const GuestsImportBatchRoute = GuestsImportBatchRouteImport.update({
-  id: '/$batch',
-  path: '/$batch',
-  getParentRoute: () => GuestsImportRoute,
+  id: '/guests_/import_/$batch',
+  path: '/guests/import/$batch',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ITokenExpiredRoute = ITokenExpiredRouteImport.update({
-  id: '/expired',
-  path: '/expired',
-  getParentRoute: () => ITokenRoute,
+  id: '/i/$token_/expired',
+  path: '/i/$token/expired',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ITokenRsvpRoute = ITokenRsvpRouteImport.update({
-  id: '/rsvp',
-  path: '/rsvp',
-  getParentRoute: () => ITokenRoute,
+  id: '/i/$token_/rsvp',
+  path: '/i/$token/rsvp',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ITokenRsvpReceiptRoute = ITokenRsvpReceiptRouteImport.update({
-  id: '/receipt',
-  path: '/receipt',
-  getParentRoute: () => ITokenRsvpRoute,
+  id: '/i/$token_/rsvp_/receipt',
+  path: '/i/$token/rsvp/receipt',
+  getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
   '/admin': typeof AdminRoute
-  '/checkout': typeof CheckoutRouteWithChildren
-  '/guests': typeof GuestsRouteWithChildren
+  '/checkout': typeof CheckoutRoute
+  '/guests': typeof GuestsRoute
   '/home': typeof HomeRoute
   '/login': typeof LoginRoute
   '/plans': typeof PlansRoute
@@ -198,8 +198,8 @@ export interface FileRoutesByFullPath {
   '/register': typeof RegisterRoute
   '/rsvp': typeof RsvpRoute
   '/start': typeof StartRoute
-  '/guests/import': typeof GuestsImportRouteWithChildren
-  '/i/$token': typeof ITokenRouteWithChildren
+  '/guests/import': typeof GuestsImportRoute
+  '/i/$token': typeof ITokenRoute
   '/invitation/changes': typeof InvitationChangesRoute
   '/invitation/content': typeof InvitationContentRoute
   '/invitation/preview': typeof InvitationPreviewRoute
@@ -213,15 +213,15 @@ export interface FileRoutesByFullPath {
   '/checkout/status/$id': typeof CheckoutStatusIdRoute
   '/guests/import/$batch': typeof GuestsImportBatchRoute
   '/i/$token/expired': typeof ITokenExpiredRoute
-  '/i/$token/rsvp': typeof ITokenRsvpRouteWithChildren
+  '/i/$token/rsvp': typeof ITokenRsvpRoute
   '/i/$token/rsvp/receipt': typeof ITokenRsvpReceiptRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
   '/admin': typeof AdminRoute
-  '/checkout': typeof CheckoutRouteWithChildren
-  '/guests': typeof GuestsRouteWithChildren
+  '/checkout': typeof CheckoutRoute
+  '/guests': typeof GuestsRoute
   '/home': typeof HomeRoute
   '/login': typeof LoginRoute
   '/plans': typeof PlansRoute
@@ -229,8 +229,8 @@ export interface FileRoutesByTo {
   '/register': typeof RegisterRoute
   '/rsvp': typeof RsvpRoute
   '/start': typeof StartRoute
-  '/guests/import': typeof GuestsImportRouteWithChildren
-  '/i/$token': typeof ITokenRouteWithChildren
+  '/guests/import': typeof GuestsImportRoute
+  '/i/$token': typeof ITokenRoute
   '/invitation/changes': typeof InvitationChangesRoute
   '/invitation/content': typeof InvitationContentRoute
   '/invitation/preview': typeof InvitationPreviewRoute
@@ -244,7 +244,7 @@ export interface FileRoutesByTo {
   '/checkout/status/$id': typeof CheckoutStatusIdRoute
   '/guests/import/$batch': typeof GuestsImportBatchRoute
   '/i/$token/expired': typeof ITokenExpiredRoute
-  '/i/$token/rsvp': typeof ITokenRsvpRouteWithChildren
+  '/i/$token/rsvp': typeof ITokenRsvpRoute
   '/i/$token/rsvp/receipt': typeof ITokenRsvpReceiptRoute
 }
 export interface FileRoutesById {
@@ -252,8 +252,8 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
   '/admin': typeof AdminRoute
-  '/checkout': typeof CheckoutRouteWithChildren
-  '/guests': typeof GuestsRouteWithChildren
+  '/checkout': typeof CheckoutRoute
+  '/guests': typeof GuestsRoute
   '/home': typeof HomeRoute
   '/login': typeof LoginRoute
   '/plans': typeof PlansRoute
@@ -261,8 +261,8 @@ export interface FileRoutesById {
   '/register': typeof RegisterRoute
   '/rsvp': typeof RsvpRoute
   '/start': typeof StartRoute
-  '/guests/import': typeof GuestsImportRouteWithChildren
-  '/i/$token': typeof ITokenRouteWithChildren
+  '/guests_/import': typeof GuestsImportRoute
+  '/i/$token': typeof ITokenRoute
   '/invitation/changes': typeof InvitationChangesRoute
   '/invitation/content': typeof InvitationContentRoute
   '/invitation/preview': typeof InvitationPreviewRoute
@@ -273,11 +273,11 @@ export interface FileRoutesById {
   '/settings/team': typeof SettingsTeamRoute
   '/wedding/events': typeof WeddingEventsRoute
   '/wedding/new': typeof WeddingNewRoute
-  '/checkout/status/$id': typeof CheckoutStatusIdRoute
-  '/guests/import/$batch': typeof GuestsImportBatchRoute
-  '/i/$token/expired': typeof ITokenExpiredRoute
-  '/i/$token/rsvp': typeof ITokenRsvpRouteWithChildren
-  '/i/$token/rsvp/receipt': typeof ITokenRsvpReceiptRoute
+  '/checkout_/status/$id': typeof CheckoutStatusIdRoute
+  '/guests_/import_/$batch': typeof GuestsImportBatchRoute
+  '/i/$token_/expired': typeof ITokenExpiredRoute
+  '/i/$token_/rsvp': typeof ITokenRsvpRoute
+  '/i/$token_/rsvp_/receipt': typeof ITokenRsvpReceiptRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -356,7 +356,7 @@ export interface FileRouteTypes {
     | '/register'
     | '/rsvp'
     | '/start'
-    | '/guests/import'
+    | '/guests_/import'
     | '/i/$token'
     | '/invitation/changes'
     | '/invitation/content'
@@ -368,19 +368,19 @@ export interface FileRouteTypes {
     | '/settings/team'
     | '/wedding/events'
     | '/wedding/new'
-    | '/checkout/status/$id'
-    | '/guests/import/$batch'
-    | '/i/$token/expired'
-    | '/i/$token/rsvp'
-    | '/i/$token/rsvp/receipt'
+    | '/checkout_/status/$id'
+    | '/guests_/import_/$batch'
+    | '/i/$token_/expired'
+    | '/i/$token_/rsvp'
+    | '/i/$token_/rsvp_/receipt'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AccountRoute: typeof AccountRoute
   AdminRoute: typeof AdminRoute
-  CheckoutRoute: typeof CheckoutRouteWithChildren
-  GuestsRoute: typeof GuestsRouteWithChildren
+  CheckoutRoute: typeof CheckoutRoute
+  GuestsRoute: typeof GuestsRoute
   HomeRoute: typeof HomeRoute
   LoginRoute: typeof LoginRoute
   PlansRoute: typeof PlansRoute
@@ -388,7 +388,8 @@ export interface RootRouteChildren {
   RegisterRoute: typeof RegisterRoute
   RsvpRoute: typeof RsvpRoute
   StartRoute: typeof StartRoute
-  ITokenRoute: typeof ITokenRouteWithChildren
+  GuestsImportRoute: typeof GuestsImportRoute
+  ITokenRoute: typeof ITokenRoute
   InvitationChangesRoute: typeof InvitationChangesRoute
   InvitationContentRoute: typeof InvitationContentRoute
   InvitationPreviewRoute: typeof InvitationPreviewRoute
@@ -399,6 +400,11 @@ export interface RootRouteChildren {
   SettingsTeamRoute: typeof SettingsTeamRoute
   WeddingEventsRoute: typeof WeddingEventsRoute
   WeddingNewRoute: typeof WeddingNewRoute
+  CheckoutStatusIdRoute: typeof CheckoutStatusIdRoute
+  GuestsImportBatchRoute: typeof GuestsImportBatchRoute
+  ITokenExpiredRoute: typeof ITokenExpiredRoute
+  ITokenRsvpRoute: typeof ITokenRsvpRoute
+  ITokenRsvpReceiptRoute: typeof ITokenRsvpReceiptRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -487,12 +493,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StartRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/guests/import': {
-      id: '/guests/import'
-      path: '/import'
+    '/guests_/import': {
+      id: '/guests_/import'
+      path: '/guests/import'
       fullPath: '/guests/import'
       preLoaderRoute: typeof GuestsImportRouteImport
-      parentRoute: typeof GuestsRoute
+      parentRoute: typeof rootRouteImport
     }
     '/i/$token': {
       id: '/i/$token'
@@ -571,110 +577,50 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WeddingNewRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/checkout/status/$id': {
-      id: '/checkout/status/$id'
-      path: '/status/$id'
+    '/checkout_/status/$id': {
+      id: '/checkout_/status/$id'
+      path: '/checkout/status/$id'
       fullPath: '/checkout/status/$id'
       preLoaderRoute: typeof CheckoutStatusIdRouteImport
-      parentRoute: typeof CheckoutRoute
+      parentRoute: typeof rootRouteImport
     }
-    '/guests/import/$batch': {
-      id: '/guests/import/$batch'
-      path: '/$batch'
+    '/guests_/import_/$batch': {
+      id: '/guests_/import_/$batch'
+      path: '/guests/import/$batch'
       fullPath: '/guests/import/$batch'
       preLoaderRoute: typeof GuestsImportBatchRouteImport
-      parentRoute: typeof GuestsImportRoute
+      parentRoute: typeof rootRouteImport
     }
-    '/i/$token/expired': {
-      id: '/i/$token/expired'
-      path: '/expired'
+    '/i/$token_/expired': {
+      id: '/i/$token_/expired'
+      path: '/i/$token/expired'
       fullPath: '/i/$token/expired'
       preLoaderRoute: typeof ITokenExpiredRouteImport
-      parentRoute: typeof ITokenRoute
+      parentRoute: typeof rootRouteImport
     }
-    '/i/$token/rsvp': {
-      id: '/i/$token/rsvp'
-      path: '/rsvp'
+    '/i/$token_/rsvp': {
+      id: '/i/$token_/rsvp'
+      path: '/i/$token/rsvp'
       fullPath: '/i/$token/rsvp'
       preLoaderRoute: typeof ITokenRsvpRouteImport
-      parentRoute: typeof ITokenRoute
+      parentRoute: typeof rootRouteImport
     }
-    '/i/$token/rsvp/receipt': {
-      id: '/i/$token/rsvp/receipt'
-      path: '/receipt'
+    '/i/$token_/rsvp_/receipt': {
+      id: '/i/$token_/rsvp_/receipt'
+      path: '/i/$token/rsvp/receipt'
       fullPath: '/i/$token/rsvp/receipt'
       preLoaderRoute: typeof ITokenRsvpReceiptRouteImport
-      parentRoute: typeof ITokenRsvpRoute
+      parentRoute: typeof rootRouteImport
     }
   }
 }
-
-interface CheckoutRouteChildren {
-  CheckoutStatusIdRoute: typeof CheckoutStatusIdRoute
-}
-
-const CheckoutRouteChildren: CheckoutRouteChildren = {
-  CheckoutStatusIdRoute: CheckoutStatusIdRoute,
-}
-
-const CheckoutRouteWithChildren = CheckoutRoute._addFileChildren(
-  CheckoutRouteChildren,
-)
-
-interface GuestsImportRouteChildren {
-  GuestsImportBatchRoute: typeof GuestsImportBatchRoute
-}
-
-const GuestsImportRouteChildren: GuestsImportRouteChildren = {
-  GuestsImportBatchRoute: GuestsImportBatchRoute,
-}
-
-const GuestsImportRouteWithChildren = GuestsImportRoute._addFileChildren(
-  GuestsImportRouteChildren,
-)
-
-interface GuestsRouteChildren {
-  GuestsImportRoute: typeof GuestsImportRouteWithChildren
-}
-
-const GuestsRouteChildren: GuestsRouteChildren = {
-  GuestsImportRoute: GuestsImportRouteWithChildren,
-}
-
-const GuestsRouteWithChildren =
-  GuestsRoute._addFileChildren(GuestsRouteChildren)
-
-interface ITokenRsvpRouteChildren {
-  ITokenRsvpReceiptRoute: typeof ITokenRsvpReceiptRoute
-}
-
-const ITokenRsvpRouteChildren: ITokenRsvpRouteChildren = {
-  ITokenRsvpReceiptRoute: ITokenRsvpReceiptRoute,
-}
-
-const ITokenRsvpRouteWithChildren = ITokenRsvpRoute._addFileChildren(
-  ITokenRsvpRouteChildren,
-)
-
-interface ITokenRouteChildren {
-  ITokenExpiredRoute: typeof ITokenExpiredRoute
-  ITokenRsvpRoute: typeof ITokenRsvpRouteWithChildren
-}
-
-const ITokenRouteChildren: ITokenRouteChildren = {
-  ITokenExpiredRoute: ITokenExpiredRoute,
-  ITokenRsvpRoute: ITokenRsvpRouteWithChildren,
-}
-
-const ITokenRouteWithChildren =
-  ITokenRoute._addFileChildren(ITokenRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AccountRoute: AccountRoute,
   AdminRoute: AdminRoute,
-  CheckoutRoute: CheckoutRouteWithChildren,
-  GuestsRoute: GuestsRouteWithChildren,
+  CheckoutRoute: CheckoutRoute,
+  GuestsRoute: GuestsRoute,
   HomeRoute: HomeRoute,
   LoginRoute: LoginRoute,
   PlansRoute: PlansRoute,
@@ -682,7 +628,8 @@ const rootRouteChildren: RootRouteChildren = {
   RegisterRoute: RegisterRoute,
   RsvpRoute: RsvpRoute,
   StartRoute: StartRoute,
-  ITokenRoute: ITokenRouteWithChildren,
+  GuestsImportRoute: GuestsImportRoute,
+  ITokenRoute: ITokenRoute,
   InvitationChangesRoute: InvitationChangesRoute,
   InvitationContentRoute: InvitationContentRoute,
   InvitationPreviewRoute: InvitationPreviewRoute,
@@ -693,6 +640,11 @@ const rootRouteChildren: RootRouteChildren = {
   SettingsTeamRoute: SettingsTeamRoute,
   WeddingEventsRoute: WeddingEventsRoute,
   WeddingNewRoute: WeddingNewRoute,
+  CheckoutStatusIdRoute: CheckoutStatusIdRoute,
+  GuestsImportBatchRoute: GuestsImportBatchRoute,
+  ITokenExpiredRoute: ITokenExpiredRoute,
+  ITokenRsvpRoute: ITokenRsvpRoute,
+  ITokenRsvpReceiptRoute: ITokenRsvpReceiptRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
