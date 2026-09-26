@@ -14,3 +14,12 @@ export interface RSVP { id: ID; linkId: ID; guestName: string; answers: { eventI
 export interface Order { id: ID; weddingId: ID; amount: number; currency: 'VND'; status: 'order_pending' | 'verifying' | 'paid_verified' | 'needs_support'; }
 export interface Payment { id: ID; orderId: ID; providerReference: string; verifiedAt?: string; status: 'unmatched' | 'verified' | 'rejected'; }
 export interface Entitlement { id: ID; weddingId: ID; paidAt: string; expiresAt: string; maxLinks: 3; maxPhotos: 50; status: 'active' | 'expired'; }
+/** Future API boundary shapes. These are types, not active requests. */
+export interface ApiResult<T> { data?: T; error?: { code: string; message: string; field?: string }; }
+export interface WeddingDraftInput { ownerName: string; partnerName: string; plannedDate?: string; }
+export interface EventInput { name: string; side: EventSide; date?: string; time?: string; venue?: string; address?: string; status: EventStatus; }
+export interface CsvPreviewInput { filename: string; columnMap: Record<'name'|'phone'|'side', string>; eventIds: ID[]; }
+export interface CsvPreviewResult { batch: CsvBatch; rowErrors: { row: number; reason: string }[]; suspectedDuplicates: { row: number; guestId: ID }[]; }
+export interface PublishReview { readyLinks: Link[]; blockedLinks: { link: Link; eventId: ID; missingFields: string[] }[]; }
+export interface RsvpInput { token: string; guestName: string; answers: RSVP['answers']; }
+export interface CheckoutStatus { order: Order; payment?: Payment; entitlement?: Entitlement; }
