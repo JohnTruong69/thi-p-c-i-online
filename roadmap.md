@@ -1,0 +1,4 @@
+- [x] Đọc gói xây, đặc tả trải nghiệm và 5 bảng ảnh authority.
+- [ ] Dựng hệ màu/chữ, shell desktop/mobile/khách và hợp đồng typed.
+- [ ] Tạo toàn bộ route Phase 1, trạng thái demo và liên kết thao tác.
+- [ ] Kiểm tra mobile 375px và desktop, ghi sai lệch còn lại.
