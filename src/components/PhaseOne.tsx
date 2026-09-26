@@ -105,7 +105,7 @@ function BudgetScreen(){const events=useEventNames();
   const [f,setF]=useState<CostDraft>(emptyCost());const [errors,setErrors]=useState<Record<string,string>>({});
   const total=items.reduce((s,x)=>s+plannedCost(x),0),agreed=items.reduce((s,x)=>s+agreedCost(x),0),paid=items.reduce((s,x)=>s+x.paid,0),unpaid=items.reduce((s,x)=>s+unpaidCost(x),0);
   const installments=items.flatMap(x=>x.installments.map(i=>({...i,title:x.title,payer:x.payer,event:x.event}))).sort((a,b)=>(a.due||'9999').localeCompare(b.due||'9999'));
-  const visible=items.filter(x=>(filter==='Tất cả'||eventId(x.event)===filter||x.payer===filter)&&(payerFilter==='Tất cả'||x.payer===payerFilter));
+   const visible=items.filter(x=>(filter==='Tất cả'||eventId(x.event)===filter||(filter!=='Chung'&&x.payer===filter))&&(payerFilter==='Tất cả'||x.payer===payerFilter));
    const edit=(item?:DemoCost)=>{setEditing(item?.id??null);setErrors({});setF(item?{title:item.title,group:item.group,groupDetail:item.groupDetail??'',event:eventId(item.event),payer:item.payer,estimated:item.estimated===null?'':String(item.estimated),committed:item.committed===null?'':String(item.committed),paid:String(item.paid),deposit:String(item.deposit),vendor:item.vendor,extra:String(item.extra),installments:item.installments.map(i=>({...i,amount:String(i.amount)}))}:emptyCost());setOpen(true)};
   const submit=(e:React.FormEvent)=>{
     e.preventDefault();const n:Record<string,string>={};
