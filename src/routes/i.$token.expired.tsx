@@ -11,4 +11,4 @@ export const Route = createFileRoute("/i/$token/expired")({
   ] }),
   component: Screen,
 });
-function Screen() { const { token } = Route.useParams(); return <PhaseOne screen="expired", token={token} />; }
+function Screen() { const { token } = Route.useParams(); return <PhaseOne screen="expired" token={token} />; }

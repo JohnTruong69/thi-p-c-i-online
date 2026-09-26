@@ -11,4 +11,4 @@ export const Route = createFileRoute("/i/$token/rsvp/receipt")({
   ] }),
   component: Screen,
 });
-function Screen() { const { token } = Route.useParams(); return <PhaseOne screen="receipt", token={token} />; }
+function Screen() { const { token } = Route.useParams(); return <PhaseOne screen="receipt" token={token} />; }
