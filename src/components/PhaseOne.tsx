@@ -124,7 +124,7 @@ function BudgetScreen(){const events=useEventNames();
     if(scheduled>Math.max(0,(committed??0)+extra-paid))n['schedule']='Tổng các đợt vượt phần còn phải trả.';
     if(f.installments.length&&committed===null)n['schedule']='Cần ghi giá đã chốt để lập lịch trả.';
     setErrors(n);if(Object.keys(n).length)return;
-     const item:DemoCost={id:editing??`n${Date.now()}`,title:f.title.trim(),group:f.group,groupDetail:f.group==='Khác'?f.groupDetail.trim():undefined,event:eventId(f.event),payer:f.payer,estimated,committed,paid,deposit,vendor:f.vendor.trim(),extra,installments:f.installments.map(i=>({...i,amount:parseMoney(i.amount)}))};
+     const item:DemoCost={id:editing??`n${Date.now()}`,title:f.title.trim(),group:f.group,...(f.group==='Khác'?{groupDetail:f.groupDetail.trim()}:{}),event:eventId(f.event),payer:f.payer,estimated,committed,paid,deposit,vendor:f.vendor.trim(),extra,installments:f.installments.map(i=>({...i,amount:parseMoney(i.amount)}))};
     setItems(previous=>editing?previous.map(x=>x.id===editing?item:x):[...previous,item]);setOpen(false);
   };
   const saveCap=(e:React.FormEvent)=>{e.preventDefault();if(!capDraft.trim()||!validMoney(capDraft)||parseMoney(capDraft)<=0||parseMoney(capDraft)>10_000_000_000){setCapErr('Nhập mức dự định chi hợp lệ, lớn hơn 0.');return}setCap(parseMoney(capDraft));setCapOpen(false)};
