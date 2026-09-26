@@ -5,3 +5,5 @@
 - RSVP demo choices are scoped to a browser tab and invitation token, validated on read, and never sent to a server; this lets the receipt reflect selections without implying a real submission.
 - Phase 1 screen fixtures and edits share browser-tab sessionStorage with guarded read and reset; this lets users compare routes without suggesting server persistence.
 - Budget planned totals use agreed price when available, otherwise estimates, once per item; supplier payments and schedules are separate from Wedding checkout.
+
+- Ceremony removal previews affected demo records and reassigns task/cost links while removing guest invitations; session writes occur outside React state updaters so replay cannot duplicate records.
