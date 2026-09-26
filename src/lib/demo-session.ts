@@ -20,14 +20,22 @@ export function useDemoSession<T>(key: string, initial: T, valid: (value: unknow
     return () => window.removeEventListener('phase1-demo-change', onChange);
   }, [key]);
   const update = (next: T | ((previous: T) => T)) => {
-    setValue(previous => {
-      const result = typeof next === 'function' ? (next as (previous: T) => T)(previous) : next;
-      try {
-        sessionStorage.setItem(`phase1:${key}`, JSON.stringify(result));
-        window.dispatchEvent(new CustomEvent('phase1-demo-change', { detail: key }));
-      } catch { /* No persistence in private/blocked storage. */ }
-      return result;
-    });
+    // Resolve from the latest tab value before setting state: React may replay
+    // state updater callbacks, so writes and events must not happen inside one.
+    let previous = value;
+    try {
+      const raw = sessionStorage.getItem(`phase1:${key}`);
+      if (raw) {
+        const parsed: unknown = JSON.parse(raw);
+        if (valid(parsed)) previous = parsed;
+      }
+    } catch { /* Keep the in-memory value when storage is unavailable. */ }
+    const result = typeof next === 'function' ? (next as (previous: T) => T)(previous) : next;
+    setValue(result);
+    try {
+      sessionStorage.setItem(`phase1:${key}`, JSON.stringify(result));
+      window.dispatchEvent(new CustomEvent('phase1-demo-change', { detail: key }));
+    } catch { /* No persistence in private/blocked storage. */ }
   };
   return [value, update];
 }
