@@ -66,9 +66,11 @@ describe('staged write gate (read-only)', () => {
     expect(off).not.toContain('Chế độ chỉ xem');
     const on = renderState('trial_expired_read_only', { writable: false, write_gate_enabled: true });
     expect(on).toContain('Chế độ chỉ xem');
-    expect(on).toContain('href="/checkout"');
+    expect(on).not.toContain('/checkout');
+    expect(on).not.toMatch(/149\.000|199\.000|24 tháng|36 tháng/);
     expect(on).toContain('href="/settings/data"');
-    expect(on).toContain('Thanh toán trực tuyến chưa mở');
+    expect(on).toContain('chưa mở bán');
+    expect(on).toContain('chưa thể thanh toán');
     const failClosed = renderState('trial_not_started', { writable: false, write_gate_enabled: true });
     expect(failClosed).toContain('Chế độ chỉ xem');
     expect(renderState('paid_active', { writable: true, write_gate_enabled: true })).not.toContain('Chế độ chỉ xem');

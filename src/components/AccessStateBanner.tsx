@@ -81,10 +81,9 @@ export function AccessStateBanner({ weddingId }: { weddingId: string }) {
   else message = 'Đám cưới đang ở chế độ chỉ xem.';
 
   return <div role="status" className={`mb-5 flex flex-wrap items-center justify-between gap-2 rounded-lg px-4 py-3 text-sm ${expired ? 'bg-warm' : 'bg-sage'}`}>
-    <span>{message}{locked && <> <strong>Chế độ chỉ xem:</strong> các nút thêm, sửa, xóa tạm khóa. Hai bạn vẫn xem, tải dữ liệu, gửi yêu cầu xóa dữ liệu, và người thân vẫn xem được phần đã chia sẻ. Thanh toán trực tuyến chưa mở, nên chưa thể mở khóa ngay.</>}</span>
+    <span>{message}{locked && <> <strong>Chế độ chỉ xem:</strong> các nút thêm, sửa, xóa tạm khóa. Hai bạn vẫn xem, tải dữ liệu, gửi yêu cầu xóa dữ liệu, và người thân vẫn xem được phần đã chia sẻ. Gói mới chưa mở bán và hiện chưa thể thanh toán, nên chưa thể mở khóa trong ứng dụng. Dữ liệu của hai bạn vẫn được giữ nguyên.</>}</span>
     <span className="flex flex-wrap gap-x-4">
       {(expired || locked) && <Link to="/settings/data" className="min-h-11 content-center font-semibold text-primary underline">Tải dữ liệu</Link>}
-      {locked && <Link to="/checkout" className="min-h-11 content-center font-semibold text-primary underline">Xem gói Wedding</Link>}
     </span>
   </div>;
 }
