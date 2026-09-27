@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from '@tanstack/react-router';
-import { useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
@@ -9,6 +9,8 @@ import { acceptInvite, friendlyError, inspectInvite, safeRedirect } from '@/lib/
 import { markManualSignOut } from '@/lib/auth-events';
 import { FormField, Header, Note, Panel, inputCls } from './PhaseOne';
 import { AccountEmailButton } from './Presale';
+import { checkSignupContext } from '@/lib/account-provision.functions';
+import { useServerFn } from '@tanstack/react-start';
 
 export function PublicShell({ children }: { children: React.ReactNode }) {
   return <div className="min-h-screen bg-background"><div className="mx-auto max-w-xl px-5 pb-16 pt-8 sm:px-8">
@@ -47,19 +49,37 @@ export function LoginPage({ redirect, reason }: { redirect?: string | undefined;
     </form>
       <div className="mt-4 grid gap-2 text-center text-sm">
         <Link to="/forgot-password" className="min-h-11 content-center font-semibold text-primary underline-offset-4 hover:underline">Quên mật khẩu?</Link>
-        <Link to="/register" search={redirect ? { redirect } : {}} className="min-h-11 content-center font-semibold text-primary underline-offset-4 hover:underline">Chưa có tài khoản? Tạo tài khoản</Link>
+        {/^\/(claim|invite|viewer-invite)\//.test(safeRedirect(redirect) ?? '')
+          ? <Link to="/register" search={{ redirect: safeRedirect(redirect)! }} className="min-h-11 content-center font-semibold text-primary underline-offset-4 hover:underline">Chưa có tài khoản? Tạo tài khoản</Link>
+          : <Link to="/goi" className="min-h-11 content-center font-semibold text-primary underline-offset-4 hover:underline">Chưa có tài khoản? Xem gói</Link>}
       </div>
     </Panel></PublicShell>;
 }
 
 export function RegisterPage({ redirect }: { redirect?: string | undefined }) {
-  const [f, setF] = useState({ name: '', email: '', password: '' });
+  const check = useServerFn(checkSignupContext);
+  const back = safeRedirect(redirect);
+  const q = useQuery({ queryKey: ['signup-context', back ?? ''], queryFn: () => check({ data: back ? { redirect: back } : {} }), retry: 1 });
+  if (q.isPending) return <PublicShell><Header name="Tạo tài khoản" subtitle="TÀI KHOẢN" /><Panel><p role="status" className="flex items-center gap-2 text-sm"><Loader2 className="size-4 animate-spin" /> Đang kiểm tra đường dẫn…</p></Panel></PublicShell>;
+  if (q.isError) return <PublicShell><Header name="Tạo tài khoản" subtitle="TÀI KHOẢN" /><Panel><ErrorBox text="Chưa kiểm tra được đường dẫn. Hãy thử lại." /><Button size="lg" variant="outline" className="mt-3 min-h-11 w-full" onClick={() => q.refetch()}>Thử lại</Button></Panel></PublicShell>;
+  if (!q.data.eligible) return <PublicShell><Header name="Tạo tài khoản" subtitle="TÀI KHOẢN" /><Panel>
+    <p className="text-sm leading-6">Tài khoản mới được tạo sau khi thanh toán gói, hoặc từ lời mời của người đang quản lý đám cưới. Nếu đã thanh toán, hãy mở lại đường dẫn đơn của bạn; nếu được mời, hãy mở đường dẫn trong lời mời.</p>
+    <div className="mt-4 grid gap-2"><Button asChild size="lg" className="min-h-11"><Link to="/goi">Xem gói</Link></Button><Button asChild size="lg" variant="outline" className="min-h-11"><Link to="/login">Tôi đã có tài khoản — đăng nhập</Link></Button></div>
+  </Panel></PublicShell>;
+  return <RegisterForm redirect={back} />;
+}
+
+function RegisterForm({ redirect }: { redirect?: string | undefined }) {
+  const check = useServerFn(checkSignupContext);  const [f, setF] = useState({ name: '', email: '', password: '' });
   const [err, setErr] = useState<Record<string, string>>({}); const [msg, setMsg] = useState(''); const [busy, setBusy] = useState(false); const [sent, setSent] = useState(false);
   const back = safeRedirect(redirect);
   const submit = async (e: React.FormEvent) => {
     e.preventDefault(); setMsg('');
     const n = validateLogin(f, true); setErr(n); if (Object.keys(n).length) return;
     setBusy(true);
+    const ctx = await check({ data: { redirect: back ?? '', email: f.email } }).catch(() => null);
+    if (!ctx?.eligible) { setBusy(false); setMsg('Đường dẫn đơn hoặc lời mời không còn hiệu lực.'); return; }
+    if (ctx.emailMatches === false) { setBusy(false); setErr({ email: 'Hãy dùng đúng email đã dùng khi thanh toán hoặc được mời.' }); return; }
     const { data, error } = await supabase.auth.signUp({ email: f.email.trim(), password: f.password, options: { data: { display_name: f.name.trim() }, emailRedirectTo: `${window.location.origin}/login${back ? `?redirect=${encodeURIComponent(back)}` : ''}` } });
     setBusy(false);
     if (error) { setMsg(friendlyError(error)); return; }
