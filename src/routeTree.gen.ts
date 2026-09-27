@@ -46,6 +46,7 @@ import { Route as ITokenRsvpRouteImport } from './routes/i.$token_.rsvp'
 import { Route as AuthenticatedCheckoutStatusIdRouteImport } from './routes/_authenticated/checkout_.status.$id'
 import { Route as AuthenticatedGuestsImportBatchRouteImport } from './routes/_authenticated/guests_.import_.$batch'
 import { Route as AuthenticatedPlanBudgetIdRouteImport } from './routes/_authenticated/plan.budget_.$id'
+import { Route as AuthenticatedPlanTasksIdRouteImport } from './routes/_authenticated/plan.tasks_.$id'
 import { Route as AuthenticatedPlanTasksSuggestionsRouteImport } from './routes/_authenticated/plan.tasks_.suggestions'
 import { Route as AuthenticatedWeddingEventsIdRouteImport } from './routes/_authenticated/wedding.events_.$id'
 import { Route as ITokenRsvpReceiptRouteImport } from './routes/i.$token_.rsvp_.receipt'
@@ -248,6 +249,12 @@ const AuthenticatedPlanBudgetIdRoute =
     path: '/plan/budget/$id',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedPlanTasksIdRoute =
+  AuthenticatedPlanTasksIdRouteImport.update({
+    id: '/plan/tasks_/$id',
+    path: '/plan/tasks/$id',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedPlanTasksSuggestionsRoute =
   AuthenticatedPlanTasksSuggestionsRouteImport.update({
     id: '/plan/tasks_/suggestions',
@@ -303,6 +310,7 @@ export interface FileRoutesByFullPath {
   '/checkout/status/$id': typeof AuthenticatedCheckoutStatusIdRoute
   '/guests/import/$batch': typeof AuthenticatedGuestsImportBatchRoute
   '/plan/budget/$id': typeof AuthenticatedPlanBudgetIdRoute
+  '/plan/tasks/$id': typeof AuthenticatedPlanTasksIdRoute
   '/plan/tasks/suggestions': typeof AuthenticatedPlanTasksSuggestionsRoute
   '/wedding/events/$id': typeof AuthenticatedWeddingEventsIdRoute
   '/i/$token/rsvp/receipt': typeof ITokenRsvpReceiptRoute
@@ -344,6 +352,7 @@ export interface FileRoutesByTo {
   '/checkout/status/$id': typeof AuthenticatedCheckoutStatusIdRoute
   '/guests/import/$batch': typeof AuthenticatedGuestsImportBatchRoute
   '/plan/budget/$id': typeof AuthenticatedPlanBudgetIdRoute
+  '/plan/tasks/$id': typeof AuthenticatedPlanTasksIdRoute
   '/plan/tasks/suggestions': typeof AuthenticatedPlanTasksSuggestionsRoute
   '/wedding/events/$id': typeof AuthenticatedWeddingEventsIdRoute
   '/i/$token/rsvp/receipt': typeof ITokenRsvpReceiptRoute
@@ -387,6 +396,7 @@ export interface FileRoutesById {
   '/_authenticated/checkout_/status/$id': typeof AuthenticatedCheckoutStatusIdRoute
   '/_authenticated/guests_/import_/$batch': typeof AuthenticatedGuestsImportBatchRoute
   '/_authenticated/plan/budget_/$id': typeof AuthenticatedPlanBudgetIdRoute
+  '/_authenticated/plan/tasks_/$id': typeof AuthenticatedPlanTasksIdRoute
   '/_authenticated/plan/tasks_/suggestions': typeof AuthenticatedPlanTasksSuggestionsRoute
   '/_authenticated/wedding/events_/$id': typeof AuthenticatedWeddingEventsIdRoute
   '/i/$token_/rsvp_/receipt': typeof ITokenRsvpReceiptRoute
@@ -430,6 +440,7 @@ export interface FileRouteTypes {
     | '/checkout/status/$id'
     | '/guests/import/$batch'
     | '/plan/budget/$id'
+    | '/plan/tasks/$id'
     | '/plan/tasks/suggestions'
     | '/wedding/events/$id'
     | '/i/$token/rsvp/receipt'
@@ -471,6 +482,7 @@ export interface FileRouteTypes {
     | '/checkout/status/$id'
     | '/guests/import/$batch'
     | '/plan/budget/$id'
+    | '/plan/tasks/$id'
     | '/plan/tasks/suggestions'
     | '/wedding/events/$id'
     | '/i/$token/rsvp/receipt'
@@ -513,6 +525,7 @@ export interface FileRouteTypes {
     | '/_authenticated/checkout_/status/$id'
     | '/_authenticated/guests_/import_/$batch'
     | '/_authenticated/plan/budget_/$id'
+    | '/_authenticated/plan/tasks_/$id'
     | '/_authenticated/plan/tasks_/suggestions'
     | '/_authenticated/wedding/events_/$id'
     | '/i/$token_/rsvp_/receipt'
@@ -794,6 +807,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPlanBudgetIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/plan/tasks_/$id': {
+      id: '/_authenticated/plan/tasks_/$id'
+      path: '/plan/tasks/$id'
+      fullPath: '/plan/tasks/$id'
+      preLoaderRoute: typeof AuthenticatedPlanTasksIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/plan/tasks_/suggestions': {
       id: '/_authenticated/plan/tasks_/suggestions'
       path: '/plan/tasks/suggestions'
@@ -845,6 +865,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedCheckoutStatusIdRoute: typeof AuthenticatedCheckoutStatusIdRoute
   AuthenticatedGuestsImportBatchRoute: typeof AuthenticatedGuestsImportBatchRoute
   AuthenticatedPlanBudgetIdRoute: typeof AuthenticatedPlanBudgetIdRoute
+  AuthenticatedPlanTasksIdRoute: typeof AuthenticatedPlanTasksIdRoute
   AuthenticatedPlanTasksSuggestionsRoute: typeof AuthenticatedPlanTasksSuggestionsRoute
   AuthenticatedWeddingEventsIdRoute: typeof AuthenticatedWeddingEventsIdRoute
 }
@@ -876,6 +897,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedCheckoutStatusIdRoute: AuthenticatedCheckoutStatusIdRoute,
   AuthenticatedGuestsImportBatchRoute: AuthenticatedGuestsImportBatchRoute,
   AuthenticatedPlanBudgetIdRoute: AuthenticatedPlanBudgetIdRoute,
+  AuthenticatedPlanTasksIdRoute: AuthenticatedPlanTasksIdRoute,
   AuthenticatedPlanTasksSuggestionsRoute:
     AuthenticatedPlanTasksSuggestionsRoute,
   AuthenticatedWeddingEventsIdRoute: AuthenticatedWeddingEventsIdRoute,
