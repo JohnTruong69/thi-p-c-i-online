@@ -2,7 +2,7 @@ import { Link } from '@tanstack/react-router';
 import { createContext, useContext } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '../integrations/supabase/client';
-import { Button } from '@/components/ui/button';
+import { Button } from './ui/button';
 import type { Json } from '../integrations/supabase/types';
 
 type AccessState = {
