@@ -39,19 +39,19 @@ async function main() {
   await admin.from('billing_settings').insert({ offer_version: 'qa-presale', price_vnd: 199000, terms_url: 'https://example.test/terms', terms_version: 'qa-terms', terms_approved_at: now, terms_approved_by: 'qa', bank_gateway: 'QA', bank_account_number: ACC, bank_account_name: 'QA', account_enabled: true, sandbox_verified_at: now, live_enabled: true } as never);
   try {
     // Access control on the reservation function.
-    ok(!!(await mk().rpc('reserve_account_invite', { p_kind: 'presale', p_token: tok('x') })).error, 'anon cannot call reserve_account_invite');
+    ok(!!(await mk().rpc('reserve_account_invite', { p_kind: 'presale', p_token: tok('f0') })).error, 'anon cannot call reserve_account_invite');
     const legacy = await admin.auth.admin.createUser({ email: email('legacy'), password: PW, email_confirm: true, app_metadata: { presale_exempt: true } });
     userIds.add(legacy.data.user!.id);
     const L = mk(); await L.auth.signInWithPassword({ email: email('legacy'), password: PW });
-    ok(!!(await L.rpc('reserve_account_invite', { p_kind: 'presale', p_token: tok('x') })).error, 'signed-in user cannot call reserve_account_invite');
+    ok(!!(await L.rpc('reserve_account_invite', { p_kind: 'presale', p_token: tok('f0') })).error, 'signed-in user cannot call reserve_account_invite');
 
     // 1. Unpaid / unknown orders never create accounts.
-    const T0 = tok('u'); await order(email('unpaid'), T0);
+    const T0 = tok('e1'); await order(email('unpaid'), T0);
     ok((await prov('presale', T0) as { reason?: string }).reason === 'not_paid', 'pending (unpaid) order: no account email');
-    ok((await prov('presale', tok('nope')) as { reason?: string }).reason === 'not_found', 'unknown token: not_found');
+    ok((await prov('presale', tok('f9')) as { reason?: string }).reason === 'not_found', 'unknown token: not_found');
 
     // 2. Paid order → invite link creates exactly one account for the ORDER email.
-    const T = tok('b'); await order(email('buyer'), T); await pay(T, 1);
+    const T = tok('e2'); await order(email('buyer'), T); await pay(T, 1);
     const p1 = await prov('presale', T);
     ok(p1.ok && p1.sent === 'invite', 'paid order: invite issued');
     if (p1.ok && p1.link?.userId) userIds.add(p1.link.userId);
@@ -62,7 +62,6 @@ async function main() {
     ok(p2.ok && p2.link?.userId === (p1.ok ? p1.link?.userId : 'x'), 'retry reuses the same account (idempotent, no duplicate user)');
     // Opening the link proves ownership of the order email.
     const o = await openLink(p2.ok ? p2.link!.hashed_token : '', 'recovery');
-    console.log('DBG', o.error?.message, o.user?.email);
     ok(!o.error && o.user?.email === email('buyer'), 'link sign-in lands on the order email account');
     ok(!!o.user?.email_confirmed_at, 'opening the emailed link confirms email ownership');
     const stale = p1.ok ? await openLink(p1.link!.hashed_token, 'invite') : null;
@@ -72,20 +71,20 @@ async function main() {
     ok(!cl.error && typeof cl.data === 'string', 'provisioned user claims wedding + entitlement');
     const wid = cl.data as string;
     ok((await prov('presale', T) as { reason?: string }).reason !== undefined && !(await prov('presale', T)).ok, 'claimed order: no further account emails');
-    const again = mk(); const sg = await again.auth.signInWithPassword({ email: email('buyer'), password: PW }); console.log('DBG2', sg.error?.message); ok(!sg.error, 'provisioned user logs in with password later');
+    const again = mk(); const sg = await again.auth.signInWithPassword({ email: email('buyer'), password: PW }); ok(!sg.error, 'provisioned user logs in with password later');
 
     // 3. Account recovery for a provisioned user uses the standard recovery link.
     const rec = await admin.auth.admin.generateLink({ type: 'recovery', email: email('buyer') });
     ok(!rec.error && !(await openLink((rec.data as { properties: { hashed_token: string } }).properties.hashed_token, 'recovery')).error, 'password recovery works for provisioned account');
 
     // 4. Already-existing confirmed email: no new user, no email; they sign in and claim.
-    const TL = tok('l'); await order(email('legacy'), TL); await pay(TL, 2);
-    const pl = await prov('presale', TL); console.log('DBG3', JSON.stringify(pl)); ok((pl as { reason?: string }).reason === 'existing_account', 'existing confirmed account: told to log in, nothing created');
+    const TL = tok('e3'); await order(email('legacy'), TL); await pay(TL, 2);
+    const pl = await prov('presale', TL); ok((pl as { reason?: string }).reason === 'existing_account', 'existing confirmed account: told to log in, nothing created');
     ok(!(await claim(L, TL)).error, 'existing account claims its paid order after normal login');
 
     // 5. Existing unconfirmed self-signup (legacy of open-signup era): recovery link, same account.
     const un = await admin.auth.admin.createUser({ email: email('unconf'), password: PW, email_confirm: false }); userIds.add(un.data.user!.id);
-    const TU = tok('c'); await order(email('unconf'), TU); await pay(TU, 3);
+    const TU = tok('e4'); await order(email('unconf'), TU); await pay(TU, 3);
     const pu = await prov('presale', TU);
     ok(pu.ok && pu.sent === 'recovery' && pu.link?.userId === un.data.user!.id, 'unconfirmed existing account gets recovery link, no duplicate');
 
@@ -102,7 +101,7 @@ async function main() {
     ok((await prov('partner', itok) as { reason?: string }).reason === 'invite_inactive', 'accepted invite: no further account emails');
 
     // 7. Abuse cap.
-    const TC = tok('d'); await order(email('cap'), TC); await pay(TC, 4);
+    const TC = tok('e5'); await order(email('cap'), TC); await pay(TC, 4);
     await admin.from('presale_orders').update({ account_invite_count: 5 } as never).eq('token_hash', await sha(TC));
     ok((await prov('presale', TC) as { reason?: string }).reason === 'too_many', 'more than 5 account emails per order refused');
   } finally {
