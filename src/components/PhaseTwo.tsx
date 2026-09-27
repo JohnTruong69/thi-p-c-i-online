@@ -2,11 +2,12 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from '@tanstack/react-router';
 import { ArrowRight, Check, Download, Plus, Undo2, Upload } from 'lucide-react';
 import { useDemoSession } from '@/lib/demo-session';
+import { applyResponse, guestFingerprint, pageCount, pageSlice, planUndo, setManual as setManualStatus, summaryState, type Answer, type StatusMap } from '@/lib/phase2d';
 import { buildPreview, guessColumns, parseCsv, summarize, PREVIEW_LIMIT, SAMPLE_CSV, SUGGESTED_TASKS, matchResponse, canClientSet, type ColumnMap, type CsvRow, type CsvTable, type OrderStatus } from '@/lib/phase2';
 import { Action, DemoAction, DemoDialog, Header, Note, Panel, Row, SmallLabel, Status, inputCls, initialGuests, validGuests, initialTasks, validTasks, readDemoReceipt, useEventNames, type DemoGuest, type DemoTask } from './PhaseOne';
 
 /* ---------------- CSV import ---------------- */
-type DemoBatch = { id: string; filename: string; addedIds: string[]; skipped: number; invalid: number; undone: boolean; at: string };
+type DemoBatch = { id: string; filename: string; addedIds: string[]; skipped: number; invalid: number; undone: boolean; at: string; snapshot?: Record<string, string>; kept?: number; removed?: number };
 const validBatch = (v: unknown): v is DemoBatch | null => v === null || (!!v && typeof (v as DemoBatch).id === 'string' && Array.isArray((v as DemoBatch).addedIds));
 
 export function CsvImportScreen() {
@@ -22,6 +23,7 @@ export function CsvImportScreen() {
   const [rows, setRows] = useState<CsvRow[]>([]);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [page, setPage] = useState(0);
 
   const load = (name: string, text: string) => {
     const t = parseCsv(text);
@@ -42,7 +44,7 @@ export function CsvImportScreen() {
     if (!eventIds.length) { setError('Chọn ít nhất một buổi mời cho các khách này.'); return; }
     setError('');
     setRows(buildPreview(table, map, guests.map(g => ({ id: g.id, name: g.name, phone: g.phone }))));
-    setStep(2);
+    setPage(0); setStep(2);
   };
   const sum = summarize(rows);
   const commit = () => {
@@ -50,7 +52,7 @@ export function CsvImportScreen() {
     const add = rows.filter(r => r.decision === 'add' && !r.errors.length);
     const created: DemoGuest[] = add.map((r, i) => ({ id: `csv${stamp}-${i}`, name: r.name, phone: r.phone, side: r.side, events: eventIds, party: r.party, state: 'Chưa gửi', added: true }));
     setGuests(g => [...created, ...g]);
-    setBatch({ id: `b${stamp}`, filename: file, addedIds: created.map(c => c.id), skipped: rows.length - add.length - sum.invalid, invalid: sum.invalid, undone: false, at: new Date().toISOString() });
+    setBatch({ id: `b${stamp}`, filename: file, addedIds: created.map(c => c.id), snapshot: Object.fromEntries(created.map(c => [c.id, guestFingerprint(c)])), skipped: rows.length - add.length - sum.invalid, invalid: sum.invalid, undone: false, at: new Date().toISOString() });
     navigate({ to: '/guests/import/$batch', params: { batch: 'demo-batch' } });
   };
   const setDecision = (row: number, decision: CsvRow['decision']) => setRows(rs => rs.map(r => (r.row === row ? { ...r, decision } : r)));
@@ -91,8 +93,11 @@ export function CsvImportScreen() {
         {[[sum.valid, 'hợp lệ'], [sum.invalid, 'lỗi'], [sum.possibleDuplicates, 'nghi trùng']].map(([n, l]) => <Panel key={l} className="p-3 text-center"><strong className="block font-display text-2xl">{n}</strong><span className="text-xs">{l}</span></Panel>)}
       </div>
       <Note tone="warm">Dòng nghi trùng mặc định <strong>bỏ qua</strong>; chỉ thêm khi hai bạn chọn. Dòng lỗi cần sửa trong file gốc.</Note>
-      <SmallLabel>{rows.length > PREVIEW_LIMIT ? `XEM TRƯỚC ${PREVIEW_LIMIT}/${rows.length} DÒNG ĐẦU` : `XEM TRƯỚC ${rows.length} DÒNG`}</SmallLabel>
-      <div className="space-y-2">{rows.slice(0, PREVIEW_LIMIT).map(r => <Panel key={r.row} className="p-3">
+      {(() => { const pg = pageSlice(rows, page); const pc = pageCount(rows.length); const nav = (pos: string) => pc > 1 && <nav aria-label={`Trang xem trước ${pos}`} className="my-3 grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2"><DemoAction variant="outline" disabled={pg.page === 0} onClick={() => setPage(pg.page - 1)}>Trang trước</DemoAction><span className="text-center text-xs font-semibold">Trang {pg.page + 1}/{pc}</span><DemoAction variant="outline" disabled={pg.page >= pc - 1} onClick={() => setPage(pg.page + 1)}>Trang sau</DemoAction></nav>; return <>
+      <SmallLabel>{`DÒNG ${pg.from}–${pg.to} / ${rows.length} · MỖI TRANG ${PREVIEW_LIMIT} DÒNG`}</SmallLabel>
+      {pc > 1 && <p className="mb-2 text-xs text-muted-foreground">Số “hợp lệ/lỗi/nghi trùng” và số khách sẽ thêm tính trên toàn file {rows.length} dòng. Hãy xem các trang để chọn từng dòng.</p>}
+      {nav('trên')}
+      <div className="space-y-2">{pg.rows.map(r => <Panel key={r.row} className="p-3">
         <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2">
           <div className="min-w-0"><div className="break-words text-sm font-semibold">Dòng {r.row} · {r.name || '(không tên)'}</div>
             <p className="text-xs text-muted-foreground">{[r.phone, r.side, `${r.party} người`].filter(Boolean).join(' · ')}</p>
@@ -101,6 +106,7 @@ export function CsvImportScreen() {
           {r.errors.length ? <Status tone="copper">Lỗi</Status> :
             <select aria-label={`Quyết định dòng ${r.row}`} className="h-11 rounded-md border border-border bg-background px-2 text-xs" value={r.decision} onChange={e => setDecision(r.row, e.target.value as CsvRow['decision'])}><option value="add">Thêm</option><option value="skip">Bỏ qua</option></select>}
         </div></Panel>)}</div>
+      {nav('dưới')}</>; })()}
       <DemoAction className="mt-5 w-full" onClick={commit}>Thêm {sum.toAdd} khách vào sổ (trong phiên) <Check /></DemoAction>
       <DemoAction variant="ghost" className="mt-2 w-full" onClick={() => setStep(1)}>Quay lại ghép cột</DemoAction>
     </>}
@@ -109,11 +115,20 @@ export function CsvImportScreen() {
 
 export function CsvBatchScreen() {
   const [batch, setBatch] = useDemoSession<DemoBatch | null>('csv-batch', null, validBatch);
-  const [, setGuests] = useDemoSession<DemoGuest[]>('guests', initialGuests, validGuests);
+  const [guests, setGuests] = useDemoSession<DemoGuest[]>('guests', initialGuests, validGuests);
   if (!batch) return <div className="max-w-3xl"><Header name="Kết quả nhập" subtitle="NHẬP CSV" /><Note tone="warm">Chưa có lần nhập nào trong phiên xem này.</Note><Action to="/guests/import" className="mt-5 w-full">Nhập file CSV</Action></div>;
-  const undo = () => { const ids = new Set(batch.addedIds); setGuests(g => g.filter(x => !ids.has(x.id))); setBatch({ ...batch, undone: true }); };
+  const undo = () => {
+    const snap = batch.snapshot ?? {};
+    const plan = planUndo(snap, guests);
+    const ids = new Set(plan.removeIds);
+    setGuests(g => g.filter(x => !ids.has(x.id)));
+    setBatch({ ...batch, undone: true, kept: plan.keptIds.length, removed: plan.removeIds.length });
+  };
+  const edited = batch.snapshot ? planUndo(batch.snapshot, guests).keptIds.length : 0;
   return <div className="max-w-3xl"><Header name="Kết quả nhập" subtitle="NHẬP CSV · BƯỚC 3/3" />
     <Panel className="bg-foreground text-primary-foreground"><div className="text-xs">{batch.filename}</div><div className="mt-1 font-display text-4xl">{batch.undone ? 'Đã hoàn tác' : `${batch.addedIds.length} khách đã thêm`}</div><p className="mt-2 text-xs">{batch.skipped} dòng bỏ qua · {batch.invalid} dòng lỗi · chỉ trong phiên xem này</p></Panel>
+    {batch.undone && <p role="status" className="mt-3 rounded-md bg-sage p-3 text-sm font-semibold">Đã bỏ {batch.removed ?? batch.addedIds.length} khách chưa sửa.{batch.kept ? ` Giữ lại ${batch.kept} khách đã được sửa sau khi nhập.` : ''}</p>}
+    {!batch.undone && edited > 0 && <Note tone="warm">{edited} khách trong lần nhập này đã được sửa sau đó. Hoàn tác sẽ giữ lại những khách này, chỉ bỏ khách chưa sửa.</Note>}
     {!batch.undone && <DemoAction variant="outline" className="mt-4 w-full" onClick={undo}><Undo2 /> Hoàn tác lần nhập này</DemoAction>}
     <Action to="/guests" className="mt-3 w-full">Về sổ khách <ArrowRight /></Action>
   </div>;
