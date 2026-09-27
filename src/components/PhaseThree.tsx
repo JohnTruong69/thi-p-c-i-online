@@ -12,6 +12,8 @@ import {
   removeManager, revokeInvite, teamQuery, toEventForm, updateEvent, updateWedding, useMyWedding, validateEventForm,
   type EventForm, type EventRow, type EventSideDb, type WeddingRow,
 } from '@/lib/wedding-api';
+import { EventDateImpactDialog, EventRemovalSummary } from './PlannerReal';
+import { removeEvent, updateEventWithImpact } from '@/lib/planner-api';
 import { DemoDialog, FormField, Header, Note, Panel, PlannerTabs, Row, Status, fmtDate, inputCls, useDeepLink } from './PhaseOne';
 
 const isEmptyWedding = (w: WeddingRow | null | undefined): w is null | undefined => !w;
@@ -96,17 +98,17 @@ export function RealEventsScreen() {
   const q = useQuery({ ...eventsQuery(w.id) });
   const [open, setOpen] = useState(false), [editing, setEditing] = useState<EventRow | null>(null), [f, setF] = useState<EventForm>(emptyEvent), [error, setError] = useState('');
   const [removing, setRemoving] = useState<EventRow | null>(null);
-  const refs = useQuery({ queryKey: ['event-refs', removing?.id], queryFn: () => eventReferences(removing!.id), enabled: !!removing });
-  const refresh = () => qc.invalidateQueries({ queryKey: ['events', w.id] });
+  const [review, setReview] = useState(false);
+  const refresh = () => Promise.all([qc.invalidateQueries({ queryKey: ['events', w.id] }), qc.invalidateQueries({ queryKey: ['tasks', w.id] }), qc.invalidateQueries({ queryKey: ['budget', w.id] }), qc.invalidateQueries({ queryKey: ['event-impact'] })]);
   const save = useMutation({
-    mutationFn: async () => (editing ? updateEvent(editing.id, f) : insertEvent(w.id, f)),
-    onSuccess: async () => { await refresh(); setOpen(false); },
+    mutationFn: async (shift: string[] | undefined) => (editing ? (shift ? updateEventWithImpact(editing.id, f, shift) : updateEvent(editing.id, f)) : insertEvent(w.id, f)),
+    onSuccess: async () => { await refresh(); setReview(false); setOpen(false); },
     onError: e => setError(friendlyError(e)),
   });
-  const del = useMutation({ mutationFn: (id: string) => deleteEvent(id), onSuccess: async () => { await refresh(); setRemoving(null); } });
+  const del = useMutation({ mutationFn: (id: string) => removeEvent(id), onSuccess: async () => { await refresh(); setRemoving(null); } });
   const edit = (x?: EventRow) => { setEditing(x ?? null); setError(''); setF(x ? toEventForm(x) : emptyEvent); setOpen(true); };
   const deep = useDeepLink(q.data ?? [], edit, 'buổi lễ');
-  const submit = (e: React.FormEvent) => { e.preventDefault(); if (save.isPending) return; const v = validateEventForm(f); setError(v); if (!v) save.mutate(); };
+  const submit = (e: React.FormEvent) => { e.preventDefault(); if (save.isPending) return; const v = validateEventForm(f); setError(v); if (v) return; if (editing && (editing.event_date ?? '') !== f.date && editing.event_date) { setReview(true); return; } save.mutate(undefined); };
   return <div className="max-w-3xl"><Header name="Những buổi lễ của mình" subtitle={`KẾ HOẠCH · ${coupleName(w).toUpperCase()}`} /><PlannerTabs active="events" />
     {deep.missing && <div role="alert" className="mb-4"><Note tone="copper">Không tìm thấy buổi lễ này trong đám cưới của hai bạn. Có thể buổi đã bị bỏ.</Note></div>}
     <p className="mb-5 text-muted-foreground">Mỗi buổi có giờ, nơi và lời mời khác nhau. Có thể để chưa chốt. Hai bạn cùng thấy và sửa được danh sách này.</p>
@@ -121,15 +123,15 @@ export function RealEventsScreen() {
         <div className="mt-3 flex flex-wrap gap-2"><Button variant="outline" size="lg" className="min-h-11" onClick={() => edit(x)}><Pencil className="size-4" /> Sửa</Button><Button variant="ghost" size="lg" className="min-h-11" onClick={() => setRemoving(x)}>Bỏ buổi</Button></div>
       </Panel>)}
     </div>
-    <p className="mt-4 text-xs text-muted-foreground">Việc cần làm, ngân sách, khách và thiệp vẫn là bản dùng thử trong phiên xem, chưa đọc các buổi lễ đã lưu này.</p>
+    <p className="mt-4 text-xs text-muted-foreground">Việc cần làm và ngân sách đã dùng các buổi lễ này. Khách và thiệp vẫn là bản dùng thử trong phiên xem, chưa đọc các buổi lễ đã lưu.</p>
+    {review && editing && <EventDateImpactDialog event={editing} form={f} busy={save.isPending} error={save.isError ? friendlyError(save.error) : ''} onCancel={() => { setReview(false); save.reset(); }} onConfirm={ids => save.mutate(ids)} />}
     <Dialog open={!!removing} onOpenChange={v => { if (!v) { setRemoving(null); del.reset(); } }}><DialogContent className="max-h-[92vh] w-[calc(100vw-24px)] max-w-lg overflow-y-auto rounded-lg bg-card p-5 text-foreground sm:p-6">
       <DialogHeader className="text-left"><DialogTitle className="font-display text-2xl">Bỏ {removing?.name}?</DialogTitle><DialogDescription>Buổi lễ sẽ bị xóa khỏi đám cưới của hai bạn cho cả hai người quản lý.</DialogDescription></DialogHeader>
-      {refs.isPending ? <Loading label="Đang kiểm tra dữ liệu liên quan…" /> : refs.isError ? <LoadError error={refs.error} retry={() => refs.refetch()} /> : <div className="space-y-2 text-sm">
-        <p>{refs.data!.tasks} việc đã lưu sẽ giữ lại nhưng không còn gắn với buổi này.</p><p>{refs.data!.budget} khoản chi đã lưu sẽ giữ lại, chuyển về “Chung”.</p><p>{refs.data!.guests} lượt mời khách vào buổi này sẽ bị gỡ; hồ sơ khách giữ nguyên.</p></div>}
+      {removing && <EventRemovalSummary eventId={removing.id} />}
       {del.isError && <div role="alert"><Note tone="copper">{friendlyError(del.error)}</Note></div>}
-      <DialogFooter className="flex-col-reverse gap-2 sm:flex-row"><Button variant="outline" size="lg" className="min-h-11" onClick={() => setRemoving(null)}>Giữ buổi</Button><Button size="lg" className="min-h-11" disabled={del.isPending || !refs.data} onClick={() => removing && del.mutate(removing.id)}>{del.isPending && <Loader2 className="animate-spin" />}Xác nhận bỏ buổi</Button></DialogFooter>
+      <DialogFooter className="flex-col-reverse gap-2 sm:flex-row"><Button variant="outline" size="lg" className="min-h-11" onClick={() => setRemoving(null)}>Giữ buổi</Button><Button size="lg" className="min-h-11" disabled={del.isPending} onClick={() => removing && del.mutate(removing.id)}>{del.isPending && <Loader2 className="animate-spin" />}Xác nhận bỏ buổi</Button></DialogFooter>
     </DialogContent></Dialog>
-    <DemoDialog open={open} onOpenChange={o => { setOpen(o); if (!o) deep.onClosed(); }} title={editing ? 'Sửa buổi lễ' : 'Thêm buổi lễ'} description="Thông tin chưa chốt vẫn có thể ghi lại." submitLabel={save.isPending ? 'Đang lưu…' : editing ? 'Lưu thay đổi' : 'Thêm buổi lễ'} onSubmit={submit}>
+    <DemoDialog real busy={save.isPending} open={open && !review} onOpenChange={o => { if (save.isPending) return; setOpen(o); if (!o) deep.onClosed(); }} title={editing ? 'Sửa buổi lễ' : 'Thêm buổi lễ'} description="Thông tin chưa chốt vẫn có thể ghi lại." submitLabel={save.isPending ? 'Đang lưu…' : editing ? 'Lưu thay đổi' : 'Thêm buổi lễ'} onSubmit={submit}>
       <FormField label="Tên buổi lễ *" id="event-name" error={error}><input id="event-name" autoFocus maxLength={80} className={inputCls} value={f.name} onChange={e => setF({ ...f, name: e.target.value })} aria-invalid={!!error} /></FormField>
       <FormField label="Bên tổ chức" id="event-side"><select id="event-side" className={inputCls} value={f.side} onChange={e => setF({ ...f, side: e.target.value as EventSideDb })}>{(Object.keys(SIDE_TEXT) as EventSideDb[]).map(k => <option key={k} value={k}>{SIDE_TEXT[k]}</option>)}</select></FormField>
       <div className="grid gap-3 sm:grid-cols-2"><FormField label="Ngày" id="event-date"><input id="event-date" type="date" className={inputCls} value={f.date} onChange={e => setF({ ...f, date: e.target.value })} /></FormField><FormField label="Giờ" id="event-time"><input id="event-time" type="time" className={inputCls} value={f.time} onChange={e => setF({ ...f, time: e.target.value })} /></FormField></div>
