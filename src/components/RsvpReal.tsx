@@ -35,7 +35,7 @@ export function GuestRsvpForm({ token, events }: { token: string; events: PubEve
       if (r.ok) { try { if (r.receipt.edit_code) localStorage.setItem(codeKey(token), r.receipt.edit_code); } catch { /* private mode: receipt still shown once */ }
         sessionStorage.setItem(`rsvp-last:${token}`, JSON.stringify(r.receipt)); nav({ to: '/i/$token/rsvp/receipt', params: { token } }); return; }
       setRequestKey(crypto.randomUUID());
-      setFail(r.reason === 'closed' ? 'Phản hồi cho lời mời này hiện không nhận nữa.' : r.reason === 'edit' ? 'Không tìm thấy câu trả lời trước để sửa; hãy gửi như một câu trả lời mới.' : r.reason === 'invalid' ? 'Thông tin chưa hợp lệ, xin kiểm tra lại.' : 'Chưa gửi được. Xin thử lại.');
+      setFail(r.reason === 'closed' ? 'Phản hồi cho lời mời này hiện không nhận nữa.' : r.reason === 'edit' ? 'Không tìm thấy câu trả lời trước để sửa; hãy gửi như một câu trả lời mới.' : r.reason === 'invalid' ? 'Thông tin chưa hợp lệ, xin kiểm tra lại.' : r.reason === 'rate' ? 'Có quá nhiều phản hồi cùng lúc. Xin đợi ít phút rồi gửi lại.' : 'Chưa gửi được. Xin thử lại.');
       if (r.reason === 'edit') { try { localStorage.removeItem(codeKey(token)); } catch { /* ignore */ } setCode(null); }
     },
     onError: () => setFail('Mạng đang chập chờn nên chưa gửi được. Câu trả lời vẫn còn đây, xin bấm gửi lại.'),

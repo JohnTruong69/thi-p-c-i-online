@@ -172,6 +172,44 @@ export type Database = {
           },
         ]
       }
+      data_deletion_requests: {
+        Row: {
+          id: string
+          wedding_id: string
+          requested_by: string
+          status: string
+          created_at: string
+          updated_at: string
+          resolved_at: string | null
+        }
+        Insert: {
+          id?: string
+          wedding_id: string
+          requested_by: string
+          status?: string
+          created_at?: string
+          updated_at?: string
+          resolved_at?: string | null
+        }
+        Update: {
+          id?: string
+          wedding_id?: string
+          requested_by?: string
+          status?: string
+          created_at?: string
+          updated_at?: string
+          resolved_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "data_deletion_requests_wedding_id_fkey"
+            columns: ["wedding_id"]
+            isOneToOne: false
+            referencedRelation: "weddings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       events: {
         Row: {
           address: string | null
@@ -1035,6 +1073,7 @@ export type Database = {
         Returns: string
       }
       ensure_invitation: { Args: { p_wedding_id: string }; Returns: string }
+      export_wedding_data: { Args: { p_wedding_id: string }; Returns: Json }
       get_rsvp_receipt: {
         Args: { p_edit_code: string; p_token: string }
         Returns: Json
@@ -1082,7 +1121,9 @@ export type Database = {
         Returns: string
       }
       remove_event: { Args: { p_event_id: string }; Returns: Json }
+      request_wedding_data_deletion: { Args: { p_wedding_id: string }; Returns: string }
       remove_invitation_photo: { Args: { p_photo_id: string }; Returns: string }
+      withdraw_wedding_data_deletion: { Args: { p_request_id: string }; Returns: undefined }
       remove_manager: { Args: { p_membership_id: string }; Returns: undefined }
       revoke_partner_invite: {
         Args: { p_invite_id: string }
