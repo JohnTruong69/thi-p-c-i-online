@@ -12,3 +12,4 @@
 - Phase 2 state logic (CSV parse/validate/dedupe, 43 suggested tasks, RSVP matching, order transitions, link readiness) lives in pure src/lib/phase2.ts with vitest tests; UI never marks an order paid client-side and ambiguous RSVP names are never auto-merged.
 - CSV files are parsed in the browser only (never uploaded); imported guests and undo live in the tab session.
 - Event date edits go through a computed impact review (tasks shift only on consent, payment dates warn only, enabled links flagged); link versions live in tab session and publication is always 'unpublished' client-side; invitation photos are object URLs in tab memory only.
+- Dynamic owner routes (/wedding/events/$id, /plan/budget/$id, /guests/$id, /plan/tasks/suggestions) reuse list screens and open the matching dialog from the URL via useDeepLink; unknown ids show an alert, closing returns focus to the item's Sửa button.
