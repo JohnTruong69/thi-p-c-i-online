@@ -174,31 +174,31 @@ export type Database = {
       }
       data_deletion_requests: {
         Row: {
-          id: string
-          wedding_id: string
-          requested_by: string
-          status: string
           created_at: string
-          updated_at: string
+          id: string
+          requested_by: string
           resolved_at: string | null
+          status: string
+          updated_at: string
+          wedding_id: string
         }
         Insert: {
-          id?: string
-          wedding_id: string
-          requested_by: string
-          status?: string
           created_at?: string
-          updated_at?: string
+          id?: string
+          requested_by: string
           resolved_at?: string | null
+          status?: string
+          updated_at?: string
+          wedding_id: string
         }
         Update: {
-          id?: string
-          wedding_id?: string
-          requested_by?: string
-          status?: string
           created_at?: string
-          updated_at?: string
+          id?: string
+          requested_by?: string
           resolved_at?: string | null
+          status?: string
+          updated_at?: string
+          wedding_id?: string
         }
         Relationships: [
           {
@@ -262,8 +262,8 @@ export type Database = {
       }
       guest_event_assignments: {
         Row: {
-          attending_count: number | null
           attendance_intent: string
+          attending_count: number | null
           created_at: string
           event_id: string
           expected_count: number | null
@@ -279,8 +279,8 @@ export type Database = {
           wedding_id: string
         }
         Insert: {
-          attending_count?: number | null
           attendance_intent?: string
+          attending_count?: number | null
           created_at?: string
           event_id: string
           expected_count?: number | null
@@ -296,8 +296,8 @@ export type Database = {
           wedding_id: string
         }
         Update: {
-          attending_count?: number | null
           attendance_intent?: string
+          attending_count?: number | null
           created_at?: string
           event_id?: string
           expected_count?: number | null
@@ -755,6 +755,35 @@ export type Database = {
           },
         ]
       }
+      rsvp_rate_buckets: {
+        Row: {
+          hits: number
+          link_id: string
+          window_kind: string
+          window_start: string
+        }
+        Insert: {
+          hits: number
+          link_id: string
+          window_kind: string
+          window_start: string
+        }
+        Update: {
+          hits?: number
+          link_id?: string
+          window_kind?: string
+          window_start?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rsvp_rate_buckets_link_id_fkey"
+            columns: ["link_id"]
+            isOneToOne: false
+            referencedRelation: "invitation_links"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       rsvp_responses: {
         Row: {
           created_at: string
@@ -1113,7 +1142,6 @@ export type Database = {
         Args: { p_wedding_id: string }
         Returns: boolean
       }
-      wedding_access_state: { Args: { p_wedding_id: string }; Returns: Json }
       import_guest_batch: {
         Args: {
           p_batch_id: string
@@ -1152,10 +1180,12 @@ export type Database = {
         Returns: string
       }
       remove_event: { Args: { p_event_id: string }; Returns: Json }
-      request_wedding_data_deletion: { Args: { p_wedding_id: string }; Returns: string }
       remove_invitation_photo: { Args: { p_photo_id: string }; Returns: string }
-      withdraw_wedding_data_deletion: { Args: { p_request_id: string }; Returns: undefined }
       remove_manager: { Args: { p_membership_id: string }; Returns: undefined }
+      request_wedding_data_deletion: {
+        Args: { p_wedding_id: string }
+        Returns: string
+      }
       revoke_partner_invite: {
         Args: { p_invite_id: string }
         Returns: undefined
@@ -1206,6 +1236,11 @@ export type Database = {
       update_event_with_impact: {
         Args: { p_event_id: string; p_fields: Json; p_shift_task_ids: string[] }
         Returns: number
+      }
+      wedding_access_state: { Args: { p_wedding_id: string }; Returns: Json }
+      withdraw_wedding_data_deletion: {
+        Args: { p_request_id: string }
+        Returns: undefined
       }
     }
     Enums: {
