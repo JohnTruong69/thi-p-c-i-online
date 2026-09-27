@@ -824,6 +824,111 @@ export type Database = {
           },
         ]
       }
+      presale_orders: {
+        Row: {
+          amount_vnd: number
+          bank_account_name: string
+          bank_account_number: string
+          bank_gateway: string
+          claim_expires_at: string | null
+          claimed_at: string | null
+          claimed_by: string | null
+          claimed_wedding_id: string | null
+          code: string
+          created_at: string
+          email: string
+          expires_at: string
+          id: string
+          ip_hash: string
+          offer_version: string
+          paid_at: string | null
+          plan_version: string
+          sepay_transaction_id: number | null
+          status: string
+          terms_accepted_at: string
+          terms_version: string
+          token_hash: string
+        }
+        Insert: {
+          amount_vnd: number
+          bank_account_name: string
+          bank_account_number: string
+          bank_gateway: string
+          claim_expires_at?: string | null
+          claimed_at?: string | null
+          claimed_by?: string | null
+          claimed_wedding_id?: string | null
+          code: string
+          created_at?: string
+          email: string
+          expires_at: string
+          id?: string
+          ip_hash: string
+          offer_version: string
+          paid_at?: string | null
+          plan_version?: string
+          sepay_transaction_id?: number | null
+          status?: string
+          terms_accepted_at?: string
+          terms_version: string
+          token_hash: string
+        }
+        Update: {
+          amount_vnd?: number
+          bank_account_name?: string
+          bank_account_number?: string
+          bank_gateway?: string
+          claim_expires_at?: string | null
+          claimed_at?: string | null
+          claimed_by?: string | null
+          claimed_wedding_id?: string | null
+          code?: string
+          created_at?: string
+          email?: string
+          expires_at?: string
+          id?: string
+          ip_hash?: string
+          offer_version?: string
+          paid_at?: string | null
+          plan_version?: string
+          sepay_transaction_id?: number | null
+          status?: string
+          terms_accepted_at?: string
+          terms_version?: string
+          token_hash?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "presale_orders_claimed_wedding_id_fkey"
+            columns: ["claimed_wedding_id"]
+            isOneToOne: false
+            referencedRelation: "weddings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "presale_orders_sepay_transaction_id_fkey"
+            columns: ["sepay_transaction_id"]
+            isOneToOne: true
+            referencedRelation: "sepay_transactions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      presale_policy: {
+        Row: {
+          id: boolean
+          legacy_cutoff: string
+        }
+        Insert: {
+          id?: boolean
+          legacy_cutoff?: string
+        }
+        Update: {
+          id?: boolean
+          legacy_cutoff?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
@@ -1021,6 +1126,7 @@ export type Database = {
           id: number
           match_status: string
           order_id: string | null
+          presale_order_id: string | null
           raw: Json
           received_at: string
           reference_code: string | null
@@ -1041,6 +1147,7 @@ export type Database = {
           id?: never
           match_status?: string
           order_id?: string | null
+          presale_order_id?: string | null
           raw: Json
           received_at?: string
           reference_code?: string | null
@@ -1061,6 +1168,7 @@ export type Database = {
           id?: never
           match_status?: string
           order_id?: string | null
+          presale_order_id?: string | null
           raw?: Json
           received_at?: string
           reference_code?: string | null
@@ -1079,6 +1187,13 @@ export type Database = {
             columns: ["order_id"]
             isOneToOne: false
             referencedRelation: "billing_orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sepay_transactions_presale_order_id_fkey"
+            columns: ["presale_order_id"]
+            isOneToOne: false
+            referencedRelation: "presale_orders"
             referencedColumns: ["id"]
           },
         ]
@@ -1465,10 +1580,23 @@ export type Database = {
     Functions: {
       accept_partner_invite: { Args: { p_token: string }; Returns: string }
       accept_viewer_invite: { Args: { p_token: string }; Returns: string }
+      account_can_self_create: { Args: never; Returns: boolean }
       billing_is_service: { Args: never; Returns: boolean }
       billing_offer_status: { Args: never; Returns: Json }
       can_manage_photo_path: { Args: { p_name: string }; Returns: boolean }
       can_write_photo_path: { Args: { p_name: string }; Returns: boolean }
+      claim_presale_order: {
+        Args: {
+          p_event_date?: string
+          p_event_name: string
+          p_event_side?: string
+          p_partner_one: string
+          p_partner_two: string
+          p_planned_date: string
+          p_token: string
+        }
+        Returns: string
+      }
       create_billing_order: {
         Args: { p_user_id: string; p_wedding_id: string }
         Returns: Json
@@ -1480,6 +1608,15 @@ export type Database = {
           invite_id: string
           token: string
         }[]
+      }
+      create_presale_order: {
+        Args: {
+          p_email: string
+          p_ip_hash: string
+          p_terms_version: string
+          p_token: string
+        }
+        Returns: Json
       }
       create_viewer_invite: {
         Args: {
@@ -1557,6 +1694,7 @@ export type Database = {
       }
       invitation_snapshot: { Args: { p_invitation_id: string }; Returns: Json }
       is_wedding_manager: { Args: { _wedding_id: string }; Returns: boolean }
+      match_presale_transaction: { Args: { p_tx: number }; Returns: Json }
       match_sepay_transaction: {
         Args: {
           p_actor: string
