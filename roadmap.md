@@ -43,3 +43,5 @@
 
 ## Phase 3 family viewers
 - [x] Up to 2 read-only family viewers: migration 0011 (grants, hashed invites, projection), team UI, /view routes, DB + browser QA
+- [x] Phase 3: trial / read-only write gate staged OFF (migration 0012, service-role activation only, QA-verified)
+- [ ] Activate write gate for real weddings — blocked on verified checkout/payment continuation

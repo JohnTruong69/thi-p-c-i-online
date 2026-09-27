@@ -31,6 +31,7 @@ export function friendlyError(e: unknown): string {
   if (m.includes('invite is accepted')) return 'Lời mời đã được dùng.';
   if (m.includes('invite not found')) return 'Không tìm thấy lời mời này.';
   if (m.includes('invalid email')) return 'Email chưa đúng định dạng.';
+  if (m.includes('read-only')) return 'Đám cưới đang ở chế độ chỉ xem nên chưa lưu được thay đổi. Hai bạn vẫn xem và tải dữ liệu.';
   if (m.includes('forbidden') || m.includes('row-level security') || m.includes('permission')) return 'Bạn không có quyền với dữ liệu này.';
   if (m.includes('check constraint')) return 'Thông tin chưa hợp lệ. Hãy kiểm tra lại các ô.';
   return 'Có lỗi xảy ra. Hãy thử lại.';

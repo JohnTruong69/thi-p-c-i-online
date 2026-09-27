@@ -4,6 +4,7 @@ import { Link, useNavigate } from '@tanstack/react-router';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { WriteButton } from './AccessStateBanner';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { supabase } from '@/integrations/supabase/client';
 import { eventsQuery, useMyWedding } from '@/lib/wedding-api';
@@ -120,11 +121,11 @@ export function OwnerRsvpScreen() {
     <div className="mt-4"><SmallLabel>CẦN ĐỐI CHIẾU · {review.length} phản hồi</SmallLabel></div>
     <Panel>{review.length ? review.map(r => <div key={r.id} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 border-b border-border py-3 last:border-0" data-testid="rsvp-review">
       <div className="min-w-0"><div className="font-semibold">{r.guest_name} {r.replaces_id && <Status tone="copper">Đã sửa câu trả lời</Status>}</div><p className="text-xs text-muted-foreground">{LINK_LABEL[r.link_side as LinkSide]} · {line(r)}{r.phone ? ` · ${r.phone}` : ''}</p>{r.note && <p className="text-xs">“{r.note}”</p>}</div>
-      <Button variant="outline" size="lg" className="min-h-11" onClick={() => setSel(r)}>Đối chiếu</Button></div>) : <p className="text-sm text-muted-foreground">Không có phản hồi nào cần đối chiếu.</p>}</Panel>
+      <WriteButton variant="outline" size="lg" className="min-h-11" onClick={() => setSel(r)}>Đối chiếu</WriteButton></div>) : <p className="text-sm text-muted-foreground">Không có phản hồi nào cần đối chiếu.</p>}</Panel>
     <div className="mt-4"><SmallLabel>ĐÃ XÁC NHẬN · {confirmed.length} phản hồi</SmallLabel></div>
     <Panel>{confirmed.length ? confirmed.map(r => <div key={r.id} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 border-b border-border py-3 last:border-0">
       <div className="min-w-0"><div className="font-semibold">{r.guest_name} → {guests.find(g => g.id === r.guest_id)?.name ?? 'khách đã xóa'}</div><p className="text-xs text-muted-foreground">{line(r)}</p></div>
-      <Button variant="ghost" size="lg" className="min-h-11" onClick={() => unmatch(r.id)}>Bỏ liên kết</Button></div>) : <p className="text-sm text-muted-foreground">Chưa xác nhận phản hồi nào.</p>}</Panel>
+      <WriteButton variant="ghost" size="lg" className="min-h-11" onClick={() => unmatch(r.id)}>Bỏ liên kết</WriteButton></div>) : <p className="text-sm text-muted-foreground">Chưa xác nhận phản hồi nào.</p>}</Panel>
     <div className="mt-4"><SmallLabel>CHƯA TRẢ LỜI · {pending.length} khách trong sổ</SmallLabel></div>
     <Panel>{pending.length ? pending.slice(0, 100).map(g => <div key={g.id} className="border-b border-border py-2 text-sm last:border-0">{g.name}<span className="text-xs text-muted-foreground"> · {g.party_size} người dự kiến</span></div>) : <p className="text-sm text-muted-foreground">Không còn khách nào chờ trả lời.</p>}{pending.length > 100 && <p className="mt-2 text-xs text-muted-foreground">Và {pending.length - 100} khách khác — xem trong Sổ khách.</p>}</Panel>
     {history.length > 0 && <details className="mt-4"><summary className="min-h-11 cursor-pointer py-2 text-sm font-semibold">Lịch sử: {history.length} bản trả lời đã được khách sửa</summary><Panel>{history.map(r => <div key={r.id} className="border-b border-border py-2 text-xs last:border-0"><strong>{r.guest_name}</strong> · {new Date(r.created_at).toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' })} · {line(r)} <span className="text-muted-foreground">(đã thay bằng bản mới, không tính)</span></div>)}</Panel></details>}
@@ -146,6 +147,6 @@ function ReconcileDialog({ r, guests, onClose }: { r: ResponseRow; guests: { id:
     <div role="radiogroup" aria-label="Khách trong sổ" className="max-h-60 space-y-1 overflow-y-auto">{list.map(g => <label key={g.id} className={`flex min-h-11 items-center gap-3 rounded-md border px-3 text-sm ${gid === g.id ? 'border-primary bg-copper-soft' : 'border-border'}`}><input type="radio" name="rc-g" checked={gid === g.id} onChange={() => setGid(g.id)} className="accent-primary" />{g.name}<span className="text-xs text-muted-foreground">{g.phone ?? ''} · {g.party_size} người</span></label>)}{!list.length && <p className="text-xs text-muted-foreground">Không thấy khách phù hợp. Hãy thêm khách trong Sổ khách trước.</p>}</div>
     <label className="flex min-h-11 items-center gap-3 rounded-md border border-border px-3 text-xs"><input type="checkbox" className="size-4 accent-primary" checked={apply} onChange={e => setApply(e.target.checked)} />Cập nhật trạng thái trả lời trong Sổ khách cho các buổi khách này được mời</label>
     {err && <p role="alert" className="text-xs font-semibold text-destructive">{err}</p>}
-    <DialogFooter className="flex-col-reverse gap-2 sm:flex-row"><Button variant="outline" size="lg" className="min-h-11" onClick={() => onClose()}>Để sau</Button><Button size="lg" className="min-h-11" disabled={!gid || m.isPending} onClick={() => m.mutate()}>{m.isPending && <Loader2 className="animate-spin" />}Liên kết</Button></DialogFooter>
+    <DialogFooter className="flex-col-reverse gap-2 sm:flex-row"><Button variant="outline" size="lg" className="min-h-11" onClick={() => onClose()}>Để sau</Button><WriteButton size="lg" className="min-h-11" disabled={!gid || m.isPending} onClick={() => m.mutate()}>{m.isPending && <Loader2 className="animate-spin" />}Liên kết</WriteButton></DialogFooter>
   </DialogContent></Dialog>;
 }
