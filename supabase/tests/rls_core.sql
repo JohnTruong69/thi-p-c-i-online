@@ -1,13 +1,12 @@
 -- Phase 3 slice 1 RLS / transaction verification. Runs inside one transaction and ROLLS BACK.
--- Usage: psql "$SUPABASE_DB_URL" -v ON_ERROR_STOP=1 -f supabase/tests/rls_core.sql
+-- Usage (after creating the test accounts): psql "$SUPABASE_DB_URL" -v ON_ERROR_STOP=1 -f supabase/tests/rls_core.sql
 BEGIN;
 SET LOCAL client_min_messages = notice;
 
 CREATE TEMP TABLE t_ids (k text PRIMARY KEY, v uuid);
 GRANT ALL ON t_ids TO authenticated;
-INSERT INTO t_ids VALUES ('a', gen_random_uuid()), ('b', gen_random_uuid()), ('c', gen_random_uuid());
-INSERT INTO auth.users (id, instance_id, aud, role, email, email_confirmed_at, encrypted_password, created_at, updated_at, raw_app_meta_data, raw_user_meta_data)
-SELECT v, '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'rlstest-' || k || '@example.test', now(), '', now(), now(), '{}', '{}' FROM t_ids;
+-- Requires three confirmed accounts rlstest-{a,b,c}@example.test (created via the Auth admin API before running).
+INSERT INTO t_ids SELECT split_part(split_part(email,'@',1),'-',2), id FROM auth.users WHERE email IN ('rlstest-a@example.test','rlstest-b@example.test','rlstest-c@example.test');
 
 CREATE OR REPLACE FUNCTION pg_temp.act(k text) RETURNS void LANGUAGE plpgsql AS $$
 BEGIN
