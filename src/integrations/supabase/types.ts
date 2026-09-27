@@ -141,6 +141,7 @@ export type Database = {
           offer_version: string
           plan_version: string
           price_vnd: number
+          sandbox_verified_at: string | null
           terms_approved_at: string | null
           terms_approved_by: string | null
           terms_url: string | null
@@ -157,6 +158,7 @@ export type Database = {
           offer_version: string
           plan_version?: string
           price_vnd: number
+          sandbox_verified_at?: string | null
           terms_approved_at?: string | null
           terms_approved_by?: string | null
           terms_url?: string | null
@@ -173,6 +175,7 @@ export type Database = {
           offer_version?: string
           plan_version?: string
           price_vnd?: number
+          sandbox_verified_at?: string | null
           terms_approved_at?: string | null
           terms_approved_by?: string | null
           terms_url?: string | null
