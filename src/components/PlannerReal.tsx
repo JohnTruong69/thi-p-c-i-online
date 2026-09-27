@@ -4,6 +4,7 @@ import { Link } from '@tanstack/react-router';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { ArrowRight, Loader2, Pencil, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { WriteButton } from './AccessStateBanner';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { eventsQuery, friendlyError, useMyWedding, type EventForm, type EventRow, type WeddingRow } from '@/lib/wedding-api';
 import { addSuggestedTasks, budgetQuery, deleteBudgetItem, eventImpactData, saveBudgetItem, setBudgetCap, tasksQuery, insertTask, updateTask, type BudgetItemWithSchedule, type TaskRow } from '@/lib/planner-api';
@@ -77,7 +78,7 @@ export function RealTasksScreen() {
   if (tq.isError) return <LoadError error={tq.error} retry={() => tq.refetch()} />;
   if (eq.isError) return <LoadError error={eq.error} retry={() => eq.refetch()} />;
   const tasks = tq.data; const shown = tasks.filter(t => inTaskFilter(asDemo(t), filter, today));
-  return <div className="max-w-4xl"><div className="flex flex-wrap items-end justify-between gap-x-3"><Header name="Việc của hai bạn" subtitle={`KẾ HOẠCH · ${coupleName(w).toUpperCase()}`} /><Button size="lg" className="mb-6 min-h-11" onClick={() => edit()}><Plus /> Thêm việc</Button></div><PlannerTabs active="tasks" />
+  return <div className="max-w-4xl"><div className="flex flex-wrap items-end justify-between gap-x-3"><Header name="Việc của hai bạn" subtitle={`KẾ HOẠCH · ${coupleName(w).toUpperCase()}`} /><WriteButton size="lg" className="mb-6 min-h-11" onClick={() => edit()}><Plus /> Thêm việc</WriteButton></div><PlannerTabs active="tasks" />
     {missing && <div role="alert" className="mb-4"><Note tone="copper">{missing}</Note></div>}
     <p className="mb-6 text-muted-foreground">“Hôm nay” là việc đến hạn hôm nay; “Sắp hạn” gồm việc quá hạn và đến hạn trong 14 ngày tới, không gồm hôm nay hay việc đã xong. Việc xa hơn và chưa đặt hạn vẫn ở “Tất cả”.</p>
     <div className="mb-6 grid grid-cols-4 gap-1.5 sm:flex sm:gap-2" role="group" aria-label="Lọc việc">{['Hôm nay', 'Sắp hạn', 'Chờ chốt', 'Tất cả'].map(x => <Button key={x} aria-pressed={filter === x} variant={filter === x ? 'default' : 'outline'} className="min-h-11 min-w-0 rounded-full px-1 text-[11px] sm:px-4 sm:text-sm" onClick={() => setFilter(x)}>{x}</Button>)}</div>
@@ -90,7 +91,7 @@ export function RealTasksScreen() {
         {t.kind === 'table-count' && <><p className="mt-2 text-sm"><span className="font-semibold">Số bàn dự kiến:</span> {t.planned_tables === null ? 'Chưa nhập' : `${t.planned_tables} bàn`} · <span className="font-semibold">Số bàn dự phòng:</span> {t.reserve_tables === null ? 'Chưa nhập' : `${t.reserve_tables} bàn`}</p><p className="mt-1 text-xs text-muted-foreground">Hai bạn tự dự tính số bàn; không tự tính từ phản hồi tham dự, không thay đổi sổ khách hay ngân sách.</p></>}
         {t.outcome && <p className="mt-2 break-words text-sm"><span className="font-semibold">Kết quả cần chốt:</span> {t.outcome}</p>}{t.note && <p className="mt-1 break-words text-sm"><span className="font-semibold">Ghi chú:</span> {t.note}</p>}
         <div className="mt-1 flex flex-wrap gap-x-3"><Button variant="ghost" className="min-h-11 px-0 text-primary" onClick={() => edit(t)}><Pencil className="size-4" /> Sửa việc</Button>
-          {st !== 'Xong' && <Button variant="ghost" className="min-h-11 px-0 text-primary" disabled={quickDone.isPending} title={t.kind === 'table-count' && !t.planned_tables ? 'Cần nhập số bàn dự kiến lớn hơn 0 trước' : undefined} onClick={() => { if (t.kind === 'table-count' && !t.planned_tables) { edit(t); setF(p => ({ ...p, status: 'Xong' })); setCountErr('Cần nhập số bàn dự kiến lớn hơn 0 trước khi đánh dấu đã xong.'); return; } quickDone.mutate(t); }}>Đánh dấu xong</Button>}</div>
+          {st !== 'Xong' && <WriteButton variant="ghost" className="min-h-11 px-0 text-primary" disabled={quickDone.isPending} title={t.kind === 'table-count' && !t.planned_tables ? 'Cần nhập số bàn dự kiến lớn hơn 0 trước' : undefined} onClick={() => { if (t.kind === 'table-count' && !t.planned_tables) { edit(t); setF(p => ({ ...p, status: 'Xong' })); setCountErr('Cần nhập số bàn dự kiến lớn hơn 0 trước khi đánh dấu đã xong.'); return; } quickDone.mutate(t); }}>Đánh dấu xong</WriteButton>}</div>
       </Panel>; })}
     </div>
     <RealSuggestionLibrary weddingId={w.id} tasks={tasks} onAdded={n => setDone(`Đã thêm ${n} việc gợi ý.`)} />
@@ -166,7 +167,7 @@ export function RealBudgetScreen() {
   return <div className="max-w-4xl"><Header name="Tiền bạc rõ ràng hơn" subtitle={`KẾ HOẠCH · ${coupleName(w).toUpperCase()}`} /><PlannerTabs active="budget" />
     {missing && <div role="alert" className="mb-4"><Note tone="copper">{missing}</Note></div>}
     <h2 className="font-display text-2xl">Đám cưới của mình đang dự tính hết bao nhiêu?</h2><p className="mb-5 mt-2 text-sm text-muted-foreground">Ghi từng khoản để hai bạn và hai gia đình dễ cùng theo dõi. Mọi khoản được lưu vào tài khoản.</p>
-    <div className="mb-5 flex flex-wrap gap-2"><Button size="lg" className="min-h-11" onClick={() => edit()}><Plus /> Thêm khoản chi</Button><Button variant="outline" size="lg" className="min-h-11" onClick={() => { setCapDraft(capV ? String(capV) : ''); setCapErr(''); setCapOpen(true); }}><Pencil /> {capV ? 'Đổi mức dự định chi' : 'Đặt mức dự định chi'}</Button></div>
+    <div className="mb-5 flex flex-wrap gap-2"><WriteButton size="lg" className="min-h-11" onClick={() => edit()}><Plus /> Thêm khoản chi</WriteButton><Button variant="outline" size="lg" className="min-h-11" onClick={() => { setCapDraft(capV ? String(capV) : ''); setCapErr(''); setCapOpen(true); }}><Pencil /> {capV ? 'Đổi mức dự định chi' : 'Đặt mức dự định chi'}</Button></div>
     <p role="status" className="mb-2 text-xs font-semibold text-sage-strong">{msg}</p>
     <section aria-label="Tổng hợp ngân sách" className="rounded-lg bg-foreground p-4 text-primary-foreground sm:p-5"><div className="text-xs font-semibold">Mức hai bạn dự định chi</div><div className="mt-1 break-words font-display text-4xl font-semibold" data-testid="budget-cap">{capV ? fmtVnd(capV) : 'Chưa đặt'}</div><p className="mt-2 text-xs opacity-85">Mức hai bạn tự đặt để theo dõi; có thể đổi bất cứ lúc nào.</p>
       <dl className="mt-5 space-y-1.5 border-t border-primary-foreground/25 pt-4 text-xs sm:text-sm" aria-live="polite">{[

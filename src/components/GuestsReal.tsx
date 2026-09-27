@@ -4,6 +4,7 @@ import { Link, useNavigate } from '@tanstack/react-router';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { ArrowRight, Check, Download, Loader2, Pencil, Plus, Trash2, Undo2, Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { WriteButton } from './AccessStateBanner';
 import { eventsQuery, friendlyError, useMyWedding, type EventRow } from '@/lib/wedding-api';
 import { batchChangedCount, batchesQuery, deleteGuest, guestsQuery, importGuestBatch, saveGuest, undoGuestBatch } from '@/lib/guests-api';
 import { GUEST_SIDE_TEXT, INTENT_TEXT, MAX_IMPORT_ROWS, METHOD_TEXT, SOURCE_TEXT, eventTotals, filterGuests, followupCount, guestTotals, guestsCsv, importPayload, intentOf, methodOf, needsFollowup, validateGuest, type AttendanceIntent, type GuestDraft, type GuestErrors, type GuestFilter, type GuestRecord, type GuestSideDb, type InvitationMethod, type ResponseSource } from '@/lib/guests';
@@ -75,7 +76,7 @@ export function RealGuestsScreen() {
       <label className="text-xs font-semibold sm:col-span-2">Trạng thái{f.eventId === 'all' ? ' (ở bất kỳ buổi nào)' : ''}<select className={inputCls} value={f.status} onChange={e => setF({ ...f, status: e.target.value as GuestFilter['status'] })}><option value="all">Tất cả</option><option value="needs_followup">Cần hỏi lại</option><option value="not_sent">Chưa gửi link</option><option value="sent">Đã gửi link</option><option value="pending">Chưa rõ / có thể đến</option><option value="attending">Xác nhận đến</option><option value="declined">Không đến</option></select></label>
     </div>
     <div className="mt-4 flex flex-wrap items-center justify-between gap-2"><SmallLabel>{`ĐANG HIỆN ${shown.records} HỒ SƠ · ${shown.plannedPeople} NGƯỜI`}</SmallLabel>
-      <Button size="lg" className="min-h-11" onClick={() => { setEditId(null); setD(emptyDraft(events)); setErrs({}); setSaveErr(''); setOpen(true); }}><Plus /> Thêm khách</Button></div>
+      <WriteButton size="lg" className="min-h-11" onClick={() => { setEditId(null); setD(emptyDraft(events)); setErrs({}); setSaveErr(''); setOpen(true); }}><Plus /> Thêm khách</WriteButton></div>
     {all.length === 0 ? <Panel className="mt-3"><p className="text-sm">Sổ khách còn trống. Thêm từng khách, hoặc nhập nhiều khách một lúc từ file CSV.</p><Button asChild variant="outline" className="mt-3 min-h-11"><Link to="/guests/import"><Upload /> Nhập từ CSV</Link></Button></Panel>
       : list.length === 0 ? <Panel className="mt-3"><p className="text-sm">Không có khách nào khớp bộ lọc này.</p><Button variant="ghost" className="mt-2 min-h-11 px-0 text-primary" onClick={() => setF({ q: '', side: 'all', eventId: 'all', status: 'all' })}>Bỏ bộ lọc</Button></Panel>
       : <div className="mt-3 space-y-2">{list.map(g => <Panel key={g.id} item={g.id} className="p-3"><div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-2"><div className="min-w-0"><div className="break-words font-semibold">{g.name}</div><p className="text-xs text-muted-foreground">{[g.phone, GUEST_SIDE_TEXT[g.side], `${g.party_size} người dự kiến`].filter(Boolean).join(' · ')}</p>
@@ -171,7 +172,7 @@ export function RealCsvImportScreen() {
           {r.duplicateOf && <p className="text-xs font-semibold text-primary">Có thể trùng với “{r.duplicateOf}” ({r.duplicateReason === 'phone' ? 'cùng số điện thoại' : 'cùng tên'}) — chỉ là gợi ý</p>}</div>
           {r.errors.length ? <Status tone="copper">Lỗi</Status> : <select aria-label={`Quyết định dòng ${r.row}`} className="h-11 rounded-md border border-border bg-background px-2 text-xs" value={r.decision} onChange={e => setDecision(r.row, e.target.value as CsvRow['decision'])}><option value="add">Thêm</option><option value="skip">Bỏ qua</option></select>}
         </div></Panel>)}</div>{nav('dưới')}</>; })()}
-      <Button size="lg" className="mt-5 min-h-11 w-full" disabled={commit.isPending || sum.toAdd === 0} onClick={() => { setError(''); commit.mutate(); }}>{commit.isPending ? <><Loader2 className="animate-spin" /> Đang lưu…</> : <>Thêm {sum.toAdd} khách vào sổ <Check /></>}</Button>
+      <WriteButton size="lg" className="mt-5 min-h-11 w-full" disabled={commit.isPending || sum.toAdd === 0} onClick={() => { setError(''); commit.mutate(); }}>{commit.isPending ? <><Loader2 className="animate-spin" /> Đang lưu…</> : <>Thêm {sum.toAdd} khách vào sổ <Check /></>}</WriteButton>
       {sum.toAdd === 0 && <p className="mt-2 text-xs text-muted-foreground">Chưa có dòng nào được chọn “Thêm”.</p>}
       <Button variant="ghost" size="lg" className="mt-2 min-h-11 w-full" disabled={commit.isPending} onClick={() => setStep(1)}>Quay lại ghép cột</Button>
     </>}
@@ -194,7 +195,7 @@ export function RealCsvBatchScreen() {
     {err && <p role="alert" className="mt-3 rounded-md bg-copper-soft p-3 text-sm font-semibold text-destructive">{err}</p>}
     {b.undone_at && <p role="status" className="mt-3 rounded-md bg-sage p-3 text-sm font-semibold">Đã bỏ {b.undo_removed ?? 0} khách chưa sửa.{b.undo_kept ? ` Giữ lại ${b.undo_kept} khách đã được sửa sau khi nhập.` : ''}{b.undo_missing ? ` ${b.undo_missing} khách đã được xóa trước đó.` : ''}</p>}
     {!b.undone_at && changed > 0 && <Note tone="warm">{changed} khách trong lần nhập này đã được sửa sau đó (thông tin, thiệp hoặc trả lời). Hoàn tác sẽ giữ lại những khách này, chỉ bỏ khách chưa sửa.</Note>}
-    {!b.undone_at && <Button variant="outline" size="lg" className="mt-4 min-h-11 w-full" disabled={undo.isPending} onClick={() => { setErr(''); undo.mutate(); }}>{undo.isPending ? <Loader2 className="animate-spin" /> : <Undo2 />} Hoàn tác lần nhập này</Button>}
+    {!b.undone_at && <WriteButton variant="outline" size="lg" className="mt-4 min-h-11 w-full" disabled={undo.isPending} onClick={() => { setErr(''); undo.mutate(); }}>{undo.isPending ? <Loader2 className="animate-spin" /> : <Undo2 />} Hoàn tác lần nhập này</WriteButton>}
     <Button asChild size="lg" className="mt-3 min-h-11 w-full"><Link to="/guests">Về sổ khách <ArrowRight /></Link></Button>
     <Button asChild variant="ghost" size="lg" className="mt-2 min-h-11 w-full"><Link to="/guests/import">Nhập thêm file khác</Link></Button>
   </div>;

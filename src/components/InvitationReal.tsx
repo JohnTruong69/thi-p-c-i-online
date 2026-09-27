@@ -4,6 +4,7 @@ import { Link } from '@tanstack/react-router';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { ArrowRight, Copy, ExternalLink, ImagePlus, Loader2, QrCode, Star, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { WriteButton } from './AccessStateBanner';
 import { eventsQuery, useMyWedding, type EventRow } from '@/lib/wedding-api';
 import { currentSnapshot, eventToSnap, invitationError, invitationQuery, photoUrlsQuery, publishInvitation, publishedRevision, removePhoto, revisionSnapshot, saveRevision, setCover, updateContent, updateLink, uploadPhoto, type InvitationBundle, type LinkRow } from '@/lib/invitation-api';
 import { LINK_LABEL, LINK_SIDES, MAX_MESSAGE, MAX_TITLE, diffInvitation, linkState, validateContent, type LinkSide, type SnapEvent } from '@/lib/invitation';
@@ -58,7 +59,7 @@ const renderFor = (b: InvitationBundle, events: EventRow[], urls: Record<string,
 function SaveRevisionButton({ weddingId, variant = 'outline' }: { weddingId: string; variant?: 'default' | 'outline' }) {
   const qc = useQueryClient(); const [msg, setMsg] = useState('');
   const m = useMutation({ mutationFn: () => saveRevision(weddingId, ''), onSuccess: r => { setMsg(r.unchanged ? `Không có gì mới so với bản ${r.revision}.` : `Đã lưu thành bản ${r.revision}. Bản này chưa gửi cho khách.`); qc.invalidateQueries({ queryKey: ['invitation', weddingId] }); }, onError: e => setMsg(invitationError(e)) });
-  return <div><Button variant={variant} size="lg" className="min-h-11" disabled={m.isPending} onClick={() => m.mutate()}>{m.isPending && <Loader2 className="animate-spin" />}Lưu thành một bản</Button><p role="status" className="mt-1 text-xs font-semibold text-sage-strong">{msg}</p></div>;
+  return <div><WriteButton variant={variant} size="lg" className="min-h-11" disabled={m.isPending} onClick={() => m.mutate()}>{m.isPending && <Loader2 className="animate-spin" />}Lưu thành một bản</WriteButton><p role="status" className="mt-1 text-xs font-semibold text-sage-strong">{msg}</p></div>;
 }
 
 /* ================= Content + photos ================= */
@@ -85,7 +86,7 @@ function ContentBody({ weddingId, b, events, urls }: { weddingId: string; b: Inv
         <FormField label="Lời mời chung" id="invite-message"><textarea id="invite-message" maxLength={MAX_MESSAGE} value={message} onChange={e => { setMessage(e.target.value); setErr(''); setOk(''); }} rows={5} className="mt-2 w-full rounded-md border border-border bg-background p-3 text-sm" /></FormField>
         {err && <p role="alert" className="text-xs font-semibold text-destructive">{err}</p>}
         <p role="status" className="text-xs font-semibold text-sage-strong">{ok}</p>
-        <div className="flex flex-wrap gap-2"><Button type="submit" size="lg" className="min-h-11" disabled={save.isPending}>{save.isPending && <Loader2 className="animate-spin" />}Lưu nội dung</Button>{dirty && <span className="self-center text-xs text-primary">Có thay đổi chưa lưu</span>}</div>
+        <div className="flex flex-wrap gap-2"><WriteButton type="submit" size="lg" className="min-h-11" disabled={save.isPending}>{save.isPending && <Loader2 className="animate-spin" />}Lưu nội dung</WriteButton>{dirty && <span className="self-center text-xs text-primary">Có thay đổi chưa lưu</span>}</div>
       </form></Panel>
       <Panel><PhotoPanel weddingId={weddingId} b={b} urls={urls} /></Panel>
       <Panel><h2 className="text-xl">Bản lưu</h2><p className="mt-1 text-xs text-muted-foreground">Lưu lại toàn bộ nội dung, ảnh, link và buổi lễ hiện tại thành một bản để xem lịch sử và so sánh. Lưu bản không gửi gì cho khách.</p><div className="mt-3"><SaveRevisionButton weddingId={weddingId} /></div></Panel>
@@ -246,7 +247,7 @@ export function RealPublishReviewScreen() {
         <Panel>{ready.length ? ready.map(({ s, l }) => <Row key={s} title={LINK_LABEL[s]} detail={l.event_ids.map(id => events.find(e => e.id === id)?.name).filter(Boolean).join(' / ')} right={<Status>Sẵn sàng</Status>} />) : <p className="text-sm text-muted-foreground">Chưa có link nào đủ thông tin.</p>}</Panel>
         <div className="mt-4"><SmallLabel>CHƯA CÔNG BỐ ĐƯỢC</SmallLabel></div>
         <Panel>{rs.filter(x => x.r.readiness !== 'ready').map(({ s, r }) => <Row key={s} title={LINK_LABEL[s]} detail={r.readiness === 'off' ? 'Đang tắt' : `Thiếu: ${r.missing.join(', ')}`} to="/invitation/variants" />)}</Panel>
-        <Button size="lg" className="mt-5 min-h-11 w-full" disabled={m.isPending || ready.length === 0} onClick={() => { setRes(null); m.mutate(); }}>{m.isPending && <Loader2 className="animate-spin" />}Công bố thiệp</Button>
+        <WriteButton size="lg" className="mt-5 min-h-11 w-full" disabled={m.isPending || ready.length === 0} onClick={() => { setRes(null); m.mutate(); }}>{m.isPending && <Loader2 className="animate-spin" />}Công bố thiệp</WriteButton>
         {ready.length === 0 && <p className="mt-1 text-xs text-muted-foreground">Chưa bấm được: cần ít nhất một link đang bật và đủ thông tin.</p>}
         {res && <p role={res.ok ? 'status' : 'alert'} className={`mt-2 text-sm font-semibold ${res.ok ? 'text-sage-strong' : 'text-destructive'}`}>{res.text}</p>}
         <Action to="/plans" variant="outline" className="mt-3 w-full">Xem gói thiệp cưới</Action>
