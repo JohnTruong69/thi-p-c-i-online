@@ -250,3 +250,25 @@ export function EventRemovalSummary({ eventId }: { eventId: string }) {
     <p className="text-xs text-muted-foreground">Mọi thay đổi diễn ra cùng lúc: nếu có lỗi, không dữ liệu nào bị đổi dở dang.</p>
   </div>;
 }
+
+/* ================= Home: nearest real tasks + payments ================= */
+export function RealHomeScreen() {
+  const w = useMyWedding().data!;
+  const tq = useQuery(tasksQuery(w.id)), bq = useQuery(budgetQuery(w.id)), eq = useQuery(eventsQuery(w.id));
+  const [today, setToday] = useState(''); useEffect(() => setToday(vietnamToday()), []);
+  if (tq.isPending || bq.isPending || eq.isPending) return <Loading label="Đang tải tổng quan…" />;
+  const failed = [tq, bq, eq].find(q => q.isError);
+  if (failed) return <LoadError error={failed.error} retry={() => { tq.refetch(); bq.refetch(); eq.refetch(); }} />;
+  const events = eq.data ?? []; const evName = (id: string | null) => (id ? events.find(e => e.id === id)?.name ?? 'Buổi đã bỏ' : 'Mọi buổi');
+  const open = (tq.data ?? []).filter(t => t.status !== 'done' && t.due_date).sort((a, b) => a.due_date!.localeCompare(b.due_date!));
+  const [first, second] = open;
+  const pays = (bq.data ?? []).flatMap(c => c.installments.filter(i => !i.paid_at && i.due_date).map(i => ({ i, c }))).sort((a, b) => a.i.due_date!.localeCompare(b.i.due_date!));
+  const nextPay = pays[0]; const unpaid = budgetTotals((bq.data ?? []).map(money)).unpaid;
+  const card = (t: TaskRow) => { const d = taskDue(asDemo(t), today); const st = toStatusUi(t.status); return <><div className="flex flex-wrap items-start justify-between gap-2"><div className="min-w-0 flex-1"><h2 className="break-words font-display text-xl font-semibold">{t.title}</h2><p className="mt-1 text-xs text-muted-foreground">{evName(t.event_id)} · {assigneeLabel(t.assignee, w)} phụ trách</p></div><Status tone={st === 'Chờ chốt' ? 'warm' : 'copper'}>{st}</Status></div><p className={`mt-2 text-sm ${d.group === 'overdue' ? 'font-semibold text-destructive' : 'text-muted-foreground'}`}>{d.label}</p></>; };
+  return <div><Header name="Hôm nay, mình làm gì?" subtitle={today ? new Intl.DateTimeFormat('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh', weekday: 'long', day: 'numeric', month: 'long' }).format(new Date()) : 'TỔNG QUAN'} /><p className="-mt-3 mb-7 text-muted-foreground">Những điều hai bạn đang chuẩn bị cho ngày cưới.</p>
+    <div className="grid gap-6 lg:grid-cols-[1.25fr_.75fr]"><div><SmallLabel>VIỆC CÓ HẠN GẦN NHẤT</SmallLabel><Panel className="border-l-[3px] border-l-primary">{first ? card(first) : <p className="text-sm text-muted-foreground">Chưa có việc chưa xong nào được đặt hạn.</p>}<Button asChild variant="ghost" className="mt-3 min-h-11 px-0 text-primary"><Link to="/plan/tasks">{first ? 'Mở danh sách việc' : 'Lập kế hoạch và đặt hạn'} <ArrowRight /></Link></Button></Panel>
+      <div className="mt-7"><SmallLabel>TIẾP THEO</SmallLabel><div className="grid gap-3 sm:grid-cols-2"><Panel>{second ? card(second) : <p className="text-sm text-muted-foreground">Chưa có việc có hạn tiếp theo.</p>}<Button asChild variant="ghost" className="mt-2 min-h-11 px-0 text-primary"><Link to="/plan/tasks">Xem việc <ArrowRight /></Link></Button></Panel>
+        <Panel><div className="mb-3"><Status>{nextPay ? 'KHOẢN SẮP PHẢI TRẢ' : 'CHƯA GHI HẠN TRẢ'}</Status></div><h2 className="text-xl">{nextPay ? fmtVnd(nextPay.i.amount_vnd) : unpaid > 0 ? fmtVnd(unpaid) : 'Chưa có khoản cần trả'}</h2><p className="mt-1 text-xs text-muted-foreground">{nextPay ? `${nextPay.c.label} · ${nextPay.i.label} · ${fullDate(nextPay.i.due_date)}` : unpaid > 0 ? 'Còn phải trả, chưa ghi hạn' : 'Xem sổ chi tiêu'}</p>{nextPay ? <Button asChild variant="ghost" className="mt-2 min-h-11 px-0 text-primary"><Link to="/plan/budget/$id" params={{ id: nextPay.c.id }}>Xem khoản <ArrowRight /></Link></Button> : <Button asChild variant="ghost" className="mt-2 min-h-11 px-0 text-primary"><Link to="/plan/budget">Xem ngân sách <ArrowRight /></Link></Button>}</Panel></div></div></div>
+      <div><SmallLabel>KHÁCH MỜI</SmallLabel><Panel className="bg-sage"><p className="text-sm">Sổ khách vẫn là bản dùng thử trong phiên xem, chưa lưu vào tài khoản.</p><Button asChild variant="ghost" className="mt-3 min-h-11 px-0 text-primary"><Link to="/guests">Xem sổ khách <ArrowRight /></Link></Button></Panel>
+        <div className="mt-7"><SmallLabel>HÀNH TRÌNH CỦA MÌNH</SmallLabel><Panel><p className="text-sm">{events.length} buổi lễ · {(tq.data ?? []).length} việc · {(bq.data ?? []).length} khoản chi đã lưu</p><Button asChild variant="ghost" className="mt-2 min-h-11 px-0 text-primary"><Link to="/wedding/events">Các buổi lễ <ArrowRight /></Link></Button></Panel></div></div></div></div>;
+}
