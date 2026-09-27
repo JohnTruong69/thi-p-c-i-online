@@ -11,7 +11,7 @@ export const requestAccountEmail = createServerFn({ method: 'POST' })
     const { createClient } = await import('@supabase/supabase-js');
     const key = process.env['SUPABASE_PUBLISHABLE_KEY']!;
     const anon = createClient(process.env['SUPABASE_URL']!, key, { auth: { persistSession: false, autoRefreshToken: false } });
-    // Never derive the email link from the incoming request (Host / X-Forwarded-* are caller-controlled).
+    // Never derive the email link from the incoming request (host and forwarding headers are caller-controlled).
     const origin = resolveAppOrigin({ APP_ORIGIN: process.env['APP_ORIGIN'], APP_ORIGIN_ALLOWLIST: process.env['APP_ORIGIN_ALLOWLIST'] });
     if (!origin) { console.error('account email refused: APP_ORIGIN missing or invalid'); return { ok: false as const, reason: 'not_configured' as const }; }
     const r = await provisionAccount(supabaseAdmin as never, { kind: data.kind, token: data.token, origin, mode: 'email', anon: anon as never });
