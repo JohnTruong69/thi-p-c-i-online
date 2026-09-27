@@ -75,7 +75,8 @@ async function main() {
 
   // --- seed data during OFF, including invitation + photo + viewer + import batch
   await M1.rpc('ensure_invitation', { p_wedding_id: w });
-  const g = (await M1.rpc('save_guest', { p_wedding_id: w, p_guest_id: null as never, p_guest: { name: 'Cô Ba', phone: '0901', side: 'chung', party_size: 2 }, p_assignments: [{ event_id: ev }] })).data as string;
+  const g = (await M1.rpc('save_guest', { p_wedding_id: w, p_guest_id: null as never, p_guest: { name: 'Cô Ba', phone: '0901234567', side: 'chung', party_size: 2 }, p_assignments: [{ event_id: ev }] })).data as string;
+  ok(!!g, 'seed guest via save_guest');
   const bi = (await M1.rpc('save_budget_item', { p_wedding_id: w, p_item_id: null as never, p_item: item, p_installments: [] })).data as string;
   const t = (await M1.from('tasks').insert({ wedding_id: w, title: 'seed' }).select('id').single()).data!.id;
   const bid = crypto.randomUUID();
@@ -129,7 +130,7 @@ async function main() {
       ['rpc undo_guest_batch', M1.rpc('undo_guest_batch', { p_batch_id: bid })],
       ['rpc save_invitation_revision', M1.rpc('save_invitation_revision', { p_wedding_id: w, p_note: 'x' })],
       ['rpc remove_invitation_photo', M1.rpc('remove_invitation_photo', { p_photo_id: photo })],
-      ['rpc create_partner_invite', M2.rpc('create_partner_invite', { p_wedding_id: w, p_email: email('zz') })],
+      ['rpc create_viewer_invite', M2.rpc('create_viewer_invite', { p_wedding_id: w, p_email: email('zz'), p_modules: ['events'], p_sides: ['chung'] })],
       ['rpc update_viewer_grants', M1.rpc('update_viewer_grants', { p_viewer_id: viewerId, p_modules: ['events'], p_sides: ['chung'] })],
     ];
     const res = await Promise.all(checks.map(([, p]) => p));
@@ -171,7 +172,7 @@ async function main() {
     ok(s.state === st && s.writable === writable, `${label}: state ${s.state} writable=${s.writable}`);
     if (writable) {
       ok(!(await M2.from('tasks').update({ title: label }).eq('id', t)).error, `${label}: manager direct write ok`);
-      ok(!(await M1.rpc('save_guest', { p_wedding_id: w, p_guest_id: g, p_guest: { name: 'Cô Ba', phone: '0901', side: 'chung', party_size: 3 }, p_assignments: [{ event_id: ev }] })).error, `${label}: RPC write ok`);
+      ok(!(await M1.rpc('save_guest', { p_wedding_id: w, p_guest_id: g, p_guest: { name: 'Cô Ba', phone: '0901234567', side: 'chung', party_size: 3 }, p_assignments: [{ event_id: ev }] })).error, `${label}: RPC write ok`);
     } else { await denied(label); await allowed(label); }
   }
   // a wedding without the gate is never locked, even with an old trial clock
