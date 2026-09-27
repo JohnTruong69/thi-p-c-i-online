@@ -71,6 +71,13 @@
       "when": 1790496600000,
       "tag": "0009_planner_followup",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1790501700000,
+      "tag": "0010_trial_and_one_payment_foundation",
+      "breakpoints": true
     }
   ]
 }

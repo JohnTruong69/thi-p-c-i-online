@@ -1,0 +1,23 @@
+name: Verify pull request
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - name: Install locked dependencies
+        run: bun ci
+      - name: Check TypeScript
+        run: bun x tsc --noEmit
+      - name: Run tests
+        run: bun x vitest run
+      - name: Build app
+        run: bun run build
