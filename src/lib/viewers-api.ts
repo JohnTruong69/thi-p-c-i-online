@@ -37,6 +37,7 @@ export const viewerProjectionQuery = (weddingId: string) => queryOptions({
   queryKey: ['viewer-projection', weddingId],
   queryFn: async () => must(await supabase.rpc('viewer_projection', { p_wedding_id: weddingId })) as unknown as ViewerProjection,
   refetchOnWindowFocus: true,
+  retry: (n, e) => n < 2 && !String((e as { message?: string })?.message ?? '').includes('not granted'),
 });
 
 export async function createViewerInvite(weddingId: string, email: string, modules: string[], sides: string[]) {
