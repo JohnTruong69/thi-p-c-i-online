@@ -2,7 +2,7 @@
 export type DemoTask = {
   id: string; title: string; event: string; due: string; owner: string;
   status: 'Cần làm' | 'Đang làm' | 'Chờ chốt' | 'Xong';
-  kind?: 'table-count'; plannedTables?: number; reserveTables?: number;
+  kind?: 'table-count'; plannedTables?: number | undefined; reserveTables?: number | undefined;
   outcome?: string; note?: string; added?: boolean;
 };
 
@@ -27,7 +27,7 @@ export function vietnamToday(now = new Date()): string {
 
 function dayNumber(iso: string): number | null {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(iso)) return null;
-  const [year, month, day] = iso.split('-').map(Number);
+  const [year = 0, month = 0, day = 0] = iso.split('-').map(Number);
   const stamp = Date.UTC(year, month - 1, day);
   return new Date(stamp).toISOString().slice(0, 10) === iso ? stamp / 86400000 : null;
 }
