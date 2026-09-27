@@ -123,7 +123,7 @@ export function RealEventsScreen() {
         <div className="mt-3 flex flex-wrap gap-2"><Button variant="outline" size="lg" className="min-h-11" onClick={() => edit(x)}><Pencil className="size-4" /> Sửa</Button><Button variant="ghost" size="lg" className="min-h-11" onClick={() => setRemoving(x)}>Bỏ buổi</Button></div>
       </Panel>)}
     </div>
-    <p className="mt-4 text-xs text-muted-foreground">Việc cần làm và ngân sách đã dùng các buổi lễ này. Khách và thiệp vẫn là bản dùng thử trong phiên xem, chưa đọc các buổi lễ đã lưu.</p>
+    <p className="mt-4 text-xs text-muted-foreground">Buổi lễ đã lưu có thể được chọn cho việc cần làm, khoản chi, khách mời và các link thiệp.</p>
     {review && editing && <EventDateImpactDialog event={editing} form={f} busy={save.isPending} error={save.isError ? friendlyError(save.error) : ''} onCancel={() => { setReview(false); save.reset(); }} onConfirm={ids => save.mutate(ids)} />}
     <Dialog open={!!removing} onOpenChange={v => { if (!v) { setRemoving(null); del.reset(); } }}><DialogContent className="max-h-[92vh] w-[calc(100vw-24px)] max-w-lg overflow-y-auto rounded-lg bg-card p-5 text-foreground sm:p-6">
       <DialogHeader className="text-left"><DialogTitle className="font-display text-2xl">Bỏ {removing?.name}?</DialogTitle><DialogDescription>Buổi lễ sẽ bị xóa khỏi đám cưới của hai bạn cho cả hai người quản lý.</DialogDescription></DialogHeader>
