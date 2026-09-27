@@ -25,5 +25,5 @@
 - [x] Phase 2 task follow-up: single due phrase, selectable table-count kind, 14-day upcoming filter, scoped legacy migration and QA.
 
 ## Phase 3 slice 1
-- [ ] Backend foundation: auth, schema/RLS, onboarding, real Events, couple invite
-- [ ] Fix broken SettingsScreen JSX; clean TeamPanel screen; tsgo/build/vitest; browser route check
+- [x] Backend foundation: auth, schema/RLS, onboarding, real Events, couple invite
+- [x] Fix broken SettingsScreen JSX; clean TeamPanel screen; tsgo/build/vitest; browser route check
