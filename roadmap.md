@@ -42,4 +42,4 @@
 - [ ] Phase 3 remaining: account data export/delete, email delivery checks (confirm/reset/invite)
 
 ## Phase 3 family viewers
-- [ ] Up to 2 read-only family viewers: migration 0011 (grants, hashed invites, projection), team UI, /view routes, DB + browser QA
+- [x] Up to 2 read-only family viewers: migration 0011 (grants, hashed invites, projection), team UI, /view routes, DB + browser QA
