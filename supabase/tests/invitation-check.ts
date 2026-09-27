@@ -41,6 +41,7 @@ async function main() {
 
   // Links + Events
   const ev1 = (await A.from('events').select('id').eq('wedding_id', wa).single()).data!.id;
+  await A.from('events').update({ event_time: '18:00', venue: 'Nhà hàng', address: '1 Lê Lợi' }).eq('id', ev1);
   const evC = (await C.from('events').select('id').eq('wedding_id', wc).single()).data!.id;
   ok(!!(await A.from('invitation_links').update({ event_ids: [evC] }).eq('id', chung.id)).error, 'cross-wedding Event rejected in link');
   ok(!(await A.from('invitation_links').update({ enabled: true, event_ids: [ev1] }).eq('id', chung.id)).error, 'link enabled with own Event');
