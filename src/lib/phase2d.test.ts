@@ -74,3 +74,43 @@ describe('RSVP per Event', () => {
     expect(r.map['g1']!['e2']!.choice).toBe('yes');
   });
 });
+
+import { collectReceipts, receiptKey } from './phase2d';
+import { computeDateImpact, linkReadiness } from './phase2';
+describe('many demo responses per token', () => {
+  it('two guests on the same token are both kept, not merged', () => {
+    const store: [string, string][] = [
+      [receiptKey('demo-chung', 'a1'), JSON.stringify({ name: 'An', answers: { e1: { choice: 'yes', count: 2 } }, at: '2027-01-01T01:00:00Z' })],
+      [receiptKey('demo-chung', 'b2'), JSON.stringify({ name: 'Bình', answers: { e1: { choice: 'no', count: 1 } }, at: '2027-01-01T02:00:00Z' })],
+      ['rsvp-demo-last:demo-chung', 'b2'],
+    ];
+    const r = collectReceipts(store);
+    expect(r.map(x => x.name)).toEqual(['Bình', 'An']);
+    expect(r[1]!.answers['e1']!.choice).toBe('yes');
+    expect(new Set(r.map(x => x.id)).size).toBe(2);
+  });
+  it('reads legacy one-per-token receipt', () => {
+    const r = collectReceipts([['rsvp-demo:demo', JSON.stringify({ name: 'Cũ', answers: { e1: { choice: 'no', count: 1 } } })]]);
+    expect(r[0]).toMatchObject({ id: 'legacy', token: 'demo', name: 'Cũ' });
+  });
+});
+describe('removed Events on links', () => {
+  const ev = [{ id: 'e1', name: 'Lễ', date: '2027-10-18', time: '07:00', venue: 'Nhà', address: 'A' }];
+  it('link with 2 Events, one removed → needs-fix', () => {
+    const r = linkReadiness(true, ['e1', 'e2'], ev);
+    expect(r.readiness).toBe('needs-fix');
+    expect(r.missing).toEqual(['Buổi đã bị bỏ — cần chọn lại']);
+  });
+  it('link with only the removed Event → needs-fix, never ready', () => {
+    expect(linkReadiness(true, ['e2'], ev).readiness).toBe('needs-fix');
+  });
+});
+describe('clearing an Event date', () => {
+  it('is reviewed, tasks kept, deposits and links warned', () => {
+    const i = computeDateImpact('e1', '2027-10-18', '', [{ id: 't', title: 'T', event: 'e1', due: '2027-10-01' }], [{ id: 'c', title: 'Cọc', event: 'e1', installments: [{ label: 'Cọc', due: '2027-09-01' }] }], [{ side: 'chung', enabled: true, eventIds: ['e1'] }]);
+    expect(i.cleared).toBe(true);
+    expect(i.tasks).toEqual([]);
+    expect(i.costWarnings).toHaveLength(1);
+    expect(i.linksToReview).toEqual(['chung']);
+  });
+});
