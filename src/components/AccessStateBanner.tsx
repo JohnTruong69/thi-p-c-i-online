@@ -50,7 +50,7 @@ export function AccessStateBanner({ weddingId }: { weddingId: string }) {
 
   const access = q.data;
   if (access.state === 'trial_not_started') return null;
-  const expired = access.state === 'trial_expired_read_only' || access.state === 'paid_expired_read_only';
+  const expired = access.state === 'trial_expired_read_only' || access.state === 'paid_expired_read_only' || access.state === 'legacy_paid_expired';
   let message: string;
   if (access.state === 'trial_active') message = `Hai bạn có thể dùng thử Planner đến ${vnDate(access.trial_ends_at)} (giờ Việt Nam).`;
   else if (access.state === 'paid_active') message = `Đã thanh toán · Planner và thiệp dùng đến ${vnDate(access.paid_expires_at)} (giờ Việt Nam).`;
