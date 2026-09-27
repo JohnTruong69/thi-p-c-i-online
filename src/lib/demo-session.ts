@@ -42,7 +42,7 @@ export function useDemoSession<T>(key: string, initial: T, valid: (value: unknow
 
 export function resetDemoSession() {
   try {
-    for (const key of Object.keys(sessionStorage)) if (key.startsWith('phase1:') || key.startsWith('rsvp-demo:')) sessionStorage.removeItem(key);
+    for (const key of Object.keys(sessionStorage)) if (key.startsWith('phase1:') || key.startsWith('rsvp-demo')) sessionStorage.removeItem(key);
     window.dispatchEvent(new CustomEvent('phase1-demo-reset'));
   } catch { /* Browser storage unavailable. */ }
 }

@@ -79,7 +79,7 @@ export function HistoryScreen() {
 export function CheckScreen() {
   const events = useEventNames();
   const [links] = useLinks();
-  const rows = links.map(l => ({ l, r: linkReadiness(l.enabled, l.eventIds.filter(id => events.some(e => e.id === id)), events) }));
+  const rows = links.map(l => ({ l, r: linkReadiness(l.enabled, l.eventIds, events) }));
   const eventGaps = events.map(e => ({ e, gaps: [!e.date && 'ngày', !e.time && 'giờ', !e.venue.trim() && 'nơi tổ chức', !e.address.trim() && 'địa chỉ'].filter(Boolean) as string[] })).filter(x => x.gaps.length);
   return <div className="max-w-3xl"><Header name="Kiểm tra thiệp" subtitle="THIỆP · THÔNG TIN CÒN THIẾU" />
     <p className="-mt-3 mb-5 text-muted-foreground">Những gì cần bổ sung trước khi một link có thể được công bố. Kiểm tra từ dữ liệu trong phiên xem này.</p>

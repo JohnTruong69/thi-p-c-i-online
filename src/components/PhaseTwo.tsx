@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from '@tanstack/react-router';
 import { ArrowRight, Check, Download, Plus, Undo2, Upload } from 'lucide-react';
 import { useDemoSession } from '@/lib/demo-session';
-import { applyResponse, guestFingerprint, pageCount, pageSlice, planUndo, setManual as setManualStatus, summaryState, type Answer, type StatusMap } from '@/lib/phase2d';
+import { collectReceipts, applyResponse, guestFingerprint, pageCount, pageSlice, planUndo, setManual as setManualStatus, summaryState, type Answer, type StatusMap } from '@/lib/phase2d';
 import { buildPreview, guessColumns, parseCsv, summarize, PREVIEW_LIMIT, SAMPLE_CSV, SUGGESTED_TASKS, matchResponse, canClientSet, type ColumnMap, type CsvRow, type CsvTable, type OrderStatus } from '@/lib/phase2';
 import { Action, DemoAction, DemoDialog, Header, Note, Panel, Row, SmallLabel, Status, inputCls, initialGuests, validGuests, initialTasks, validTasks, readDemoReceipt, useEventNames, type DemoGuest, type DemoTask } from './PhaseOne';
 
@@ -178,7 +178,7 @@ export function OwnerRsvpReconcile() {
   const [msg, setMsg] = useState('');
   useEffect(() => {
     const extra: Resp[] = [];
-    try { for (const k of Object.keys(sessionStorage)) if (k.startsWith('rsvp-demo:')) { const tok = k.slice(10); const r = readDemoReceipt(tok); if (r) extra.push({ id: `tab-${tok}`, name: r.name, link: LINK_NAME[tok] ?? 'Link thử', answers: r.answers, at: new Date().toISOString() }); } } catch { /* storage unavailable */ }
+    try { const all = collectReceipts(Object.keys(sessionStorage).map(k => [k, sessionStorage.getItem(k)])); for (const r of all) extra.push({ id: `tab-${r.token}-${r.id}`, name: r.name, link: LINK_NAME[r.token] ?? 'Link thử', answers: r.answers, at: r.at || new Date().toISOString() }); } catch { /* storage unavailable */ }
     setResponses([...extra, ...SAMPLE_RESPONSES]);
   }, []);
   const eventIdsOf = (g: DemoGuest) => g.events.map(x => events.find(e => e.id === x || e.name === x)?.id ?? x);

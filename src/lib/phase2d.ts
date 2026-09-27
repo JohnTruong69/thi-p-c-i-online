@@ -81,3 +81,28 @@ export function summaryState(perEvent: Record<string, EventStatus> | undefined, 
   if (vals.every(v => v === 'no')) return 'Không đến';
   return 'Trả lời từng buổi';
 }
+
+// ---------- Many demo RSVP responses per token (tab session) ----------
+export type StoredReceipt = { id: string; token: string; name: string; answers: Record<string, Answer>; at: string };
+export const RECEIPT_PREFIX = 'rsvp-demo:';
+export const receiptKey = (token: string, id: string) => `${RECEIPT_PREFIX}${token}:${id}`;
+export const lastReceiptKey = (token: string) => `rsvp-demo-last:${token}`;
+export function validAnswers(v: unknown): v is Record<string, Answer> {
+  return !!v && typeof v === 'object' && Object.values(v).every(a => !!a && (a.choice === 'yes' || a.choice === 'no') && Number.isInteger(a.count) && a.count >= 1 && a.count <= 20);
+}
+/** Parses one storage entry; legacy key `rsvp-demo:<token>` (one per token) still reads, with id 'legacy'. */
+export function parseReceipt(key: string, raw: string | null): StoredReceipt | null {
+  if (!key.startsWith(RECEIPT_PREFIX) || !raw) return null;
+  const rest = key.slice(RECEIPT_PREFIX.length); const i = rest.indexOf(':');
+  const token = i < 0 ? rest : rest.slice(0, i); const id = i < 0 ? 'legacy' : rest.slice(i + 1);
+  if (!token || !id) return null;
+  try {
+    const v = JSON.parse(raw) as Partial<StoredReceipt>;
+    if (typeof v?.name !== 'string' || !v.name.trim() || !validAnswers(v.answers)) return null;
+    return { id, token, name: v.name.slice(0, 100), answers: v.answers, at: typeof v.at === 'string' ? v.at : '' };
+  } catch { return null; }
+}
+/** All responses in the tab, newest first; each keeps its own id — never merged. */
+export function collectReceipts(entries: [string, string | null][]) {
+  return entries.map(([k, v]) => parseReceipt(k, v)).filter((x): x is StoredReceipt => !!x).sort((a, b) => b.at.localeCompare(a.at));
+}
