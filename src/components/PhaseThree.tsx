@@ -68,8 +68,10 @@ export function WeddingNewScreen() {
     if (!w && !f.eventName.trim()) n['eventName'] = 'Hãy đặt tên cho buổi lễ đầu tiên.';
     setErr(n); if (Object.keys(n).length) return; m.mutate();
   };
-  if (q.isPending) return <Loading />;
+  const selfQ = useQuery({ queryKey: ['can-self-create'], queryFn: async () => { const r = await supabase.rpc('account_can_self_create'); if (r.error) throw r.error; return r.data === true; }, enabled: q.isSuccess && !w });
+  if (q.isPending || (!w && selfQ.isPending)) return <Loading />;
   if (q.isError) return <LoadError error={q.error} retry={() => q.refetch()} />;
+  if (!w && selfQ.data === false) return <div className="max-w-2xl"><Header name="Câu chuyện của hai bạn" subtitle="THÔNG TIN NGÀY CƯỚI" /><PayFirstNote /></div>;
   return <div className="max-w-2xl"><Header name={w ? 'Thông tin đám cưới' : 'Câu chuyện của hai bạn'} subtitle={w ? 'ĐÃ LƯU VÀO TÀI KHOẢN' : 'THÔNG TIN NGÀY CƯỚI'} />
     <p className="mb-5 text-muted-foreground">{w ? 'Bản nháp đám cưới của hai bạn đã được lưu. Sửa tên hoặc ngày dự kiến bất cứ lúc nào.' : 'Bắt đầu bằng tên hai bạn và một buổi lễ. Chưa chốt ngày giờ cũng không sao.'}</p>
     <Panel><form noValidate onSubmit={submit} className="space-y-5">

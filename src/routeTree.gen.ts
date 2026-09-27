@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
+import { Route as GoiRouteImport } from './routes/goi'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as RegisterRouteImport } from './routes/register'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
@@ -27,6 +28,7 @@ import { Route as AuthenticatedRsvpRouteImport } from './routes/_authenticated/r
 import { Route as AuthenticatedViewRouteImport } from './routes/_authenticated/view'
 import { Route as ITokenRouteImport } from './routes/i.$token'
 import { Route as InviteTokenRouteImport } from './routes/invite.$token'
+import { Route as PayTokenRouteImport } from './routes/pay.$token'
 import { Route as ViewerInviteTokenRouteImport } from './routes/viewer-invite.$token'
 import { Route as AuthenticatedGuestsIdRouteImport } from './routes/_authenticated/guests_.$id'
 import { Route as AuthenticatedGuestsExportRouteImport } from './routes/_authenticated/guests_.export'
@@ -67,6 +69,11 @@ const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
 const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
   id: '/forgot-password',
   path: '/forgot-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GoiRoute = GoiRouteImport.update({
+  id: '/goi',
+  path: '/goi',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -142,6 +149,11 @@ const ITokenRoute = ITokenRouteImport.update({
 const InviteTokenRoute = InviteTokenRouteImport.update({
   id: '/invite/$token',
   path: '/invite/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PayTokenRoute = PayTokenRouteImport.update({
+  id: '/pay/$token',
+  path: '/pay/$token',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ViewerInviteTokenRoute = ViewerInviteTokenRouteImport.update({
@@ -301,6 +313,7 @@ const ITokenRsvpReceiptRoute = ITokenRsvpReceiptRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/forgot-password': typeof ForgotPasswordRoute
+  '/goi': typeof GoiRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
   '/reset-password': typeof ResetPasswordRoute
@@ -316,6 +329,7 @@ export interface FileRoutesByFullPath {
   '/view': typeof AuthenticatedViewRoute
   '/i/$token': typeof ITokenRoute
   '/invite/$token': typeof InviteTokenRoute
+  '/pay/$token': typeof PayTokenRoute
   '/viewer-invite/$token': typeof ViewerInviteTokenRoute
   '/guests/$id': typeof AuthenticatedGuestsIdRoute
   '/guests/export': typeof AuthenticatedGuestsExportRoute
@@ -347,6 +361,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/forgot-password': typeof ForgotPasswordRoute
+  '/goi': typeof GoiRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
   '/reset-password': typeof ResetPasswordRoute
@@ -362,6 +377,7 @@ export interface FileRoutesByTo {
   '/view': typeof AuthenticatedViewRoute
   '/i/$token': typeof ITokenRoute
   '/invite/$token': typeof InviteTokenRoute
+  '/pay/$token': typeof PayTokenRoute
   '/viewer-invite/$token': typeof ViewerInviteTokenRoute
   '/guests/$id': typeof AuthenticatedGuestsIdRoute
   '/guests/export': typeof AuthenticatedGuestsExportRoute
@@ -395,6 +411,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/forgot-password': typeof ForgotPasswordRoute
+  '/goi': typeof GoiRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
   '/reset-password': typeof ResetPasswordRoute
@@ -410,6 +427,7 @@ export interface FileRoutesById {
   '/_authenticated/view': typeof AuthenticatedViewRoute
   '/i/$token': typeof ITokenRoute
   '/invite/$token': typeof InviteTokenRoute
+  '/pay/$token': typeof PayTokenRoute
   '/viewer-invite/$token': typeof ViewerInviteTokenRoute
   '/_authenticated/guests_/$id': typeof AuthenticatedGuestsIdRoute
   '/_authenticated/guests_/export': typeof AuthenticatedGuestsExportRoute
@@ -443,6 +461,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/forgot-password'
+    | '/goi'
     | '/login'
     | '/register'
     | '/reset-password'
@@ -458,6 +477,7 @@ export interface FileRouteTypes {
     | '/view'
     | '/i/$token'
     | '/invite/$token'
+    | '/pay/$token'
     | '/viewer-invite/$token'
     | '/guests/$id'
     | '/guests/export'
@@ -489,6 +509,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/forgot-password'
+    | '/goi'
     | '/login'
     | '/register'
     | '/reset-password'
@@ -504,6 +525,7 @@ export interface FileRouteTypes {
     | '/view'
     | '/i/$token'
     | '/invite/$token'
+    | '/pay/$token'
     | '/viewer-invite/$token'
     | '/guests/$id'
     | '/guests/export'
@@ -536,6 +558,7 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/forgot-password'
+    | '/goi'
     | '/login'
     | '/register'
     | '/reset-password'
@@ -551,6 +574,7 @@ export interface FileRouteTypes {
     | '/_authenticated/view'
     | '/i/$token'
     | '/invite/$token'
+    | '/pay/$token'
     | '/viewer-invite/$token'
     | '/_authenticated/guests_/$id'
     | '/_authenticated/guests_/export'
@@ -584,12 +608,14 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   ForgotPasswordRoute: typeof ForgotPasswordRoute
+  GoiRoute: typeof GoiRoute
   LoginRoute: typeof LoginRoute
   RegisterRoute: typeof RegisterRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   StartRoute: typeof StartRoute
   ITokenRoute: typeof ITokenRoute
   InviteTokenRoute: typeof InviteTokenRoute
+  PayTokenRoute: typeof PayTokenRoute
   ViewerInviteTokenRoute: typeof ViewerInviteTokenRoute
   ITokenExpiredRoute: typeof ITokenExpiredRoute
   ITokenRsvpRoute: typeof ITokenRsvpRoute
@@ -618,6 +644,13 @@ declare module '@tanstack/react-router' {
       path: '/forgot-password'
       fullPath: '/forgot-password'
       preLoaderRoute: typeof ForgotPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/goi': {
+      id: '/goi'
+      path: '/goi'
+      fullPath: '/goi'
+      preLoaderRoute: typeof GoiRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -723,6 +756,13 @@ declare module '@tanstack/react-router' {
       path: '/invite/$token'
       fullPath: '/invite/$token'
       preLoaderRoute: typeof InviteTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pay/$token': {
+      id: '/pay/$token'
+      path: '/pay/$token'
+      fullPath: '/pay/$token'
+      preLoaderRoute: typeof PayTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/viewer-invite/$token': {
@@ -993,12 +1033,14 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   ForgotPasswordRoute: ForgotPasswordRoute,
+  GoiRoute: GoiRoute,
   LoginRoute: LoginRoute,
   RegisterRoute: RegisterRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   StartRoute: StartRoute,
   ITokenRoute: ITokenRoute,
   InviteTokenRoute: InviteTokenRoute,
+  PayTokenRoute: PayTokenRoute,
   ViewerInviteTokenRoute: ViewerInviteTokenRoute,
   ITokenExpiredRoute: ITokenExpiredRoute,
   ITokenRsvpRoute: ITokenRsvpRoute,
