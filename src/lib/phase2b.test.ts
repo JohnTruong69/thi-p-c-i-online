@@ -36,7 +36,7 @@ describe('adapters', () => {
   it('maps session shapes to contracts', () => {
     expect(toEventInput({ id: 'e', name: ' Tiệc ', side: 'Nhà trai', date: '', time: '', venue: '', address: '', confirmed: false })).toEqual({ name: 'Tiệc', side: 'nha-trai', status: 'tentative' });
     expect(toGuest({ id: 'g', name: 'An', phone: '0901', side: 'Nhà gái', events: ['e1'] }, 'w').phone).toBe('0901');
-    const l = toLink({ side: 'chung', enabled: true, eventIds: ['e1'] }, 'inv', [{ id: 'e1', name: 'Lễ', date: 'd', time: 't', venue: 'v' }]);
+    const l = toLink({ side: 'chung', enabled: true, eventIds: ['e1'] }, 'inv', [{ id: 'e1', name: 'Lễ', date: 'd', time: 't', venue: 'v', address: 'a' }]);
     expect(l).toMatchObject({ readiness: 'ready', publication: 'unpublished' });
     expect(toRsvpInput('tok', ' An ', { e1: { choice: 'yes', count: 2 }, e2: { choice: 'no', count: 0 } }).answers).toEqual([{ eventId: 'e1', attending: true, partySize: 2 }, { eventId: 'e2', attending: false }]);
   });
