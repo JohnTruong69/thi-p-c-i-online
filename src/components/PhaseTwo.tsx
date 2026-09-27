@@ -2,11 +2,12 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from '@tanstack/react-router';
 import { ArrowRight, Check, Download, Plus, Undo2, Upload } from 'lucide-react';
 import { useDemoSession } from '@/lib/demo-session';
+import { applyResponse, guestFingerprint, pageCount, pageSlice, planUndo, setManual as setManualStatus, summaryState, type Answer, type StatusMap } from '@/lib/phase2d';
 import { buildPreview, guessColumns, parseCsv, summarize, PREVIEW_LIMIT, SAMPLE_CSV, SUGGESTED_TASKS, matchResponse, canClientSet, type ColumnMap, type CsvRow, type CsvTable, type OrderStatus } from '@/lib/phase2';
 import { Action, DemoAction, DemoDialog, Header, Note, Panel, Row, SmallLabel, Status, inputCls, initialGuests, validGuests, initialTasks, validTasks, readDemoReceipt, useEventNames, type DemoGuest, type DemoTask } from './PhaseOne';
 
 /* ---------------- CSV import ---------------- */
-type DemoBatch = { id: string; filename: string; addedIds: string[]; skipped: number; invalid: number; undone: boolean; at: string };
+type DemoBatch = { id: string; filename: string; addedIds: string[]; skipped: number; invalid: number; undone: boolean; at: string; snapshot?: Record<string, string>; kept?: number; removed?: number };
 const validBatch = (v: unknown): v is DemoBatch | null => v === null || (!!v && typeof (v as DemoBatch).id === 'string' && Array.isArray((v as DemoBatch).addedIds));
 
 export function CsvImportScreen() {
@@ -22,6 +23,7 @@ export function CsvImportScreen() {
   const [rows, setRows] = useState<CsvRow[]>([]);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [page, setPage] = useState(0);
 
   const load = (name: string, text: string) => {
     const t = parseCsv(text);
@@ -42,7 +44,7 @@ export function CsvImportScreen() {
     if (!eventIds.length) { setError('Chọn ít nhất một buổi mời cho các khách này.'); return; }
     setError('');
     setRows(buildPreview(table, map, guests.map(g => ({ id: g.id, name: g.name, phone: g.phone }))));
-    setStep(2);
+    setPage(0); setStep(2);
   };
   const sum = summarize(rows);
   const commit = () => {
@@ -50,7 +52,7 @@ export function CsvImportScreen() {
     const add = rows.filter(r => r.decision === 'add' && !r.errors.length);
     const created: DemoGuest[] = add.map((r, i) => ({ id: `csv${stamp}-${i}`, name: r.name, phone: r.phone, side: r.side, events: eventIds, party: r.party, state: 'Chưa gửi', added: true }));
     setGuests(g => [...created, ...g]);
-    setBatch({ id: `b${stamp}`, filename: file, addedIds: created.map(c => c.id), skipped: rows.length - add.length - sum.invalid, invalid: sum.invalid, undone: false, at: new Date().toISOString() });
+    setBatch({ id: `b${stamp}`, filename: file, addedIds: created.map(c => c.id), snapshot: Object.fromEntries(created.map(c => [c.id, guestFingerprint(c)])), skipped: rows.length - add.length - sum.invalid, invalid: sum.invalid, undone: false, at: new Date().toISOString() });
     navigate({ to: '/guests/import/$batch', params: { batch: 'demo-batch' } });
   };
   const setDecision = (row: number, decision: CsvRow['decision']) => setRows(rs => rs.map(r => (r.row === row ? { ...r, decision } : r)));
@@ -91,8 +93,11 @@ export function CsvImportScreen() {
         {[[sum.valid, 'hợp lệ'], [sum.invalid, 'lỗi'], [sum.possibleDuplicates, 'nghi trùng']].map(([n, l]) => <Panel key={l} className="p-3 text-center"><strong className="block font-display text-2xl">{n}</strong><span className="text-xs">{l}</span></Panel>)}
       </div>
       <Note tone="warm">Dòng nghi trùng mặc định <strong>bỏ qua</strong>; chỉ thêm khi hai bạn chọn. Dòng lỗi cần sửa trong file gốc.</Note>
-      <SmallLabel>{rows.length > PREVIEW_LIMIT ? `XEM TRƯỚC ${PREVIEW_LIMIT}/${rows.length} DÒNG ĐẦU` : `XEM TRƯỚC ${rows.length} DÒNG`}</SmallLabel>
-      <div className="space-y-2">{rows.slice(0, PREVIEW_LIMIT).map(r => <Panel key={r.row} className="p-3">
+      {(() => { const pg = pageSlice(rows, page); const pc = pageCount(rows.length); const nav = (pos: string) => pc > 1 && <nav aria-label={`Trang xem trước ${pos}`} className="my-3 grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2"><DemoAction variant="outline" disabled={pg.page === 0} onClick={() => setPage(pg.page - 1)}>Trang trước</DemoAction><span className="text-center text-xs font-semibold">Trang {pg.page + 1}/{pc}</span><DemoAction variant="outline" disabled={pg.page >= pc - 1} onClick={() => setPage(pg.page + 1)}>Trang sau</DemoAction></nav>; return <>
+      <SmallLabel>{`DÒNG ${pg.from}–${pg.to} / ${rows.length} · MỖI TRANG ${PREVIEW_LIMIT} DÒNG`}</SmallLabel>
+      {pc > 1 && <p className="mb-2 text-xs text-muted-foreground">Số “hợp lệ/lỗi/nghi trùng” và số khách sẽ thêm tính trên toàn file {rows.length} dòng. Hãy xem các trang để chọn từng dòng.</p>}
+      {nav('trên')}
+      <div className="space-y-2">{pg.rows.map(r => <Panel key={r.row} className="p-3">
         <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2">
           <div className="min-w-0"><div className="break-words text-sm font-semibold">Dòng {r.row} · {r.name || '(không tên)'}</div>
             <p className="text-xs text-muted-foreground">{[r.phone, r.side, `${r.party} người`].filter(Boolean).join(' · ')}</p>
@@ -101,6 +106,7 @@ export function CsvImportScreen() {
           {r.errors.length ? <Status tone="copper">Lỗi</Status> :
             <select aria-label={`Quyết định dòng ${r.row}`} className="h-11 rounded-md border border-border bg-background px-2 text-xs" value={r.decision} onChange={e => setDecision(r.row, e.target.value as CsvRow['decision'])}><option value="add">Thêm</option><option value="skip">Bỏ qua</option></select>}
         </div></Panel>)}</div>
+      {nav('dưới')}</>; })()}
       <DemoAction className="mt-5 w-full" onClick={commit}>Thêm {sum.toAdd} khách vào sổ (trong phiên) <Check /></DemoAction>
       <DemoAction variant="ghost" className="mt-2 w-full" onClick={() => setStep(1)}>Quay lại ghép cột</DemoAction>
     </>}
@@ -109,11 +115,20 @@ export function CsvImportScreen() {
 
 export function CsvBatchScreen() {
   const [batch, setBatch] = useDemoSession<DemoBatch | null>('csv-batch', null, validBatch);
-  const [, setGuests] = useDemoSession<DemoGuest[]>('guests', initialGuests, validGuests);
+  const [guests, setGuests] = useDemoSession<DemoGuest[]>('guests', initialGuests, validGuests);
   if (!batch) return <div className="max-w-3xl"><Header name="Kết quả nhập" subtitle="NHẬP CSV" /><Note tone="warm">Chưa có lần nhập nào trong phiên xem này.</Note><Action to="/guests/import" className="mt-5 w-full">Nhập file CSV</Action></div>;
-  const undo = () => { const ids = new Set(batch.addedIds); setGuests(g => g.filter(x => !ids.has(x.id))); setBatch({ ...batch, undone: true }); };
+  const undo = () => {
+    const snap = batch.snapshot ?? {};
+    const plan = planUndo(snap, guests);
+    const ids = new Set(plan.removeIds);
+    setGuests(g => g.filter(x => !ids.has(x.id)));
+    setBatch({ ...batch, undone: true, kept: plan.keptIds.length, removed: plan.removeIds.length });
+  };
+  const edited = batch.snapshot ? planUndo(batch.snapshot, guests).keptIds.length : 0;
   return <div className="max-w-3xl"><Header name="Kết quả nhập" subtitle="NHẬP CSV · BƯỚC 3/3" />
     <Panel className="bg-foreground text-primary-foreground"><div className="text-xs">{batch.filename}</div><div className="mt-1 font-display text-4xl">{batch.undone ? 'Đã hoàn tác' : `${batch.addedIds.length} khách đã thêm`}</div><p className="mt-2 text-xs">{batch.skipped} dòng bỏ qua · {batch.invalid} dòng lỗi · chỉ trong phiên xem này</p></Panel>
+    {batch.undone && <p role="status" className="mt-3 rounded-md bg-sage p-3 text-sm font-semibold">Đã bỏ {batch.removed ?? batch.addedIds.length} khách chưa sửa.{batch.kept ? ` Giữ lại ${batch.kept} khách đã được sửa sau khi nhập.` : ''}</p>}
+    {!batch.undone && edited > 0 && <Note tone="warm">{edited} khách trong lần nhập này đã được sửa sau đó. Hoàn tác sẽ giữ lại những khách này, chỉ bỏ khách chưa sửa.</Note>}
     {!batch.undone && <DemoAction variant="outline" className="mt-4 w-full" onClick={undo}><Undo2 /> Hoàn tác lần nhập này</DemoAction>}
     <Action to="/guests" className="mt-3 w-full">Về sổ khách <ArrowRight /></Action>
   </div>;
@@ -140,39 +155,68 @@ export function SuggestionLibrary({ autoOpen = false }: { autoOpen?: boolean }) 
 }
 
 /* ---------------- RSVP reconciliation ---------------- */
-type Resp = { id: string; name: string; phone?: string; link: string; answer: string };
+type Resp = { id: string; name: string; phone?: string; link: string; answers: Record<string, Answer>; at: string };
 type Links = Record<string, string | 'separate'>;
 const SAMPLE_RESPONSES: Resp[] = [
-  { id: 'r1', name: 'Mai Nguyễn', link: 'Link chung', answer: 'Lễ gia tiên: Có đến · 2 người · Tiệc tối: Không đến' },
-  { id: 'r2', name: 'Quang Tùng', link: 'Link chung', answer: 'Tiệc tối: Có đến · 1 người' },
+  { id: 'r1', name: 'Mai Nguyễn', link: 'Link chung', answers: { e1: { choice: 'yes', count: 2 }, e2: { choice: 'no', count: 1 } }, at: '2027-09-20T09:15:00Z' },
+  { id: 'r2', name: 'Quang Tùng', link: 'Link chung', answers: { e2: { choice: 'yes', count: 1 } }, at: '2027-09-21T12:40:00Z' },
 ];
 const validLinks = (v: unknown): v is Links => !!v && typeof v === 'object' && !Array.isArray(v);
+const validStatus = (v: unknown): v is StatusMap => !!v && typeof v === 'object' && !Array.isArray(v);
+const LINK_NAME: Record<string, string> = { demo: 'Link chung', 'demo-chung': 'Link chung', 'demo-nha-gai': 'Link nhà gái', 'demo-nha-trai': 'Link nhà trai' };
+const fmtAt = (iso: string) => { const d = new Date(iso); return Number.isNaN(d.getTime()) ? '' : d.toLocaleString('vi-VN', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit' }); };
+const ansText = (a: { choice: 'yes' | 'no'; count: number }) => (a.choice === 'yes' ? `Có đến · ${a.count} người` : 'Không đến');
 
 export function OwnerRsvpReconcile() {
   const [guests, setGuests] = useDemoSession<DemoGuest[]>('guests', initialGuests, validGuests);
   const [links, setLinks] = useDemoSession<Links>('rsvp-links', {}, validLinks);
+  const [status, setStatus] = useDemoSession<StatusMap>('rsvp-status', {}, validStatus);
+  const events = useEventNames();
+  const evName = (id: string) => events.find(e => e.id === id)?.name ?? 'Buổi đã bỏ';
   const [responses, setResponses] = useState<Resp[]>(SAMPLE_RESPONSES);
   const [choice, setChoice] = useState<Record<string, string>>({});
+  const [msg, setMsg] = useState('');
   useEffect(() => {
     const extra: Resp[] = [];
-    try { for (const k of Object.keys(sessionStorage)) if (k.startsWith('rsvp-demo:')) { const tok = k.slice(10); const r = readDemoReceipt(tok); if (r) extra.push({ id: `tab-${tok}`, name: r.name, link: `Link ${tok}`, answer: Object.values(r.answers).map(a => (a.choice === 'yes' ? `Có đến · ${a.count} người` : 'Không đến')).join(' · ') }); } } catch { /* storage unavailable */ }
+    try { for (const k of Object.keys(sessionStorage)) if (k.startsWith('rsvp-demo:')) { const tok = k.slice(10); const r = readDemoReceipt(tok); if (r) extra.push({ id: `tab-${tok}`, name: r.name, link: LINK_NAME[tok] ?? 'Link thử', answers: r.answers, at: new Date().toISOString() }); } } catch { /* storage unavailable */ }
     setResponses([...extra, ...SAMPLE_RESPONSES]);
   }, []);
+  const eventIdsOf = (g: DemoGuest) => g.events.map(x => events.find(e => e.id === x || e.name === x)?.id ?? x);
   const pending = responses.filter(r => !links[r.id]);
   const done = responses.filter(r => links[r.id]);
-  const confirm = (r: Resp) => { const id = choice[r.id]; if (!id) return; setLinks(l => ({ ...l, [r.id]: id })); if (id !== 'separate') setGuests(g => g.map(x => (x.id === id ? { ...x, state: r.answer.includes('Có đến') ? 'Có đến' : 'Không đến' } : x))); };
-  const setManual = (id: string, state: string) => setGuests(g => g.map(x => (x.id === id ? { ...x, state } : x)));
+  const confirm = (r: Resp) => {
+    const id = choice[r.id];
+    if (!id) { setMsg(`Hãy chọn khách để nối phản hồi của ${r.name}.`); return; }
+    setLinks(l => ({ ...l, [r.id]: id }));
+    if (id === 'separate') { setMsg(`Đã giữ riêng phản hồi của ${r.name}.`); return; }
+    const res = applyResponse(status, id, r.answers, r.at, r.link);
+    setStatus(res.map);
+    setGuests(g => g.map(x => (x.id === id ? { ...x, state: summaryState(res.map[id], eventIdsOf(x), x.state) } : x)));
+    setMsg(`Đã cập nhật ${res.applied.length} buổi theo phản hồi.${res.skipped.length ? ` Giữ nguyên ${res.skipped.map(evName).join(', ')} vì hai bạn đã cập nhật tay.` : ''}`);
+  };
+  const manual = (g: DemoGuest, eventId: string, v: 'yes' | 'no' | '') => {
+    const next = setManualStatus(status, g.id, eventId, v, new Date().toISOString());
+    setStatus(next);
+    setGuests(gs => gs.map(x => (x.id === g.id ? { ...x, state: summaryState(next[g.id], eventIdsOf(x), 'Chưa trả lời') } : x)));
+  };
   return <div className="max-w-4xl"><Header name="Phản hồi tham dự" subtitle="PHẢN HỒI THAM DỰ" />
-    <p className="-mt-3 mb-5 text-muted-foreground">Nối từng phản hồi với khách trong sổ. Tên trùng không bao giờ tự gộp.</p>
+    <p className="-mt-3 mb-5 text-muted-foreground">Nối từng phản hồi với khách trong sổ. Mỗi buổi được ghi riêng. Tên trùng không bao giờ tự gộp.</p>
+    <p role="status" className="mb-3 text-xs font-semibold text-sage-strong">{msg}</p>
     <SmallLabel>CẦN ĐỐI CHIẾU · {pending.length}</SmallLabel>
     {pending.length === 0 && <Note>Mọi phản hồi đã được đối chiếu.</Note>}
-    <div className="space-y-3">{pending.map(r => { const m = matchResponse(r, guests.map(g => ({ id: g.id, name: g.name, phone: g.phone }))); const cands = m.kind === 'exact' ? [m.guestId] : m.kind === 'ambiguous' ? m.guestIds : []; return <Panel key={r.id}>
-      <div className="font-display text-lg font-semibold">{r.name} · {r.link}</div><p className="text-xs text-muted-foreground">{r.answer}</p><p className="mt-1 text-xs font-semibold text-primary">{m.reason}</p>
+    <div className="space-y-3">{pending.map(r => { const m = matchResponse(r, guests.map(g => ({ id: g.id, name: g.name, phone: g.phone }))); const cands = m.kind === 'exact' ? [m.guestId] : m.kind === 'ambiguous' ? m.guestIds : []; return <Panel key={r.id} item={r.id}>
+      <div className="font-display text-lg font-semibold">{r.name} · {r.link}</div>
+      <ul className="mt-1 space-y-0.5 text-xs">{Object.entries(r.answers).map(([eid, a]) => <li key={eid}><strong>{evName(eid)}:</strong> {ansText(a)}</li>)}</ul>
+      <p className="text-[11px] text-muted-foreground">Nhận lúc {fmtAt(r.at)} (minh họa)</p>
+      <p className="mt-1 text-xs font-semibold text-primary">{m.reason}</p>
       <div className="mt-3 grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto]"><select aria-label={`Nối phản hồi của ${r.name}`} className={inputCls + ' mt-0'} value={choice[r.id] ?? ''} onChange={e => setChoice({ ...choice, [r.id]: e.target.value })}><option value="">— Chọn khách trong sổ —</option>{cands.length > 0 && <optgroup label="Gợi ý">{cands.map(id => { const g = guests.find(x => x.id === id); return g ? <option key={id} value={id}>{g.name} · {g.side}</option> : null; })}</optgroup>}<optgroup label="Tất cả khách">{guests.filter(g => !cands.includes(g.id)).map(g => <option key={g.id} value={g.id}>{g.name} · {g.side}</option>)}</optgroup><option value="separate">Giữ riêng, không nối với ai</option></select><DemoAction className="sm:mt-0" onClick={() => confirm(r)}>Xác nhận</DemoAction></div>
     </Panel>; })}</div>
-    {done.length > 0 && <><div className="mt-6"><SmallLabel>ĐÃ ĐỐI CHIẾU · {done.length}</SmallLabel></div><Panel>{done.map(r => <Row key={r.id} title={r.name} detail={links[r.id] === 'separate' ? 'Giữ riêng' : `Nối với ${guests.find(g => g.id === links[r.id])?.name ?? 'khách đã xóa'}`} right={<DemoAction variant="ghost" onClick={() => setLinks(l => { const n = { ...l }; delete n[r.id]; return n; })}>Bỏ nối</DemoAction>} />)}</Panel></>}
-    <div className="mt-6"><SmallLabel>CẬP NHẬT THỦ CÔNG</SmallLabel></div>
-    <Panel>{guests.map(g => <div key={g.id} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 border-b border-border py-2 last:border-0"><span className="min-w-0 break-words text-sm">{g.name}</span><select aria-label={`Trạng thái của ${g.name}`} className="h-11 rounded-md border border-border bg-background px-2 text-xs" value={g.state} onChange={e => setManual(g.id, e.target.value)}>{['Chưa gửi', 'Chưa trả lời', 'Có đến', 'Không đến'].map(s => <option key={s}>{s}</option>)}</select></div>)}<p className="mt-2 text-xs text-muted-foreground">Nguồn cập nhật: hai bạn nhập tay (trong phiên).</p></Panel>
+    {done.length > 0 && <><div className="mt-6"><SmallLabel>ĐÃ ĐỐI CHIẾU · {done.length}</SmallLabel></div><Panel>{done.map(r => <Row key={r.id} title={r.name} detail={links[r.id] === 'separate' ? 'Giữ riêng' : `Nối với ${guests.find(g => g.id === links[r.id])?.name ?? 'khách đã xóa'}`} right={<DemoAction variant="ghost" onClick={() => setLinks(l => { const n = { ...l }; delete n[r.id]; return n; })}>Bỏ nối</DemoAction>} />)}<p className="mt-2 text-xs text-muted-foreground">Bỏ nối không xóa trạng thái đã ghi cho từng buổi; hãy sửa tay bên dưới nếu cần.</p></Panel></>}
+    <div className="mt-6"><SmallLabel>TRẠNG THÁI THEO TỪNG BUỔI</SmallLabel></div>
+    <Panel>{guests.map(g => <div key={g.id} className="border-b border-border py-3 last:border-0" data-guest={g.id}><div className="flex flex-wrap items-center justify-between gap-2"><span className="min-w-0 break-words text-sm font-semibold">{g.name}</span><Status tone={g.state === 'Có đến' ? 'sage' : 'warm'}>{g.state}</Status></div>
+      <div className="mt-2 space-y-2">{eventIdsOf(g).map(eid => { const st = status[g.id]?.[eid]; return <div key={eid} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2"><div className="min-w-0 text-xs"><div className="font-semibold">{evName(eid)}</div><div className="text-muted-foreground">{st ? `${st.source === 'manual' ? 'Hai bạn nhập tay' : `Phản hồi · ${st.from ?? ''}`} · ${fmtAt(st.at)}` : 'Chưa có câu trả lời'}</div></div><select aria-label={`${g.name} · ${evName(eid)}`} className="h-11 rounded-md border border-border bg-background px-2 text-xs" value={st?.choice ?? ''} onChange={e => manual(g, eid, e.target.value as 'yes' | 'no' | '')}><option value="">Chưa trả lời</option><option value="yes">Có đến</option><option value="no">Không đến</option></select></div>; })}
+        {eventIdsOf(g).length === 0 && <p className="text-xs text-muted-foreground">Chưa được mời buổi nào.</p>}</div></div>)}
+      <p className="mt-2 text-xs text-muted-foreground">Cập nhật tay luôn được giữ; phản hồi đến sau không ghi đè (trong phiên).</p></Panel>
     <p className="mt-4 text-xs text-muted-foreground">Phản hồi mẫu và phản hồi thử trong tab này; chưa có phản hồi thật từ khách.</p>
   </div>;
 }

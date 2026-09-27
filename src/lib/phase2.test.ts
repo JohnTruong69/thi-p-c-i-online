@@ -46,9 +46,15 @@ describe('order and links', () => {
     expect(canClientSet('order_pending', 'verifying')).toBe(true);
   });
   it('readiness lists missing event fields', () => {
-    const ev = [{ id: 'e1', name: 'Lễ', date: '2027-10-18', time: '07:00', venue: 'Nhà' }, { id: 'e2', name: 'Tiệc tối', date: '2027-10-18', venue: 'NH' }];
+    const ev = [{ id: 'e1', name: 'Lễ', date: '2027-10-18', time: '07:00', venue: 'Nhà', address: '24 Nguyễn Văn Cừ' }, { id: 'e2', name: 'Tiệc tối', date: '2027-10-18', venue: 'NH', address: '1 Lê Lợi' }];
     expect(linkReadiness(false, ['e1'], ev).readiness).toBe('off');
     expect(linkReadiness(true, ['e1'], ev).readiness).toBe('ready');
     expect(linkReadiness(true, ['e1', 'e2'], ev).missing).toEqual(['Tiệc tối: giờ']);
+  });
+  it('empty address is never "ready" (same rule as Check screen)', () => {
+    const ev = [{ id: 'e1', name: 'Lễ', date: '2027-10-18', time: '07:00', venue: 'Nhà', address: '  ' }];
+    const r = linkReadiness(true, ['e1'], ev);
+    expect(r.readiness).toBe('needs-fix');
+    expect(r.missing).toEqual(['Lễ: địa chỉ']);
   });
 });

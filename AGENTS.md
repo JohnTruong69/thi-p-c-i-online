@@ -13,3 +13,6 @@
 - CSV files are parsed in the browser only (never uploaded); imported guests and undo live in the tab session.
 - Event date edits go through a computed impact review (tasks shift only on consent, payment dates warn only, enabled links flagged); link versions live in tab session and publication is always 'unpublished' client-side; invitation photos are object URLs in tab memory only.
 - Dynamic owner routes (/wedding/events/$id, /plan/budget/$id, /guests/$id, /plan/tasks/suggestions) reuse list screens and open the matching dialog from the URL via useDeepLink; unknown ids show an alert, closing returns focus to the item's Sửa button.
+- Guest pages, preview, RSVP and receipt all resolve events via linkView/viewForToken in src/lib/phase2d.ts (same links session config); only DEMO_TOKENS open, off/unknown show a neutral page — keeps preview = guest.
+- RSVP status is stored per guest per Event (rsvp-status session); manual entries are never overwritten by responses; CSV undo removes only guests unchanged since import (fingerprint snapshot).
+- Link readiness requires date, time, venue and address — same rule as the Check screen.

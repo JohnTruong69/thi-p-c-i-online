@@ -19,3 +19,5 @@
 - [x] CSV thật trong trình duyệt: chọn file/mẫu, ghép cột, xem 100 dòng, quyết định từng dòng, thêm + hoàn tác.
 - [x] Thư viện 43 việc gợi ý (chỉ thêm khi chọn); đối chiếu phản hồi + cập nhật tay; trạng thái đơn minh họa.
 - [x] Đổi ngày có xem tác động; sửa việc/khách; ảnh xem trước ≤50; 3 phiên bản link + kiểm tra sẵn sàng; xem lại trước công bố; so sánh thay đổi sau gửi; Admin demo; adapter + test.
+
+- [x] Phase 2 QA blockers: CSV paging, safe undo, shared link selector, per-Event RSVP, photos in preview, readiness=address

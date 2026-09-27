@@ -44,6 +44,9 @@ const subs = new Set<() => void>();
 const emit = () => subs.forEach(f => f());
 const subscribe = (f: () => void) => { subs.add(f); return () => subs.delete(f); };
 const EMPTY: Photo[] = [];
+/** Object URLs are revoked when photos are removed or the demo is reset. */
+export function clearPhotos() { photos.forEach(p => URL.revokeObjectURL(p.url)); photos = []; emit(); }
+if (typeof window !== 'undefined') window.addEventListener('phase1-demo-reset', clearPhotos);
 export const usePhotos = () => useSyncExternalStore(subscribe, () => photos, () => EMPTY);
 
 export function PhotoManager() {
