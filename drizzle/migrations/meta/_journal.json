@@ -120,6 +120,13 @@
       "when": 1790522646241,
       "tag": "0016_presale_paid_signup",
       "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1790523014146,
+      "tag": "0017_presale_enforce_locked_offer",
+      "breakpoints": true
     }
   ]
 }
