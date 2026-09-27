@@ -18,4 +18,4 @@
 - [x] Logic thuần + test: CSV, 43 việc gợi ý, đối chiếu phản hồi, trạng thái đơn, độ sẵn sàng link.
 - [x] CSV thật trong trình duyệt: chọn file/mẫu, ghép cột, xem 100 dòng, quyết định từng dòng, thêm + hoàn tác.
 - [x] Thư viện 43 việc gợi ý (chỉ thêm khi chọn); đối chiếu phản hồi + cập nhật tay; trạng thái đơn minh họa.
-- [ ] Đổi ngày buổi lễ có xem tác động; sửa việc/khách; tải ảnh xem trước (≤50); 1–3 phiên bản link với kiểm tra sẵn sàng; so sánh thay đổi sau gửi; Admin thao tác demo.
+- [x] Đổi ngày có xem tác động; sửa việc/khách; ảnh xem trước ≤50; 3 phiên bản link + kiểm tra sẵn sàng; xem lại trước công bố; so sánh thay đổi sau gửi; Admin demo; adapter + test.
