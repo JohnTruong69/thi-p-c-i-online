@@ -185,6 +185,6 @@ export function OrderStatusDemo() {
   return <Panel className="mt-4"><SmallLabel>TRẠNG THÁI ĐƠN MINH HỌA</SmallLabel><div role="status" className="font-display text-2xl">{LABEL[status]}</div>
     <p className="mt-1 text-xs text-muted-foreground">{status === 'verifying' ? 'Trong bản thật, hệ thống tự đối chiếu giao dịch; trang này không tự chuyển sang đã trả.' : status === 'needs_support' ? 'Trong bản thật, hai bạn gửi mã đơn để được hỗ trợ. Bản dùng thử chưa có kênh hỗ trợ.' : 'Chưa ghi nhận giao dịch.'}</p>
     <div className="mt-3 flex flex-wrap gap-2">{(['order_pending', 'verifying', 'needs_support'] as OrderStatus[]).filter(s => s !== status).map(s => <DemoAction key={s} variant="outline" onClick={() => canClientSet(status, s) && setStatus(s)} className={canClientSet(status, s) ? '' : 'hidden'}>Xem “{LABEL[s]}”</DemoAction>)}
-      <Status tone="warm">Đã xác minh: chỉ hệ thống thanh toán thật bật được</Status></div>
+      </div>
     <p className="mt-2 text-xs text-muted-foreground">Trạng thái “Đã xác minh” chỉ có thể đến từ giao dịch thật được hệ thống xác nhận, không bật được trong bản dùng thử.</p></Panel>;
 }
