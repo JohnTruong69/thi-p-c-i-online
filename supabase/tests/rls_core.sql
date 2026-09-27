@@ -6,7 +6,7 @@ SET LOCAL client_min_messages = notice;
 CREATE TEMP TABLE t_ids (k text PRIMARY KEY, v uuid);
 GRANT ALL ON t_ids TO authenticated;
 -- Requires three confirmed accounts rlstest-{a,b,c}@example.test (created via the Auth admin API before running).
-INSERT INTO t_ids SELECT split_part(split_part(email,'@',1),'-',2), id FROM auth.users WHERE email IN ('rlstest-a@example.test','rlstest-b@example.test','rlstest-c@example.test');
+INSERT INTO t_ids SELECT split_part(split_part(email,'@',1),'-',2), id FROM public.profiles WHERE email IN ('rlstest-a@example.test','rlstest-b@example.test','rlstest-c@example.test');
 
 CREATE OR REPLACE FUNCTION pg_temp.act(k text) RETURNS void LANGUAGE plpgsql AS $$
 BEGIN
