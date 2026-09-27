@@ -149,7 +149,7 @@ export function linkReadiness(enabled: boolean, eventIds: string[], events: Read
   if (!eventIds.length) return { readiness: 'needs-fix' as const, missing: ['Chưa chọn buổi nào'] };
   const missing = eventIds.flatMap(id => {
     const e = events.find(x => x.id === id);
-    if (!e) return ['Buổi đã bị bỏ'];
+    if (!e) return ['Buổi đã bị bỏ — cần chọn lại'];
     return [!e.date && `${e.name}: ngày`, !e.time && `${e.name}: giờ`, !e.venue?.trim() && `${e.name}: nơi tổ chức`, !e.address?.trim() && `${e.name}: địa chỉ`].filter((x): x is string => !!x);
   });
   return { readiness: missing.length ? ('needs-fix' as const) : ('ready' as const), missing };
@@ -172,6 +172,8 @@ export type DateImpact = {
   costWarnings: { title: string; label: string; due: string }[];
   /** Enabled links containing the event: need review before any public update. */
   linksToReview: string[];
+  /** The date was cleared: task due dates are kept, never shifted. */
+  cleared: boolean;
 };
 export function computeDateImpact(eventId: string, oldDate: string, newDate: string, tasks: ImpactTask[], costs: ImpactCost[], links: ImpactLink[]): DateImpact {
   const deltaDays = oldDate && newDate ? dayDiff(oldDate, newDate) : 0;
@@ -180,6 +182,7 @@ export function computeDateImpact(eventId: string, oldDate: string, newDate: str
     tasks: deltaDays ? tasks.filter(t => t.event === eventId && t.due).map(t => ({ id: t.id, title: t.title, from: t.due, to: shiftDate(t.due, deltaDays) })) : [],
     costWarnings: costs.filter(c => c.event === eventId).flatMap(c => c.installments.filter(i => i.due).map(i => ({ title: c.title, label: i.label, due: i.due }))),
     linksToReview: links.filter(l => l.enabled && l.eventIds.includes(eventId)).map(l => l.side),
+    cleared: !!oldDate && !newDate,
   };
 }
 
