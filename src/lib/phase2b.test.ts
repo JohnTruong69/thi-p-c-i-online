@@ -19,7 +19,7 @@ describe('date impact', () => {
 describe('photos', () => {
   it('rejects type, size and over-limit', () => {
     const r = checkPhotos([{ name: 'ok.jpg', type: 'image/jpeg', size: 10 * 1024 * 1024 }, { name: 'a.gif', type: 'image/gif', size: 1 }, { name: 'b.jpg', type: 'image/jpeg', size: 10 * 1024 * 1024 + 1 }, { name: 'c.jpg', type: 'image/jpeg', size: 1 }, { name: 'd.png', type: 'image/png', size: 1 }], 48);
-    expect(r.accepted).toEqual([0]);
+    expect(r.accepted).toEqual([0, 3]);
     expect(r.rejected.map(x => x.reason)).toEqual(['Chỉ nhận JPG, PNG hoặc WEBP', 'Ảnh lớn hơn 10 MB', 'Đã đủ 50 ảnh']);
   });
 });
