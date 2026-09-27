@@ -49,6 +49,138 @@ export type Database = {
           },
         ]
       }
+      billing_orders: {
+        Row: {
+          amount_vnd: number
+          bank_account_name: string
+          bank_account_number: string
+          bank_gateway: string
+          code: string
+          created_at: string
+          created_by: string | null
+          currency: string
+          entitlement_expires_at: string | null
+          expires_at: string
+          id: string
+          offer_version: string
+          paid_at: string | null
+          plan_version: string
+          sepay_transaction_id: number | null
+          status: string
+          terms_version: string
+          updated_at: string
+          wedding_id: string
+        }
+        Insert: {
+          amount_vnd: number
+          bank_account_name: string
+          bank_account_number: string
+          bank_gateway: string
+          code: string
+          created_at?: string
+          created_by?: string | null
+          currency?: string
+          entitlement_expires_at?: string | null
+          expires_at: string
+          id?: string
+          offer_version: string
+          paid_at?: string | null
+          plan_version: string
+          sepay_transaction_id?: number | null
+          status?: string
+          terms_version: string
+          updated_at?: string
+          wedding_id: string
+        }
+        Update: {
+          amount_vnd?: number
+          bank_account_name?: string
+          bank_account_number?: string
+          bank_gateway?: string
+          code?: string
+          created_at?: string
+          created_by?: string | null
+          currency?: string
+          entitlement_expires_at?: string | null
+          expires_at?: string
+          id?: string
+          offer_version?: string
+          paid_at?: string | null
+          plan_version?: string
+          sepay_transaction_id?: number | null
+          status?: string
+          terms_version?: string
+          updated_at?: string
+          wedding_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "billing_orders_tx_fk"
+            columns: ["sepay_transaction_id"]
+            isOneToOne: false
+            referencedRelation: "sepay_transactions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "billing_orders_wedding_id_fkey"
+            columns: ["wedding_id"]
+            isOneToOne: false
+            referencedRelation: "weddings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      billing_settings: {
+        Row: {
+          account_enabled: boolean
+          bank_account_name: string | null
+          bank_account_number: string | null
+          bank_gateway: string | null
+          id: boolean
+          live_enabled: boolean
+          offer_version: string
+          plan_version: string
+          price_vnd: number
+          terms_approved_at: string | null
+          terms_approved_by: string | null
+          terms_url: string | null
+          terms_version: string
+          updated_at: string
+        }
+        Insert: {
+          account_enabled?: boolean
+          bank_account_name?: string | null
+          bank_account_number?: string | null
+          bank_gateway?: string | null
+          id?: boolean
+          live_enabled?: boolean
+          offer_version: string
+          plan_version?: string
+          price_vnd: number
+          terms_approved_at?: string | null
+          terms_approved_by?: string | null
+          terms_url?: string | null
+          terms_version: string
+          updated_at?: string
+        }
+        Update: {
+          account_enabled?: boolean
+          bank_account_name?: string | null
+          bank_account_number?: string | null
+          bank_gateway?: string | null
+          id?: boolean
+          live_enabled?: boolean
+          offer_version?: string
+          plan_version?: string
+          price_vnd?: number
+          terms_approved_at?: string | null
+          terms_approved_by?: string | null
+          terms_url?: string | null
+          terms_version?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       budget_installments: {
         Row: {
           amount_vnd: number
@@ -877,6 +1009,77 @@ export type Database = {
           },
         ]
       }
+      sepay_transactions: {
+        Row: {
+          account_number: string
+          code: string | null
+          content: string
+          gateway: string
+          id: number
+          match_status: string
+          order_id: string | null
+          raw: Json
+          received_at: string
+          reference_code: string | null
+          resolution_note: string | null
+          resolved_at: string | null
+          resolved_by: string | null
+          sepay_id: number
+          transaction_date: string
+          transfer_amount: number
+          transfer_type: string
+          unmatched_reason: string | null
+        }
+        Insert: {
+          account_number: string
+          code?: string | null
+          content: string
+          gateway: string
+          id?: never
+          match_status?: string
+          order_id?: string | null
+          raw: Json
+          received_at?: string
+          reference_code?: string | null
+          resolution_note?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          sepay_id: number
+          transaction_date: string
+          transfer_amount: number
+          transfer_type: string
+          unmatched_reason?: string | null
+        }
+        Update: {
+          account_number?: string
+          code?: string | null
+          content?: string
+          gateway?: string
+          id?: never
+          match_status?: string
+          order_id?: string | null
+          raw?: Json
+          received_at?: string
+          reference_code?: string | null
+          resolution_note?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          sepay_id?: number
+          transaction_date?: string
+          transfer_amount?: number
+          transfer_type?: string
+          unmatched_reason?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sepay_transactions_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "billing_orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tasks: {
         Row: {
           assignee: string
@@ -948,6 +1151,27 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
       }
       wedding_entitlements: {
         Row: {
@@ -1238,8 +1462,14 @@ export type Database = {
     Functions: {
       accept_partner_invite: { Args: { p_token: string }; Returns: string }
       accept_viewer_invite: { Args: { p_token: string }; Returns: string }
+      billing_is_service: { Args: never; Returns: boolean }
+      billing_offer_status: { Args: never; Returns: Json }
       can_manage_photo_path: { Args: { p_name: string }; Returns: boolean }
       can_write_photo_path: { Args: { p_name: string }; Returns: boolean }
+      create_billing_order: {
+        Args: { p_user_id: string; p_wedding_id: string }
+        Returns: Json
+      }
       create_partner_invite: {
         Args: { p_email: string; p_wedding_id: string }
         Returns: {
@@ -1283,6 +1513,13 @@ export type Database = {
         Returns: Json
       }
       guest_fingerprint: { Args: { p_guest_id: string }; Returns: string }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
       has_valid_entitlement: {
         Args: { p_wedding_id: string }
         Returns: boolean
@@ -1317,6 +1554,15 @@ export type Database = {
       }
       invitation_snapshot: { Args: { p_invitation_id: string }; Returns: Json }
       is_wedding_manager: { Args: { _wedding_id: string }; Returns: boolean }
+      match_sepay_transaction: {
+        Args: {
+          p_actor: string
+          p_note: string
+          p_order_id: string
+          p_tx: number
+        }
+        Returns: Json
+      }
       photo_slot_available: { Args: { p_wedding: string }; Returns: boolean }
       public_invitation: { Args: { p_token: string }; Returns: Json }
       public_invitation_photo_paths: {
@@ -1328,6 +1574,7 @@ export type Database = {
         Args: { p_apply?: boolean; p_guest_id: string; p_response_id: string }
         Returns: number
       }
+      record_sepay_transaction: { Args: { p: Json }; Returns: Json }
       register_invitation_photo: {
         Args: { p_path: string; p_wedding_id: string }
         Returns: string
@@ -1424,7 +1671,7 @@ export type Database = {
       }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1551,6 +1798,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin"],
+    },
   },
 } as const
