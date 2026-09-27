@@ -43,14 +43,20 @@ export const getPublicInvitation = createServerFn({ method: 'GET' })
       global: { fetch: (input, init) => { const h = new Headers(init?.headers); if (key.startsWith('sb_') && h.get('Authorization') === `Bearer ${key}`) h.delete('Authorization'); h.set('apikey', key); return fetch(input, { ...init, headers: h }); } },
     });
     const r = await pub.rpc('public_invitation', { p_token: data.token });
-    const v = r.data as { open?: boolean; side?: string; title?: string; message?: string; cover?: string | null; photos?: string[]; events?: [] } | null;
+    const v = r.data as { open?: boolean; side?: string; title?: string; message?: string; has_cover?: boolean; photo_count?: number; events?: [] } | null;
     if (r.error || !v || v.open !== true) return { open: false };
-    const paths = [...(v.cover ? [v.cover] : []), ...(v.photos ?? [])];
-    let urls: Record<string, string> = {};
-    if (paths.length) {
+    let coverUrl: string | null = null; let photoUrls: string[] = [];
+    if (v.has_cover || (v.photo_count ?? 0) > 0) {
       const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
-      const s = await supabaseAdmin.storage.from('invitation-photos').createSignedUrls([...new Set(paths)], 3600);
-      urls = Object.fromEntries((s.data ?? []).filter(x => x.signedUrl && x.path).map(x => [x.path as string, x.signedUrl as string]));
+      const pr = await supabaseAdmin.rpc('public_invitation_photo_paths', { p_token: data.token });
+      const pp = (pr.data ?? {}) as { cover?: string | null; photos?: string[] };
+      const paths = [...new Set([...(pp.cover ? [pp.cover] : []), ...(pp.photos ?? [])])];
+      if (paths.length) {
+        const s = await supabaseAdmin.storage.from('invitation-photos').createSignedUrls(paths, 3600);
+        const urls = Object.fromEntries((s.data ?? []).filter(x => x.signedUrl && x.path).map(x => [x.path as string, x.signedUrl as string]));
+        coverUrl = pp.cover ? urls[pp.cover] ?? null : null;
+        photoUrls = (pp.photos ?? []).filter(p => p !== pp.cover).map(p => urls[p]).filter((u): u is string => !!u);
+      }
     }
-    return { open: true, side: v.side ?? 'chung', title: v.title ?? '', message: v.message ?? '', coverUrl: v.cover ? urls[v.cover] ?? null : null, photoUrls: (v.photos ?? []).filter(p => p !== v.cover).map(p => urls[p]).filter((u): u is string => !!u), events: v.events ?? [] };
+    return { open: true, side: v.side ?? 'chung', title: v.title ?? '', message: v.message ?? '', coverUrl, photoUrls, events: v.events ?? [] };
   });
