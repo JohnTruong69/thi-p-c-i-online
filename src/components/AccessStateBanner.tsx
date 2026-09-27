@@ -72,9 +72,9 @@ export function AccessStateBanner({ weddingId }: { weddingId: string }) {
   if (access.state === 'trial_not_started' && !locked) return null;
   const expired = locked || access.state === 'trial_expired_read_only' || access.state === 'paid_expired_read_only' || access.state === 'legacy_paid_expired';
   let message: string;
-  if (access.state === 'trial_active') message = `Hai bạn có thể dùng thử Planner đến ${vnDate(access.trial_ends_at)} (giờ Việt Nam).`;
+  if (access.state === 'trial_active') message = `Planner mở đến ${vnDate(access.trial_ends_at)} (giờ Việt Nam).`;
   else if (access.state === 'paid_active') message = `Đã thanh toán · Planner và thiệp dùng đến ${vnDate(access.paid_expires_at)} (giờ Việt Nam).`;
-  else if (access.state === 'trial_expired_read_only') message = 'Thời gian dùng thử đã kết thúc. Hai bạn vẫn xem và tải dữ liệu đã nhập.';
+  else if (access.state === 'trial_expired_read_only') message = 'Thời gian sử dụng đã kết thúc. Hai bạn vẫn xem và tải dữ liệu đã nhập.';
   else if (access.state === 'paid_expired_read_only') message = 'Thời hạn gói đã kết thúc. Link thiệp ngừng mở; hai bạn vẫn xem và tải dữ liệu.';
   else if (access.state === 'legacy_paid_active') message = `Gói thiệp cũ còn hạn đến ${vnDate(access.paid_expires_at)} (giờ Việt Nam).`;
   else if (access.state === 'legacy_paid_expired') message = 'Gói thiệp cũ đã hết hạn. Hai bạn vẫn có thể xem và tải dữ liệu.';

@@ -28,7 +28,7 @@ export function CsvImportScreen() {
   const load = (name: string, text: string) => {
     const t = parseCsv(text);
     if (!t.headers.length || !t.rows.length) { setError('File không có dòng dữ liệu nào. Hãy kiểm tra dòng tiêu đề và nội dung.'); return; }
-    if (t.rows.length > 2000) { setError('File quá dài (tối đa 2.000 dòng trong bản dùng thử).'); return; }
+    if (t.rows.length > 2000) { setError('File quá dài (tối đa 2.000 dòng trong bản minh họa).'); return; }
     setError(''); setFile(name); setTable(t); setMap(guessColumns(t.headers)); setEventIds(events.map(e => e.id)); setStep(1);
   };
   const onFile = (f: File | undefined) => {
@@ -227,8 +227,8 @@ const validOrder = (v: unknown): v is OrderStatus => typeof v === 'string' && v 
 export function OrderStatusDemo() {
   const [status, setStatus] = useDemoSession<OrderStatus>('order', 'order_pending', validOrder);
   return <Panel className="mt-4"><SmallLabel>TRẠNG THÁI ĐƠN MINH HỌA</SmallLabel><div role="status" className="font-display text-2xl">{LABEL[status]}</div>
-    <p className="mt-1 text-xs text-muted-foreground">{status === 'verifying' ? 'Trong bản thật, hệ thống tự đối chiếu giao dịch; trang này không tự chuyển sang đã trả.' : status === 'needs_support' ? 'Trong bản thật, hai bạn gửi mã đơn để được hỗ trợ. Bản dùng thử chưa có kênh hỗ trợ.' : 'Chưa ghi nhận giao dịch.'}</p>
+    <p className="mt-1 text-xs text-muted-foreground">{status === 'verifying' ? 'Trong bản thật, hệ thống tự đối chiếu giao dịch; trang này không tự chuyển sang đã trả.' : status === 'needs_support' ? 'Trong bản thật, hai bạn gửi mã đơn để được hỗ trợ. Bản minh họa chưa có kênh hỗ trợ.' : 'Chưa ghi nhận giao dịch.'}</p>
     <div className="mt-3 flex flex-wrap gap-2">{(['order_pending', 'verifying', 'needs_support'] as OrderStatus[]).filter(s => s !== status).map(s => <DemoAction key={s} variant="outline" onClick={() => canClientSet(status, s) && setStatus(s)} className={canClientSet(status, s) ? '' : 'hidden'}>Xem “{LABEL[s]}”</DemoAction>)}
       </div>
-    <p className="mt-2 text-xs text-muted-foreground">Trạng thái “Đã xác minh” chỉ có thể đến từ giao dịch thật được hệ thống xác nhận, không bật được trong bản dùng thử.</p></Panel>;
+    <p className="mt-2 text-xs text-muted-foreground">Trạng thái “Đã xác minh” chỉ có thể đến từ giao dịch thật được hệ thống xác nhận, không bật được trong bản minh họa.</p></Panel>;
 }

@@ -94,7 +94,7 @@ export function LinksScreen() {
       {l.eventIds.some(id => !events.some(e => e.id === id)) && <DemoAction variant="outline" className="mt-2" onClick={() => { setLinks(ls => ls.map(x => (x.side === l.side ? { ...x, eventIds: x.eventIds.filter(id => events.some(e => e.id === id)) } : x))); setMsg(`${SIDE_LABEL[l.side]}: đã gỡ buổi đã bị bỏ. Hãy chọn lại buổi nếu cần.`); }}>Gỡ buổi đã bị bỏ</DemoAction>}
       <div className="mt-3 flex flex-wrap gap-2"><DemoAction variant="outline" onClick={() => toggle(l.side)}>{l.enabled ? 'Tắt link' : 'Bật link'}</DemoAction>{r.missing.length > 0 && <Action to="/wedding/events" variant="ghost">Sửa buổi lễ <ArrowRight /></Action>}<Action to="/invitation/preview" variant="ghost">Xem trước</Action></div>
     </Panel>; })}</div>
-    <Note tone="warm">Bật link chỉ chọn link để công bố sau. Công bố cần gói thiệp cưới đã được xác minh thanh toán; bản dùng thử không tạo địa chỉ công khai.</Note>
+    <Note tone="warm">Bật link chỉ chọn link để công bố sau. Công bố cần gói thiệp cưới đã được xác minh thanh toán; bản minh họa không tạo địa chỉ công khai.</Note>
     <Action to="/publish" className="mt-5 w-full">Xem lại trước khi công bố <ArrowRight /></Action>
   </div>;
 }
@@ -127,10 +127,10 @@ export function ChangesReviewScreen({ invite }: { invite: Inv }) {
   const current = { title: invite.title, message: invite.message, events: events.map(e => ({ id: e.id, name: e.name, date: e.date, time: e.time, venue: e.venue, address: e.address })) };
   const changes = snap ? diffSnapshot(snap, current) : [];
   const affected = links.filter(l => l.enabled && changes.some(c => !c.eventId || l.eventIds.includes(c.eventId)));
-  return <div className="max-w-3xl"><Header name="Thay đổi sau khi gửi" subtitle="LỜI MỜI · BẢN DÙNG THỬ" />
+  return <div className="max-w-3xl"><Header name="Thay đổi sau khi gửi" subtitle="LỜI MỜI · BẢN MINH HỌA" />
     <p className="-mt-3 mb-5 text-muted-foreground">So sánh bản đã gửi với thông tin hiện tại. Không có gì tự cập nhật cho khách.</p>
     <p role="status" className="mb-3 text-xs font-semibold text-sage-strong">{msg}</p>
-    {!snap ? <><Note>Chưa có mốc “bản đã gửi”. Trong bản dùng thử, hãy đặt mốc từ thông tin hiện tại rồi sửa buổi lễ hoặc lời mời để xem so sánh.</Note><DemoAction className="mt-4 w-full" onClick={() => { setSnap({ revision: 1, ...current }); setMsg('Đã đặt mốc bản 1 (minh họa, không gửi cho ai).'); }}>Đặt mốc bản đã gửi (minh họa)</DemoAction></> : <>
+    {!snap ? <><Note>Chưa có mốc “bản đã gửi”. Trong bản minh họa, hãy đặt mốc từ thông tin hiện tại rồi sửa buổi lễ hoặc lời mời để xem so sánh.</Note><DemoAction className="mt-4 w-full" onClick={() => { setSnap({ revision: 1, ...current }); setMsg('Đã đặt mốc bản 1 (minh họa, không gửi cho ai).'); }}>Đặt mốc bản đã gửi (minh họa)</DemoAction></> : <>
       <Panel><SmallLabel>BẢN {snap.revision} → THÔNG TIN HIỆN TẠI</SmallLabel>{changes.length === 0 ? <p className="text-sm text-muted-foreground">Chưa có thay đổi nào so với bản đã gửi.</p> : <ul className="space-y-3">{changes.map((c, i) => <li key={i} className="border-b border-border pb-2 text-sm last:border-0"><div className="font-semibold">{c.field}</div><div className="text-xs">Trước: <span className="line-through">{c.before}</span></div><div className="text-xs text-primary">Sau: <strong>{c.after}</strong></div></li>)}</ul>}</Panel>
       {changes.length > 0 && <Note tone="warm"><strong>{affected.length} link đang bật bị ảnh hưởng</strong><br />{affected.map(l => SIDE_LABEL[l.side]).join(', ') || 'Không có'}. Địa chỉ link và phản hồi cũ giữ nguyên; ứng dụng không tự báo khách.</Note>}
       <div className="mt-4 grid gap-2 sm:grid-cols-2"><DemoAction disabled={!changes.length} onClick={() => { setSnap({ revision: snap.revision + 1, ...current }); setMsg(`Đã duyệt thành bản ${snap.revision + 1} trong phiên. Chưa cập nhật bản công khai thật.`); }}>Duyệt thành bản {snap.revision + 1} (minh họa)</DemoAction><DemoAction variant="outline" onClick={() => { setSnap(null); setMsg('Đã xóa mốc so sánh.'); }}>Xóa mốc</DemoAction></div>
