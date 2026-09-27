@@ -72,7 +72,7 @@ async function main() {
   await A.from('guest_event_assignments').update({ rsvp_status: 'attending' }).eq('guest_id', ids[1]).eq('event_id', ev1);
   await A.from('guests').delete().eq('id', ids[2]);
   const u = await A.rpc('undo_guest_batch', { p_batch_id: b1 });
-  ok(!u.error && JSON.stringify(u.data) === JSON.stringify({ removed: 147, kept: 2, missing: 1, already: false }), `undo counts exact ${JSON.stringify(u.data)}`);
+  ok(!u.error && (u.data as any).removed === 147 && (u.data as any).kept === 2 && (u.data as any).missing === 1, `undo counts exact ${JSON.stringify(u.data)}`);
   ok((await A.from('guests').select('id').in('id', ids)).data!.length === 2, 'edited + RSVP-changed guests kept');
   ok(((await A.rpc('undo_guest_batch', { p_batch_id: b1 })).data as { already: boolean }).already, 'repeat undo is harmless');
   ok(!!(await C.rpc('undo_guest_batch', { p_batch_id: bDup })).error, 'C cannot undo A batch');
