@@ -72,6 +72,7 @@ export function RealPlansScreen() {
 
 export function RealCheckoutScreen() {
   const a = useAvailability(); const w = useMyWedding(); const qc = useQueryClient(); const navigate = useNavigate();
+  const acc = useAccessState(w.data?.id); const kind = useOwnerPackage();
   const create = useServerFn(createCheckoutOrder);
   const [agree, setAgree] = useState(false);
   const orders = useQuery({ enabled: !!w.data, queryKey: ['billing-orders', w.data?.id], queryFn: async () => {
