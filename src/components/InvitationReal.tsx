@@ -10,6 +10,7 @@ import { LINK_LABEL, LINK_SIDES, MAX_MESSAGE, MAX_TITLE, diffInvitation, linkSta
 import { checkPhotos, MAX_PHOTOS } from '@/lib/phase2';
 import { mapUrl } from '@/lib/phase2d';
 import { getPublicInvitation } from '@/lib/invitation.functions';
+import { GuestReceipt, GuestRsvpForm } from './RsvpReal';
 import { Action, FormField, Header, InvitationTabs, Note, Panel, Row, SmallLabel, Status, fmtDate, inputCls } from './PhaseOne';
 import { LoadError, Loading } from './PhaseThree';
 
@@ -262,6 +263,8 @@ export function PublicInvitationPage({ token, mode }: { token: string; mode: 'vi
   if (q.isPending) return <div className="pt-16"><Loading label="Đang mở thiệp…" /></div>;
   const v = q.data;
   if (q.isError || !v || !v.open) return <div className="mx-auto max-w-lg pt-16 text-center" data-testid="guest-closed"><h1 className="text-4xl">Thiệp chưa mở</h1><p className="mt-4 text-muted-foreground">Lời mời này hiện không hiển thị. Nếu cần biết thêm thông tin, xin liên hệ trực tiếp với gia đình.</p></div>;
-  if (mode !== 'view') return <div className="mx-auto max-w-lg pt-16 text-center"><h1 className="text-4xl">Phản hồi tham dự chưa mở</h1><p className="mt-4 text-muted-foreground">Xin liên hệ trực tiếp với gia đình để báo tham dự.</p><Button asChild variant="outline" size="lg" className="mt-5 min-h-11"><Link to="/i/$token" params={{ token }}>Quay lại thiệp</Link></Button></div>;
-  return <div className="pt-8"><InvitationRenderer title={v.title} message={v.message} side={v.side as LinkSide} events={v.events} coverUrl={v.coverUrl} photoUrls={v.photoUrls} /></div>;
+  if (mode === 'rsvp') return <GuestRsvpForm token={token} events={v.events} />;
+  if (mode === 'receipt') return <GuestReceipt token={token} />;
+  return <div className="pt-8"><InvitationRenderer title={v.title} message={v.message} side={v.side as LinkSide} events={v.events} coverUrl={v.coverUrl} photoUrls={v.photoUrls} />
+    <div className="mx-auto mt-6 max-w-lg"><Button asChild size="lg" className="min-h-11 w-full"><Link to="/i/$token/rsvp" params={{ token }}>Xác nhận tham dự</Link></Button></div></div>;
 }
