@@ -174,10 +174,11 @@ async function main() {
       ok(!(await M1.rpc('save_guest', { p_wedding_id: w, p_guest_id: g, p_guest: { name: 'Cô Ba', phone: '0901', side: 'chung', party_size: 3 }, p_assignments: [{ event_id: ev }] })).error, `${label}: RPC write ok`);
     } else { await denied(label); await allowed(label); }
   }
-  // paid active overrides an expired trial; a wedding still OFF is never affected
-  const w2 = await draft(M1 === M1 ? await user('other') : M1, 'Off');
+  // a wedding without the gate is never locked, even with an old trial clock
+  const O = await user('o'); const w2 = await draft(O, 'Off');
   await setTrial(w2, 30);
-  ok(((await admin.from('wedding_write_gate').select('wedding_id').eq('wedding_id', w2)).data ?? []).length === 0, 'second wedding not gated');
+  const s2 = await state(O, w2);
+  ok(s2.writable && !s2.write_gate_enabled && !(await O.from('tasks').insert({ wedding_id: w2, title: 'ok' })).error, 'gate OFF wedding with expired clock stays writable');
 }
 
 main().catch(e => { console.error(e); failed++; }).finally(async () => {
