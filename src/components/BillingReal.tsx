@@ -7,7 +7,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Header, Panel, Note, SmallLabel, Row, Status, Action, InvitationTabs, inputCls } from './PhaseOne';
 import { useMyWedding } from '@/lib/wedding-api';
-import { createCheckoutOrder, getBillingAdminOverview, getCheckoutAvailability, reconcileSepayTransaction } from '@/lib/billing.functions';
+import { createCheckoutOrder, getBillingAdminOverview, getCheckoutAvailability, reconcileSepayTransaction, saveBillingSettings } from '@/lib/billing.functions';
 
 const vnd = (n: number) => new Intl.NumberFormat('vi-VN').format(n) + ' đ';
 const vnTime = (v: string | null | undefined) => v ? new Intl.DateTimeFormat('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh', dateStyle: 'short', timeStyle: 'short' }).format(new Date(v)) : '—';
@@ -99,11 +99,47 @@ export function RealAdminScreen() {
   return <div className="max-w-3xl"><Header name="Vận hành thanh toán" subtitle="QUẢN TRỊ" />
     <Panel><SmallLabel>ĐIỀU KIỆN MỞ THANH TOÁN (CHỈ ĐỌC)</SmallLabel>
       {item(c.offerInstalled, 'Giá và phiên bản gói')}{item(c.termsApproved, 'Điều khoản đã duyệt')}{item(c.accountEnabled, `Tài khoản nhận tiền${c.accountLast4 ? ' ••' + c.accountLast4 : ''}`)}{item(c.webhookSecret, 'Khóa ký webhook SePay')}{item(c.sandboxVerified, 'Đã kiểm tra SePay sandbox đầu-cuối')}{item(c.goLive, 'Công tắc mở bán trên máy chủ')}{item(c.liveEnabled, 'Công tắc mở bán trong dữ liệu')}
-      <p className="mt-2 text-xs text-muted-foreground">Các mục này chỉ được cài bởi người vận hành ngoài ứng dụng sau khi điều khoản được duyệt.</p></Panel>
+      <p className="mt-2 text-xs text-muted-foreground">Duyệt điều khoản, xác nhận sandbox, khóa webhook và công tắc mở bán do người vận hành cài ngoài ứng dụng.</p></Panel>
+    <SepaySettingsForm initial={q.data.settings} />
     <Panel className="mt-4"><SmallLabel>GIAO DỊCH SEPAY CẦN ĐỐI SOÁT</SmallLabel><p className="mb-2 text-xs text-muted-foreground">Chỉ gồm giao dịch SePay đã xác thực chữ ký. Chỉ gắn lại vào đơn còn hiệu lực, đúng số tiền và tài khoản; không có cách đánh dấu đã trả thủ công.</p>{q.data.unmatched.length === 0 ? <p className="text-sm text-muted-foreground">Không có giao dịch chờ.</p> : q.data.unmatched.map(t => <div key={t.id} className="border-b border-border py-3 last:border-0"><div className="font-semibold">#{t.sepay_id} · {vnd(t.transfer_amount)} · {t.unmatched_reason ?? t.match_status}</div><p className="text-xs text-muted-foreground break-words">{t.transaction_date} · {t.content}</p><Button variant="outline" className="mt-2" onClick={() => setForm({ tx: t.id, code: t.code ?? '', note: '' })}>Gắn giao dịch SePay này với đơn</Button></div>)}</Panel>
     {form && <Panel className="mt-4"><label className="block text-xs font-semibold">Mã đơn<input className={inputCls} value={form.code} onChange={e => setForm({ ...form, code: e.target.value })} /></label><label className="mt-2 block text-xs font-semibold">Lý do ngoại lệ (tối thiểu 15 ký tự, lưu nhật ký)<input className={inputCls} value={form.note} onChange={e => setForm({ ...form, note: e.target.value })} /></label>
       {m.data && m.data.result !== 'matched' && m.data.result !== 'already_matched' && <p role="alert" className="mt-2 text-xs font-semibold text-destructive">Không khớp: {m.data.reason}</p>}{m.isError && <p role="alert" className="mt-2 text-xs text-destructive">Chưa đối soát được.</p>}
       <Button className="mt-3" disabled={m.isPending || form.note.trim().length < 15} onClick={() => m.mutate()}>Xác nhận đối soát</Button></Panel>}
     <Panel className="mt-4"><SmallLabel>ĐƠN GẦN ĐÂY</SmallLabel>{q.data.orders.length === 0 ? <p className="text-sm text-muted-foreground">Chưa có đơn.</p> : q.data.orders.map(o => <Row key={o.id} title={o.code} detail={`${vnd(o.amount_vnd)} · ${vnTime(o.created_at)}`} right={<Status>{STATUS[o.status] ?? o.status}</Status>} />)}</Panel>
   </div>;
+}
+
+type Settings = { offerVersion: string; priceVnd: number; termsVersion: string; termsUrl: string | null; bankGateway: string | null; bankAccountNumber: string | null; bankAccountName: string | null; accountEnabled: boolean };
+function SepaySettingsForm({ initial }: { initial: Settings | null }) {
+  const save = useServerFn(saveBillingSettings); const qc = useQueryClient();
+  const [f, setF] = useState({ offerVersion: initial?.offerVersion ?? 'test-36m-v1', price: String(initial?.priceVnd ?? ''), termsVersion: initial?.termsVersion ?? '', termsUrl: initial?.termsUrl ?? '', bankGateway: initial?.bankGateway ?? '', acc: initial?.bankAccountNumber ?? '', accName: initial?.bankAccountName ?? '', accountEnabled: initial?.accountEnabled ?? false });
+  const set = (k: keyof typeof f) => (e: React.ChangeEvent<HTMLInputElement>) => setF({ ...f, [k]: e.target.type === 'checkbox' ? e.target.checked : e.target.value });
+  const price = Number(f.price.replace(/\D/g, ''));
+  const errs: string[] = [];
+  if (!/^[a-z0-9_.-]{3,40}$/.test(f.offerVersion)) errs.push('Phiên bản gói: 3–40 ký tự a-z, 0-9, dấu chấm, gạch.');
+  if (!(price > 0 && price <= 100000000)) errs.push('Giá phải là số đồng lớn hơn 0.');
+  if (!f.termsVersion.trim()) errs.push('Cần phiên bản điều khoản.');
+  if (f.termsUrl && !/^https:\/\//.test(f.termsUrl)) errs.push('Link điều khoản phải bắt đầu bằng https://');
+  if (f.acc && !/^[0-9A-Za-z]{4,30}$/.test(f.acc)) errs.push('Số tài khoản: 4–30 chữ/số, không dấu cách.');
+  if (f.accountEnabled && (!f.bankGateway.trim() || !f.acc || !f.accName.trim())) errs.push('Bật tài khoản nhận tiền cần đủ ngân hàng, số và tên chủ tài khoản.');
+  const m = useMutation({ mutationFn: () => save({ data: { offerVersion: f.offerVersion, priceVnd: price, termsVersion: f.termsVersion.trim(), termsUrl: f.termsUrl.trim() || null, bankGateway: f.bankGateway.trim() || null, bankAccountNumber: f.acc || null, bankAccountName: f.accName.trim() || null, accountEnabled: f.accountEnabled } }), onSuccess: () => qc.invalidateQueries({ queryKey: ['billing-admin'] }) });
+  const field = (label: string, k: keyof typeof f, extra?: React.InputHTMLAttributes<HTMLInputElement>) => <label className="mt-2 block text-xs font-semibold">{label}<input className={inputCls} value={f[k] as string} onChange={set(k)} {...extra} /></label>;
+  return <Panel className="mt-4"><SmallLabel>CÀI ĐẶT SEPAY</SmallLabel>
+    <Note tone="warm">Lưu ở đây không mở bán. Giá chỉ là giả thuyết thử nghiệm. Đổi giá, điều khoản hoặc tài khoản sẽ xóa dấu "đã duyệt điều khoản" và "đã kiểm tra sandbox" để phải làm lại.</Note>
+    <form onSubmit={e => { e.preventDefault(); if (!errs.length) m.mutate(); }}>
+      {field('Phiên bản gói', 'offerVersion')}
+      {field('Giá thử nghiệm (đồng)', 'price', { inputMode: 'numeric' })}
+      {field('Phiên bản điều khoản', 'termsVersion')}
+      {field('Link điều khoản (https://, không bắt buộc)', 'termsUrl', { type: 'url' })}
+      {field('Ngân hàng liên kết SePay (ví dụ MBBank)', 'bankGateway')}
+      {field('Số tài khoản nhận', 'acc', { autoComplete: 'off' })}
+      {field('Tên chủ tài khoản', 'accName')}
+      <label className="mt-3 flex items-center gap-2 text-sm"><input type="checkbox" checked={f.accountEnabled} onChange={set('accountEnabled')} />Tài khoản đã liên kết với SePay</label>
+      {errs.length > 0 && <ul className="mt-2 list-disc pl-5 text-xs text-destructive">{errs.map(x => <li key={x}>{x}</li>)}</ul>}
+      {m.isError && <p role="alert" className="mt-2 text-xs text-destructive">Chưa lưu được, thử lại.</p>}
+      {m.isSuccess && <p role="status" className="mt-2 text-xs text-muted-foreground">Đã lưu. Mở bán vẫn tắt.{m.data.clearedApproval ? ' Điều khoản cần duyệt lại.' : ''}{m.data.clearedSandbox ? ' Cần chạy lại sandbox.' : ''}</p>}
+      <Button type="submit" className="mt-3" disabled={m.isPending || errs.length > 0}>{m.isPending ? 'Đang lưu…' : 'Lưu cài đặt'}</Button>
+    </form>
+    <p className="mt-2 text-xs text-muted-foreground">Khóa ký webhook SePay được lưu trong cài đặt bảo mật máy chủ, không nhập ở đây.</p>
+  </Panel>;
 }
