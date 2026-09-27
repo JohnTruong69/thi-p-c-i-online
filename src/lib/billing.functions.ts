@@ -1,3 +1,4 @@
+import { resolveAppOrigin } from './app-origin';
 /** Checkout server functions. Staged OFF: every path requires DB live config + server env go-live + webhook secret. */
 import { createServerFn } from '@tanstack/react-start';
 import { z } from 'zod';
@@ -65,6 +66,7 @@ export const getBillingAdminOverview = createServerFn({ method: 'GET' })
         offerInstalled: !!s, termsApproved: !!s?.terms_approved_at, accountEnabled: !!s?.account_enabled, sandboxVerified: !!s?.sandbox_verified_at,
         accountLast4: s?.bank_account_number ? s.bank_account_number.slice(-4) : null, liveEnabled: !!s?.live_enabled,
         webhookSecret: env.webhookSecret, goLive: env.goLive,
+        appOrigin: !!resolveAppOrigin({ APP_ORIGIN: process.env['APP_ORIGIN'], APP_ORIGIN_ALLOWLIST: process.env['APP_ORIGIN_ALLOWLIST'] }),
       },
       offer: s ? { price_vnd: s.price_vnd, terms_version: s.terms_version, offer_version: s.offer_version } : null,
       settings: s ? { offerVersion: s.offer_version, priceVnd: Number(s.price_vnd), termsVersion: s.terms_version, termsUrl: s.terms_url, bankGateway: s.bank_gateway, bankAccountNumber: s.bank_account_number, bankAccountName: s.bank_account_name, accountEnabled: s.account_enabled } : null,

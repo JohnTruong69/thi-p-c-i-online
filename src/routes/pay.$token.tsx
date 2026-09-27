@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { PayStatusPage } from "@/components/Presale";
 export const Route = createFileRoute("/pay/$token")({
   head: () => ({ meta: [
+    { name: "referrer", content: "no-referrer" },
     { title: "Đơn thanh toán | Thiệp Cưới Online Việt" },
     { name: "description", content: "Trạng thái đơn thanh toán gói Thiệp Cưới." },
     { name: "robots", content: "noindex" },

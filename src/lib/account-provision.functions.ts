@@ -1,6 +1,6 @@
 /** Public server fn: request the account email for a paid presale order or a pending partner invite. Token possession + DB-owned email only. */
 import { createServerFn } from '@tanstack/react-start';
-import { getRequestHeader } from '@tanstack/react-start/server';
+import { resolveAppOrigin } from './app-origin';
 import { z } from 'zod';
 
 export const requestAccountEmail = createServerFn({ method: 'POST' })
@@ -11,10 +11,9 @@ export const requestAccountEmail = createServerFn({ method: 'POST' })
     const { createClient } = await import('@supabase/supabase-js');
     const key = process.env['SUPABASE_PUBLISHABLE_KEY']!;
     const anon = createClient(process.env['SUPABASE_URL']!, key, { auth: { persistSession: false, autoRefreshToken: false } });
-    const host = getRequestHeader('x-forwarded-host') ?? getRequestHeader('host');
-    const proto = getRequestHeader('x-forwarded-proto') ?? 'https';
-    const origin = host ? `${proto}://${host}` : '';
-    if (!origin) return { ok: false as const, reason: 'send_failed' as const };
+    // Never derive the email link from the incoming request (Host / X-Forwarded-* are caller-controlled).
+    const origin = resolveAppOrigin({ APP_ORIGIN: process.env['APP_ORIGIN'], APP_ORIGIN_ALLOWLIST: process.env['APP_ORIGIN_ALLOWLIST'] });
+    if (!origin) { console.error('account email refused: APP_ORIGIN missing or invalid'); return { ok: false as const, reason: 'not_configured' as const }; }
     const r = await provisionAccount(supabaseAdmin as never, { kind: data.kind, token: data.token, origin, mode: 'email', anon: anon as never });
     return r.ok ? { ok: true as const, sent: r.sent } : { ok: false as const, reason: r.reason };
   });

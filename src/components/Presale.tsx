@@ -111,7 +111,7 @@ const EMAIL_REASON: Record<string, string> = {
   existing_account: 'Email này đã có tài khoản. Hãy đăng nhập (hoặc dùng "Quên mật khẩu").',
   wait: 'Vừa gửi xong. Hãy đợi một phút rồi thử lại.', too_many: 'Đã gửi quá nhiều lần. Hãy liên hệ hỗ trợ.',
   not_paid: 'Đơn chưa được SePay xác nhận.', already_claimed: 'Đơn đã được dùng.', claim_expired: 'Đơn đã quá hạn tạo tài khoản.',
-  invite_inactive: 'Lời mời đã hết hạn hoặc bị hủy.', not_found: 'Liên kết không hợp lệ.', send_failed: 'Chưa gửi được email. Hãy thử lại.',
+  invite_inactive: 'Lời mời đã hết hạn hoặc bị hủy.', not_found: 'Liên kết không hợp lệ.', send_failed: 'Chưa gửi được email. Hãy thử lại.', not_configured: 'Tính năng gửi email tạo tài khoản chưa được bật. Hãy dùng các nút phía trên.',
 };
 /** Server sends the account email to the address stored on the paid order / partner invite (never a typed address). */
 export function AccountEmailButton({ kind, token }: { kind: 'presale' | 'partner'; token: string }) {

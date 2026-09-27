@@ -4,6 +4,7 @@ export const Route = createFileRoute("/reset-password")({
   ssr: false,
   validateSearch: (s: Record<string, unknown>): { next?: string } => (typeof s['next'] === 'string' ? { next: s['next'] } : {}),
   head: () => ({ meta: [
+    { name: "referrer", content: "no-referrer" },
     { title: "Chọn mật khẩu mới | Thiệp Cưới Online Việt" },
     { name: "description", content: "Đặt mật khẩu mới cho tài khoản của bạn." },
     { property: "og:title", content: "Chọn mật khẩu mới | Thiệp Cưới Online Việt" },
