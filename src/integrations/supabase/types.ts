@@ -929,6 +929,10 @@ export type Database = {
       is_wedding_manager: { Args: { _wedding_id: string }; Returns: boolean }
       photo_slot_available: { Args: { p_wedding: string }; Returns: boolean }
       public_invitation: { Args: { p_token: string }; Returns: Json }
+      public_invitation_photo_paths: {
+        Args: { p_token: string }
+        Returns: Json
+      }
       publish_invitation: { Args: { p_wedding_id: string }; Returns: Json }
       register_invitation_photo: {
         Args: { p_path: string; p_wedding_id: string }
