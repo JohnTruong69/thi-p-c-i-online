@@ -1,6 +1,8 @@
 /** Truthful plan/checkout/receipt/operations screens. Checkout is staged OFF until approved terms + config are installed server-side. */
 import { useState } from 'react';
-import { useNavigate } from '@tanstack/react-router';
+import { Link, useNavigate } from '@tanstack/react-router';
+import { useAccessState } from './AccessStateBanner';
+import { PRESALE_MONTHS, PRESALE_PRICE_VND } from '@/lib/presale';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useServerFn } from '@tanstack/react-start';
 import { supabase } from '@/integrations/supabase/client';
@@ -18,30 +20,41 @@ function useAvailability() {
 }
 
 function NotOnSale() {
-  return <Note tone="warm"><strong>Gói mới đang hoàn thiện, chưa thể thanh toán.</strong><br />Hiện chưa có giá, điều khoản hay tài khoản nhận tiền được duyệt, nên ứng dụng chưa tạo đơn và chưa nhận thanh toán. Khi mở, thanh toán chỉ qua SePay và quyền được mở tự động sau khi SePay xác nhận. Hai bạn vẫn chuẩn bị miễn phí và dữ liệu được giữ nguyên.</Note>;
+  return <Note tone="warm"><strong>Gói chưa mở bán, hiện chưa thể thanh toán.</strong><br />Điều khoản, chính sách hoàn tiền và tài khoản nhận tiền SePay đang được hoàn tất, nên ứng dụng chưa tạo đơn và chưa nhận tiền. Khi mở, thanh toán chỉ qua SePay và quyền được mở tự động sau khi SePay xác nhận.</Note>;
 }
 
-function ProposedRights() {
+/** The single locked package — always shown with its real price; sale state is separate. */
+function LockedPackage({ onSale }: { onSale: boolean }) {
   return <Panel className="mt-4 border-l-[3px] border-l-primary">
-    <div className="flex flex-wrap items-start justify-between gap-2"><SmallLabel>QUYỀN DỰ KIẾN · BẢN THỬ NGHIỆM</SmallLabel><Status tone="warm">Thử nghiệm · chưa mở bán</Status></div>
-    <h2 className="text-2xl">Thanh toán một lần cho một đám cưới</h2>
-    <p className="mt-2 text-sm leading-6 text-muted-foreground">Đây là hướng đang cân nhắc, có thể thay đổi. Giá và điều khoản chính thức chỉ hiển thị khi đã được duyệt.</p>
+    <div className="flex flex-wrap items-start justify-between gap-2"><SmallLabel>GÓI THIỆP CƯỚI · MỘT ĐÁM CƯỚI</SmallLabel><Status tone={onSale ? 'sage' : 'warm'}>{onSale ? 'Đang mở bán' : 'Chưa mở bán'}</Status></div>
+    <h2 className="text-3xl">{vnd(PRESALE_PRICE_VND)}</h2>
+    <p className="mt-1 text-sm">Thanh toán một lần · dùng {PRESALE_MONTHS} tháng kể từ lúc SePay xác nhận · không tự gia hạn.</p>
     <div className="mt-3 border-t border-border">
-      <Row title="Dự kiến 36 tháng" detail="Tính từ lúc thanh toán được hệ thống xác minh, không gia hạn tự động" />
-      <Row title="Công bố tối đa 3 link" detail="Chung, nhà trai và nhà gái" />
+      <Row title="Kế hoạch cưới, sổ khách, nhập CSV" detail="Hai người cùng quản lý với quyền như nhau" />
+      <Row title="Thiệp Đường Hẹn, tối đa 3 link" detail="Chung, nhà trai và nhà gái" />
       <Row title="Tối đa 50 ảnh" detail="Mỗi ảnh gốc tối đa 10 MB" />
       <Row title="Phản hồi tham dự theo từng buổi" detail="Khách trả lời không cần đăng nhập" />
     </div>
-    <p className="mt-3 text-xs text-muted-foreground">Chính sách hủy và hoàn tiền chưa được chốt; sẽ nêu rõ trong điều khoản trước khi mở thanh toán.</p>
+    <p className="mt-3 text-xs text-muted-foreground">Sau {PRESALE_MONTHS} tháng, thiệp ngừng hiển thị với khách và đám cưới chuyển sang chỉ xem; hai bạn vẫn tải được dữ liệu.</p>
   </Panel>;
 }
 
+/** What this account should do about the package: already covered, existing wedding waiting for sale, or no wedding yet (go to /goi). */
+function OwnerPackageStatus() {
+  const w = useMyWedding(); const acc = useAccessState(w.data?.id);
+  if (w.isPending || (w.data && acc.isPending)) return null;
+  if (!w.data) return <Note tone="warm">Tài khoản này chưa có đám cưới. Khách hàng mới thanh toán gói trước ở trang gói, sau đó dùng đường dẫn đơn để tạo đám cưới. <Link to="/goi" className="font-semibold text-primary underline">Xem gói và cách thanh toán</Link></Note>;
+  const st = acc.data?.state;
+  if (st === 'paid_active' || st === 'legacy_paid_active') return <Note tone="sage"><strong>Đám cưới này đã có quyền sử dụng</strong> đến {vnTime(acc.data?.paid_expires_at)} (giờ Việt Nam). Hai bạn không cần thanh toán thêm.</Note>;
+  return <Note tone="sage"><strong>Đám cưới của hai bạn vẫn dùng bình thường.</strong> Hai bạn chưa phải trả khoản nào; dữ liệu được giữ nguyên. Khi gói mở bán, việc thanh toán để công bố thiệp sẽ thực hiện ngay tại đây.</Note>;
+}
+
 export function RealPlansScreen() {
-  const a = useAvailability();
-  return <div className="max-w-3xl"><Header name="Chuẩn bị công bố" subtitle="CÔNG BỐ THIỆP" /><InvitationTabs active="publish" />
-    <Panel className="mb-4 bg-sage"><SmallLabel>CHUẨN BỊ MIỄN PHÍ</SmallLabel><p className="text-sm">Kế hoạch cưới, sổ khách, nhập CSV và soạn/xem trước thiệp Đường Hẹn.</p></Panel>
-    {a.data?.available && a.data.offer ? <Panel className="border-l-[3px] border-l-primary"><SmallLabel>GÓI ĐÃ DUYỆT · ĐIỀU KHOẢN {a.data.offer.terms_version}</SmallLabel><h2 className="text-3xl">{vnd(a.data.offer.price_vnd)}</h2><p className="mt-1 text-sm">Thanh toán một lần · {a.data.offer.duration_months} tháng từ lúc xác minh</p><Action to="/checkout" className="mt-4 w-full">Xem đơn và thanh toán</Action></Panel>
-      : <><NotOnSale /><ProposedRights /></>}
+  const a = useAvailability(); const onSale = !!(a.data?.available && a.data.offer);
+  return <div className="max-w-3xl"><Header name="Gói thiệp cưới" subtitle="CÔNG BỐ THIỆP" /><InvitationTabs active="publish" />
+    <OwnerPackageStatus />
+    <LockedPackage onSale={onSale} />
+    {onSale ? <Action to="/checkout" className="mt-4 w-full">Xem đơn và thanh toán</Action> : <div className="mt-4"><NotOnSale /></div>}
   </div>;
 }
 
@@ -58,7 +71,7 @@ export function RealCheckoutScreen() {
   const offer = a.data?.available ? a.data.offer : null;
   return <div className="max-w-3xl"><Header name="Thanh toán gói Wedding" subtitle="ĐƠN HÀNG" />
     {a.isPending ? <p className="text-sm text-muted-foreground">Đang kiểm tra…</p> : a.isError ? <Note tone="copper">Chưa kiểm tra được trạng thái thanh toán. <button className="font-semibold underline" onClick={() => a.refetch()}>Thử lại</button></Note>
-      : !offer ? <><NotOnSale /><Action to="/plans" variant="outline" className="mt-4 w-full">Xem quyền dự kiến (thử nghiệm)</Action></>
+      : !offer ? <><OwnerPackageStatus /><LockedPackage onSale={false} /><div className="mt-4"><NotOnSale /></div></>
       : <Panel><SmallLabel>ĐIỀU KHOẢN {offer.terms_version}</SmallLabel><h2 className="text-3xl">{vnd(offer.price_vnd)}</h2><p className="text-sm">Một lần · {offer.duration_months} tháng từ lúc xác minh</p>
         {offer.terms_url && <a href={offer.terms_url} target="_blank" rel="noreferrer" className="mt-2 inline-block text-sm font-semibold underline">Đọc điều khoản</a>}
         <label className="mt-3 flex items-start gap-2 text-sm"><input type="checkbox" checked={agree} onChange={e => setAgree(e.target.checked)} className="mt-1" />Tôi đã đọc và đồng ý điều khoản {offer.terms_version}.</label>
@@ -125,10 +138,10 @@ function SepaySettingsForm({ initial }: { initial: Settings | null }) {
   const m = useMutation({ mutationFn: () => save({ data: { offerVersion: f.offerVersion, priceVnd: price, termsVersion: f.termsVersion.trim(), termsUrl: f.termsUrl.trim() || null, bankGateway: f.bankGateway.trim() || null, bankAccountNumber: f.acc || null, bankAccountName: f.accName.trim() || null, accountEnabled: f.accountEnabled } }), onSuccess: () => qc.invalidateQueries({ queryKey: ['billing-admin'] }) });
   const field = (label: string, k: keyof typeof f, extra?: React.InputHTMLAttributes<HTMLInputElement>) => <label className="mt-2 block text-xs font-semibold">{label}<input className={inputCls} value={f[k] as string} onChange={set(k)} {...extra} /></label>;
   return <Panel className="mt-4"><SmallLabel>CÀI ĐẶT SEPAY</SmallLabel>
-    <Note tone="warm">Lưu ở đây không mở bán. Giá chỉ là giả thuyết thử nghiệm. Đổi giá, điều khoản hoặc tài khoản sẽ xóa dấu "đã duyệt điều khoản" và "đã kiểm tra sandbox" để phải làm lại.</Note>
+    <Note tone="warm">Lưu ở đây không mở bán. Giá gói khóa ở 199.000 đ; giá khác sẽ bị từ chối khi mở bán. Đổi giá, điều khoản hoặc tài khoản sẽ xóa dấu "đã duyệt điều khoản" và "đã kiểm tra sandbox" để phải làm lại.</Note>
     <form onSubmit={e => { e.preventDefault(); if (!errs.length) m.mutate(); }}>
       {field('Phiên bản gói', 'offerVersion')}
-      {field('Giá thử nghiệm (đồng)', 'price', { inputMode: 'numeric' })}
+      {field('Giá (khóa 199.000 đồng)', 'price', { inputMode: 'numeric' })}
       {field('Phiên bản điều khoản', 'termsVersion')}
       {field('Link điều khoản (https://, không bắt buộc)', 'termsUrl', { type: 'url' })}
       {field('Ngân hàng liên kết SePay (ví dụ MBBank)', 'bankGateway')}
