@@ -9,3 +9,5 @@
 - Ceremony removal previews affected demo records and reassigns task/cost links while removing guest invitations; session writes occur outside React state updaters so replay cannot duplicate records.
 - V1 membership is at most two equal managers (creator is metadata only; server auth by Wedding membership, audit revoke/delete, never zero managers); invitation and role states are browser-tab-only demos, never evidence of email delivery or actual access.
 - Owner navigation groups persistent desktop child links by task while mobile keeps exactly five primary tabs and exposes child routes inside their parent screens; this preserves discoverability without changing V3 structure.
+- Phase 2 state logic (CSV parse/validate/dedupe, 43 suggested tasks, RSVP matching, order transitions, link readiness) lives in pure src/lib/phase2.ts with vitest tests; UI never marks an order paid client-side and ambiguous RSVP names are never auto-merged.
+- CSV files are parsed in the browser only (never uploaded); imported guests and undo live in the tab session.
