@@ -60,7 +60,8 @@ async function main() {
   ok(res(await tx(base + 1, {}))?.result === 'duplicate', 'replay of same SePay id deduped');
 
   // Install QA live config
-  const s = await admin.from('billing_settings').insert({ offer_version: 'qa-test', price_vnd: 199000, terms_version: 'qa-v0', terms_approved_at: new Date().toISOString(), terms_approved_by: 'qa', bank_gateway: 'QA', bank_account_number: ACC, bank_account_name: 'QA', account_enabled: true, live_enabled: true });
+  ok(!!(await admin.from('billing_settings').insert({ offer_version: 'qa-test', price_vnd: 199000, terms_version: 'qa-v0', terms_approved_at: new Date().toISOString(), terms_approved_by: 'qa', bank_gateway: 'QA', bank_account_number: ACC, bank_account_name: 'QA', account_enabled: true, live_enabled: true })).error, 'live refused without SePay sandbox verification');
+  const s = await admin.from('billing_settings').insert({ offer_version: 'qa-test', price_vnd: 199000, terms_version: 'qa-v0', terms_approved_at: new Date().toISOString(), terms_approved_by: 'qa', bank_gateway: 'QA', bank_account_number: ACC, bank_account_name: 'QA', account_enabled: true, live_enabled: true, sandbox_verified_at: new Date().toISOString() });
   ok(!s.error, 'QA settings installed');
   ok(!!(await admin.from('billing_settings').insert({ id: false } as never)).error, 'singleton settings enforced');
   ok(!!(await admin.rpc('create_billing_order', { p_wedding_id: wA, p_user_id: B.id })).error, 'cannot create order for another wedding');
