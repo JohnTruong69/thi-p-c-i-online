@@ -826,6 +826,8 @@ export type Database = {
       }
       presale_orders: {
         Row: {
+          account_invite_count: number
+          account_invited_at: string | null
           amount_vnd: number
           bank_account_name: string
           bank_account_number: string
@@ -850,6 +852,8 @@ export type Database = {
           token_hash: string
         }
         Insert: {
+          account_invite_count?: number
+          account_invited_at?: string | null
           amount_vnd: number
           bank_account_name: string
           bank_account_number: string
@@ -874,6 +878,8 @@ export type Database = {
           token_hash: string
         }
         Update: {
+          account_invite_count?: number
+          account_invited_at?: string | null
           amount_vnd?: number
           bank_account_name?: string
           bank_account_number?: string
@@ -1329,6 +1335,8 @@ export type Database = {
       wedding_invites: {
         Row: {
           accepted_by: string | null
+          account_invite_count: number
+          account_invited_at: string | null
           created_at: string
           email: string
           expires_at: string
@@ -1341,6 +1349,8 @@ export type Database = {
         }
         Insert: {
           accepted_by?: string | null
+          account_invite_count?: number
+          account_invited_at?: string | null
           created_at?: string
           email: string
           expires_at: string
@@ -1353,6 +1363,8 @@ export type Database = {
         }
         Update: {
           accepted_by?: string | null
+          account_invite_count?: number
+          account_invited_at?: string | null
           created_at?: string
           email?: string
           expires_at?: string
@@ -1730,6 +1742,10 @@ export type Database = {
       request_wedding_data_deletion: {
         Args: { p_wedding_id: string }
         Returns: string
+      }
+      reserve_account_invite: {
+        Args: { p_kind: string; p_token: string }
+        Returns: Json
       }
       revoke_partner_invite: {
         Args: { p_invite_id: string }

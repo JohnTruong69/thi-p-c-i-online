@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { PublicShell } from './AuthScreens';
 import { Header, Panel, Note, SmallLabel, inputCls } from './PhaseOne';
 import { createPresaleOrder, getPresaleStatus, getPublicOffer } from '@/lib/presale.functions';
+import { requestAccountEmail } from '@/lib/account-provision.functions';
 import { PRESALE_MONTHS, PRESALE_PRICE_VND, claimErrorText } from '@/lib/presale';
 
 const vnd = (n: number) => new Intl.NumberFormat('vi-VN').format(n) + ' đ';
@@ -73,7 +74,7 @@ export function PayStatusPage({ token }: { token: string }) {
       {q.data.status === 'expired' && <p className="mt-3 text-sm">Đơn đã hết hạn thanh toán. <Link to="/goi" className="font-semibold text-primary">Tạo đơn mới</Link></p>}
       {q.data.status === 'paid' && <div className="mt-3"><p className="text-sm font-semibold">SePay đã xác nhận thanh toán lúc {vnTime(q.data.paidAt)}.</p>
         <p className="mt-1 text-sm">Tạo tài khoản bằng đúng email {q.data.maskedEmail}, xác nhận email, rồi quay lại để tạo đám cưới (trước {vnTime(q.data.claimExpiresAt)}).</p>
-        <div className="mt-3 grid gap-2 sm:grid-cols-2"><Button asChild><Link to="/register" search={{ redirect: claim }}>Tạo tài khoản</Link></Button><Button asChild variant="outline"><Link to="/login" search={{ redirect: claim }}>Đã có tài khoản</Link></Button></div></div>}
+        <div className="mt-3 grid gap-2 sm:grid-cols-2"><Button asChild><Link to="/register" search={{ redirect: claim }}>Tạo tài khoản</Link></Button><Button asChild variant="outline"><Link to="/login" search={{ redirect: claim }}>Đã có tài khoản</Link></Button></div><AccountEmailButton kind="presale" token={token} /></div>}
       {q.data.status === 'claimed' && <p className="mt-3 text-sm">Đơn đã được dùng để tạo đám cưới. <Link to="/login" className="font-semibold text-primary">Đăng nhập</Link></p>}
     </Panel>}</div>
   </PublicShell>;
@@ -104,4 +105,22 @@ export function ClaimScreen({ token }: { token: string }) {
 
 export function PayFirstNote() {
   return <Note tone="warm"><strong>Tài khoản mới cần thanh toán gói trước.</strong> Tài khoản này chưa gắn với đơn đã thanh toán nên chưa tạo được đám cưới. Nếu bạn được mời cùng quản lý, hãy mở liên kết lời mời. <Link to="/goi" className="font-semibold text-primary underline">Xem gói</Link></Note>;
+}
+
+const EMAIL_REASON: Record<string, string> = {
+  existing_account: 'Email này đã có tài khoản. Hãy đăng nhập (hoặc dùng "Quên mật khẩu").',
+  wait: 'Vừa gửi xong. Hãy đợi một phút rồi thử lại.', too_many: 'Đã gửi quá nhiều lần. Hãy liên hệ hỗ trợ.',
+  not_paid: 'Đơn chưa được SePay xác nhận.', already_claimed: 'Đơn đã được dùng.', claim_expired: 'Đơn đã quá hạn tạo tài khoản.',
+  invite_inactive: 'Lời mời đã hết hạn hoặc bị hủy.', not_found: 'Liên kết không hợp lệ.', send_failed: 'Chưa gửi được email. Hãy thử lại.',
+};
+/** Server sends the account email to the address stored on the paid order / partner invite (never a typed address). */
+export function AccountEmailButton({ kind, token }: { kind: 'presale' | 'partner'; token: string }) {
+  const fn = useServerFn(requestAccountEmail);
+  const m = useMutation({ mutationFn: () => fn({ data: { kind, token } }) });
+  return <div className="mt-3">
+    <Button type="button" variant="outline" className="w-full" disabled={m.isPending} onClick={() => m.mutate()}>{m.isPending ? 'Đang gửi…' : 'Gửi email tạo tài khoản'}</Button>
+    {m.data?.ok && <p role="status" className="mt-2 text-xs text-muted-foreground">Đã gửi email tới địa chỉ đã đăng ký. Mở thư, bấm liên kết và đặt mật khẩu.</p>}
+    {m.data && !m.data.ok && <p role="alert" className="mt-2 text-xs text-destructive">{EMAIL_REASON[m.data.reason] ?? EMAIL_REASON['send_failed']}</p>}
+    {m.isError && <p role="alert" className="mt-2 text-xs text-destructive">{EMAIL_REASON['send_failed']}</p>}
+  </div>;
 }

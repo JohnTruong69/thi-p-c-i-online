@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { ResetPasswordPage } from "@/components/AuthScreens";
 export const Route = createFileRoute("/reset-password")({
   ssr: false,
+  validateSearch: (s: Record<string, unknown>): { next?: string } => (typeof s['next'] === 'string' ? { next: s['next'] } : {}),
   head: () => ({ meta: [
     { title: "Chọn mật khẩu mới | Thiệp Cưới Online Việt" },
     { name: "description", content: "Đặt mật khẩu mới cho tài khoản của bạn." },
@@ -10,5 +11,6 @@ export const Route = createFileRoute("/reset-password")({
     { property: "og:type", content: "website" },
     { name: "twitter:card", content: "summary" },
   ] }),
-  component: ResetPasswordPage,
+  component: Screen,
 });
+function Screen() { const { next } = Route.useSearch(); return <ResetPasswordPage next={next} />; }
