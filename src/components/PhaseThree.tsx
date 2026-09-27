@@ -3,6 +3,7 @@ import { Link, useNavigate } from '@tanstack/react-router';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { ArrowRight, Copy, Loader2, LogOut, Pencil, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { WriteButton } from './AccessStateBanner';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { supabase } from '@/integrations/supabase/client';
 import { markManualSignOut } from '@/lib/auth-events';
@@ -87,7 +88,7 @@ export function WeddingNewScreen() {
       </fieldset>}
       {msg && <div role="alert"><Note tone="copper">{msg}</Note></div>}
       {saved && <div role="status"><Note>Đã lưu thông tin đám cưới.</Note></div>}
-      <Button type="submit" size="lg" className="min-h-11 w-full" disabled={m.isPending} aria-busy={m.isPending}>{m.isPending && <Loader2 className="animate-spin" />}{m.isPending ? 'Đang lưu…' : w ? 'Lưu thay đổi' : 'Lưu và tiếp tục'}</Button>
+      <WriteButton type="submit" size="lg" className="min-h-11 w-full" disabled={m.isPending} aria-busy={m.isPending}>{m.isPending && <Loader2 className="animate-spin" />}{m.isPending ? 'Đang lưu…' : w ? 'Lưu thay đổi' : 'Lưu và tiếp tục'}</WriteButton>
     </form></Panel>
     {w && <Button asChild variant="outline" size="lg" className="mt-4 min-h-11"><Link to="/wedding/events">Các buổi lễ <ArrowRight /></Link></Button>}
   </div>;
@@ -115,7 +116,7 @@ export function RealEventsScreen() {
   return <div className="max-w-3xl"><Header name="Những buổi lễ của mình" subtitle={`KẾ HOẠCH · ${coupleName(w).toUpperCase()}`} /><PlannerTabs active="events" />
     {deep.missing && <div role="alert" className="mb-4"><Note tone="copper">Không tìm thấy buổi lễ này trong đám cưới của hai bạn. Có thể buổi đã bị bỏ.</Note></div>}
     <p className="mb-5 text-muted-foreground">Mỗi buổi có giờ, nơi và lời mời khác nhau. Có thể để chưa chốt. Hai bạn cùng thấy và sửa được danh sách này.</p>
-    <Button size="lg" className="min-h-11" onClick={() => edit()}><Plus /> Thêm buổi lễ</Button>
+    <WriteButton size="lg" className="min-h-11" onClick={() => edit()}><Plus /> Thêm buổi lễ</WriteButton>
     <div className="mt-4 space-y-3" aria-live="polite">
       {q.isPending && <Loading />}
       {q.isError && <LoadError error={q.error} retry={() => q.refetch()} />}
@@ -123,7 +124,7 @@ export function RealEventsScreen() {
       {q.data?.map(x => <Panel key={x.id} item={x.id}>
         <div className="flex flex-wrap items-start justify-between gap-2"><h2 className="text-xl">{x.name}</h2><Status tone={x.status === 'confirmed' ? 'sage' : 'warm'}>{x.status === 'confirmed' ? 'Đã chốt' : 'Chưa chốt'}</Status></div>
         <p className="mt-2 text-xs leading-6">{SIDE_TEXT[x.side as EventSideDb]} · {x.event_date ? fmtDate(x.event_date) : 'Chưa ghi ngày'} · {x.event_time ? x.event_time.slice(0, 5) : 'Chưa chốt giờ'}<br />{x.venue || 'Chưa ghi nơi'}{x.address ? ` · ${x.address}` : ''}</p>
-        <div className="mt-3 flex flex-wrap gap-2"><Button variant="outline" size="lg" className="min-h-11" onClick={() => edit(x)}><Pencil className="size-4" /> Sửa</Button><Button variant="ghost" size="lg" className="min-h-11" onClick={() => setRemoving(x)}>Bỏ buổi</Button></div>
+        <div className="mt-3 flex flex-wrap gap-2"><Button variant="outline" size="lg" className="min-h-11" onClick={() => edit(x)}><Pencil className="size-4" /> Sửa</Button><WriteButton variant="ghost" size="lg" className="min-h-11" onClick={() => setRemoving(x)}>Bỏ buổi</WriteButton></div>
       </Panel>)}
     </div>
     <p className="mt-4 text-xs text-muted-foreground">Buổi lễ đã lưu có thể được chọn cho việc cần làm, khoản chi, khách mời và các link thiệp.</p>
@@ -132,7 +133,7 @@ export function RealEventsScreen() {
       <DialogHeader className="text-left"><DialogTitle className="font-display text-2xl">Bỏ {removing?.name}?</DialogTitle><DialogDescription>Buổi lễ sẽ bị xóa khỏi đám cưới của hai bạn cho cả hai người quản lý.</DialogDescription></DialogHeader>
       {removing && <EventRemovalSummary eventId={removing.id} />}
       {del.isError && <div role="alert"><Note tone="copper">{friendlyError(del.error)}</Note></div>}
-      <DialogFooter className="flex-col-reverse gap-2 sm:flex-row"><Button variant="outline" size="lg" className="min-h-11" onClick={() => setRemoving(null)}>Giữ buổi</Button><Button size="lg" className="min-h-11" disabled={del.isPending} onClick={() => removing && del.mutate(removing.id)}>{del.isPending && <Loader2 className="animate-spin" />}Xác nhận bỏ buổi</Button></DialogFooter>
+      <DialogFooter className="flex-col-reverse gap-2 sm:flex-row"><Button variant="outline" size="lg" className="min-h-11" onClick={() => setRemoving(null)}>Giữ buổi</Button><WriteButton size="lg" className="min-h-11" disabled={del.isPending} onClick={() => removing && del.mutate(removing.id)}>{del.isPending && <Loader2 className="animate-spin" />}Xác nhận bỏ buổi</WriteButton></DialogFooter>
     </DialogContent></Dialog>
     <DemoDialog real busy={save.isPending} open={open && !review} onOpenChange={o => { if (save.isPending) return; setOpen(o); if (!o) deep.onClosed(); }} title={editing ? 'Sửa buổi lễ' : 'Thêm buổi lễ'} description="Thông tin chưa chốt vẫn có thể ghi lại." submitLabel={save.isPending ? 'Đang lưu…' : editing ? 'Lưu thay đổi' : 'Thêm buổi lễ'} onSubmit={submit}>
       <FormField label="Tên buổi lễ *" id="event-name" error={error}><input id="event-name" autoFocus maxLength={80} className={inputCls} value={f.name} onChange={e => setF({ ...f, name: e.target.value })} aria-invalid={!!error} /></FormField>
@@ -185,7 +186,7 @@ export function TeamPanel() {
       <p className="mt-2 text-xs leading-5 text-muted-foreground">Hệ thống chưa kết nối gửi email. Hãy tự gửi đường dẫn này cho người còn lại (Zalo, Messenger…). Người đó cần đăng nhập bằng đúng email trên để chấp nhận. Đường dẫn chỉ hiện một lần và hết hạn ngày {new Date(created.expires_at).toLocaleDateString('vi-VN')}.</p>
       <div className="mt-3 flex flex-col gap-2 sm:flex-row"><input readOnly aria-label="Đường dẫn chấp nhận lời mời" className={`${inputCls} mt-0`} value={created.url} onFocus={e => e.currentTarget.select()} /><Button size="lg" className="min-h-11" onClick={async () => { try { await navigator.clipboard.writeText(created.url); setCopied(true); } catch { setCopied(false); } }}><Copy className="size-4" />{copied ? 'Đã sao chép' : 'Sao chép'}</Button></div>
     </Panel></div>}
-    <div className="mt-4 flex flex-wrap gap-2">{slotFree ? <Button size="lg" className="min-h-11" onClick={() => { setEmail(''); setErr(''); setInviteOpen(true); }}><Plus className="size-4" /> Mời người còn lại</Button> : <p className="text-xs text-muted-foreground">Đã đủ hai người (gồm lời mời đang chờ). Hủy lời mời hoặc rút quyền để mời người khác.</p>}</div>
+    <div className="mt-4 flex flex-wrap gap-2">{slotFree ? <WriteButton size="lg" className="min-h-11" onClick={() => { setEmail(''); setErr(''); setInviteOpen(true); }}><Plus className="size-4" /> Mời người còn lại</WriteButton> : <p className="text-xs text-muted-foreground">Đã đủ hai người (gồm lời mời đang chờ). Hủy lời mời hoặc rút quyền để mời người khác.</p>}</div>
     <DemoDialog open={inviteOpen} onOpenChange={setInviteOpen} title="Mời người còn lại" description="Sau khi chấp nhận, người này có quyền như bạn ở mọi việc. Khi lời mời còn chờ, họ chưa xem được dữ liệu nào." submitLabel={inv.isPending ? 'Đang tạo…' : 'Tạo lời mời'} onSubmit={submit}>
       <FormField id="partner-email" label="Email người còn lại *" error={err}><input id="partner-email" autoFocus type="email" autoComplete="email" maxLength={255} className={inputCls} value={email} aria-invalid={!!err} onChange={e => { setEmail(e.target.value); setErr(''); }} /></FormField>
       <p className="text-xs text-muted-foreground">Chưa có gửi email tự động: sau khi tạo, bạn sẽ nhận một đường dẫn để tự gửi.</p>
