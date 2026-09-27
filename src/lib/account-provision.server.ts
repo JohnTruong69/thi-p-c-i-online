@@ -8,7 +8,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 
 export type ProvisionKind = 'presale' | 'partner';
 export type ProvisionResult =
-  | { ok: true; sent: 'invite' | 'recovery'; link?: { hashed_token: string; type: 'invite' | 'recovery' } }
+  | { ok: true; sent: 'invite' | 'recovery'; link?: { hashed_token: string; type: 'invite' | 'recovery'; userId?: string } }
   | { ok: false; reason: 'not_found' | 'not_paid' | 'already_claimed' | 'claim_expired' | 'invite_inactive' | 'existing_account' | 'too_many' | 'wait' | 'send_failed' };
 
 export function nextPathFor(kind: ProvisionKind, token: string) {
@@ -27,9 +27,10 @@ export async function provisionAccount(admin: SupabaseClient, opts: { kind: Prov
   const type: 'invite' | 'recovery' = r.user_exists ? 'recovery' : 'invite';
   if (opts.mode === 'link') {
     const g = await admin.auth.admin.generateLink({ type, email, options: { redirectTo } } as never);
-    const ht = (g.data as { properties?: { hashed_token?: string } } | null)?.properties?.hashed_token;
-    if (g.error || !ht) return { ok: false, reason: 'send_failed' };
-    return { ok: true, sent: type, link: { hashed_token: ht, type } };
+    const gd = g.data as { properties?: { hashed_token?: string }; user?: { id: string } } | null;
+    const ht = gd?.properties?.hashed_token;
+    if (g.error || !ht) { console.error('generateLink failed', g.error?.message); return { ok: false, reason: 'send_failed' }; }
+    return { ok: true, sent: type, link: { hashed_token: ht, type, ...(gd?.user?.id ? { userId: gd.user.id } : {}) } };
   }
   if (type === 'invite') {
     const inv = await admin.auth.admin.inviteUserByEmail(email, { redirectTo });
