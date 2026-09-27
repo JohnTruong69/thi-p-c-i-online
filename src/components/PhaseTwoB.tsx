@@ -89,7 +89,7 @@ export function LinksScreen() {
       {r.missing.length > 0 && <p className="mt-2 text-xs font-semibold text-primary">Còn thiếu: {r.missing.join(', ')}</p>}
       <div className="mt-3 flex flex-wrap gap-2"><DemoAction variant="outline" onClick={() => toggle(l.side)}>{l.enabled ? 'Tắt link' : 'Bật link'}</DemoAction>{r.missing.length > 0 && <Action to="/wedding/events" variant="ghost">Sửa buổi lễ <ArrowRight /></Action>}<Action to="/invitation/preview" variant="ghost">Xem trước</Action></div>
     </Panel>; })}</div>
-    <Note tone="warm">Bật link chỉ chọn link để công bố sau. Công bố cần gói Wedding đã được xác minh thanh toán; bản dùng thử không tạo địa chỉ công khai.</Note>
+    <Note tone="warm">Bật link chỉ chọn link để công bố sau. Công bố cần gói thiệp cưới đã được xác minh thanh toán; bản dùng thử không tạo địa chỉ công khai.</Note>
     <Action to="/publish" className="mt-5 w-full">Xem lại trước khi công bố <ArrowRight /></Action>
   </div>;
 }
@@ -100,13 +100,14 @@ export function PublishReviewScreen() {
   const rs = links.map(l => ({ l, r: linkReadiness(l.enabled, l.eventIds.filter(id => events.some(e => e.id === id)), events) }));
   const ready = rs.filter(x => x.r.readiness === 'ready');
   return <div className="max-w-3xl"><Header name="Xem lại trước khi công bố" subtitle="CÔNG BỐ THIỆP" />
-    <Note tone="warm"><strong>Chưa có gói Wedding được xác minh.</strong><br />Chỉ khi thanh toán thật được xác minh, link sẵn sàng mới công bố được. Trang này không tự bật đã trả hay đã công bố.</Note>
+    <Note tone="warm"><strong>Chưa có gói thiệp cưới được xác minh.</strong><br />Chỉ khi thanh toán thật được xác minh, link sẵn sàng mới công bố được. Trang này không tự bật đã trả hay đã công bố.</Note>
     <div className="mt-4"><SmallLabel>SẼ CÔNG BỐ ĐƯỢC · {ready.length}</SmallLabel></div>
     <Panel>{ready.length ? ready.map(({ l }) => <Row key={l.side} title={SIDE_LABEL[l.side]} detail={l.eventIds.map(id => { const e = events.find(x => x.id === id); return e ? `${e.name} · ${e.time} · ${fmtDate(e.date)}` : ''; }).filter(Boolean).join(' / ')} right={<Status>Sẵn sàng</Status>} />) : <p className="text-sm text-muted-foreground">Chưa có link nào sẵn sàng.</p>}</Panel>
     <div className="mt-4"><SmallLabel>CHƯA CÔNG BỐ ĐƯỢC</SmallLabel></div>
     <Panel>{rs.filter(x => x.r.readiness !== 'ready').map(({ l, r }) => <Row key={l.side} title={SIDE_LABEL[l.side]} detail={r.readiness === 'off' ? 'Đang tắt' : `Thiếu: ${r.missing.join(', ')}`} to="/invitation/variants" />)}</Panel>
-    <Action to="/plans" className="mt-5 w-full">Xem gói Wedding để công bố</Action>
+    <Action to="/plans" className="mt-5 w-full">Xem gói thiệp cưới để công bố</Action>
     <Action to="/invitation/variants" variant="outline" className="mt-2 w-full">Sửa các link</Action>
+    <Action to="/invitation/history" variant="ghost" className="mt-2 w-full">Chia sẻ, mã QR và lịch sử</Action>
   </div>;
 }
 

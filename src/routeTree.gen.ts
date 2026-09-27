@@ -21,10 +21,14 @@ import { Route as PublishRouteImport } from './routes/publish'
 import { Route as RegisterRouteImport } from './routes/register'
 import { Route as RsvpRouteImport } from './routes/rsvp'
 import { Route as StartRouteImport } from './routes/start'
+import { Route as GuestsIdRouteImport } from './routes/guests_.$id'
+import { Route as GuestsExportRouteImport } from './routes/guests_.export'
 import { Route as GuestsImportRouteImport } from './routes/guests_.import'
 import { Route as ITokenRouteImport } from './routes/i.$token'
 import { Route as InvitationChangesRouteImport } from './routes/invitation.changes'
+import { Route as InvitationCheckRouteImport } from './routes/invitation.check'
 import { Route as InvitationContentRouteImport } from './routes/invitation.content'
+import { Route as InvitationHistoryRouteImport } from './routes/invitation.history'
 import { Route as InvitationPreviewRouteImport } from './routes/invitation.preview'
 import { Route as InvitationVariantsRouteImport } from './routes/invitation.variants'
 import { Route as PlanBudgetRouteImport } from './routes/plan.budget'
@@ -37,6 +41,9 @@ import { Route as CheckoutStatusIdRouteImport } from './routes/checkout_.status.
 import { Route as GuestsImportBatchRouteImport } from './routes/guests_.import_.$batch'
 import { Route as ITokenExpiredRouteImport } from './routes/i.$token_.expired'
 import { Route as ITokenRsvpRouteImport } from './routes/i.$token_.rsvp'
+import { Route as PlanBudgetIdRouteImport } from './routes/plan.budget_.$id'
+import { Route as PlanTasksSuggestionsRouteImport } from './routes/plan.tasks_.suggestions'
+import { Route as WeddingEventsIdRouteImport } from './routes/wedding.events_.$id'
 import { Route as ITokenRsvpReceiptRouteImport } from './routes/i.$token_.rsvp_.receipt'
 
 const IndexRoute = IndexRouteImport.update({
@@ -99,6 +106,16 @@ const StartRoute = StartRouteImport.update({
   path: '/start',
   getParentRoute: () => rootRouteImport,
 } as any)
+const GuestsIdRoute = GuestsIdRouteImport.update({
+  id: '/guests_/$id',
+  path: '/guests/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GuestsExportRoute = GuestsExportRouteImport.update({
+  id: '/guests_/export',
+  path: '/guests/export',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const GuestsImportRoute = GuestsImportRouteImport.update({
   id: '/guests_/import',
   path: '/guests/import',
@@ -114,9 +131,19 @@ const InvitationChangesRoute = InvitationChangesRouteImport.update({
   path: '/invitation/changes',
   getParentRoute: () => rootRouteImport,
 } as any)
+const InvitationCheckRoute = InvitationCheckRouteImport.update({
+  id: '/invitation/check',
+  path: '/invitation/check',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const InvitationContentRoute = InvitationContentRouteImport.update({
   id: '/invitation/content',
   path: '/invitation/content',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InvitationHistoryRoute = InvitationHistoryRouteImport.update({
+  id: '/invitation/history',
+  path: '/invitation/history',
   getParentRoute: () => rootRouteImport,
 } as any)
 const InvitationPreviewRoute = InvitationPreviewRouteImport.update({
@@ -179,6 +206,21 @@ const ITokenRsvpRoute = ITokenRsvpRouteImport.update({
   path: '/i/$token/rsvp',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PlanBudgetIdRoute = PlanBudgetIdRouteImport.update({
+  id: '/plan/budget_/$id',
+  path: '/plan/budget/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PlanTasksSuggestionsRoute = PlanTasksSuggestionsRouteImport.update({
+  id: '/plan/tasks_/suggestions',
+  path: '/plan/tasks/suggestions',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WeddingEventsIdRoute = WeddingEventsIdRouteImport.update({
+  id: '/wedding/events_/$id',
+  path: '/wedding/events/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ITokenRsvpReceiptRoute = ITokenRsvpReceiptRouteImport.update({
   id: '/i/$token_/rsvp_/receipt',
   path: '/i/$token/rsvp/receipt',
@@ -198,10 +240,14 @@ export interface FileRoutesByFullPath {
   '/register': typeof RegisterRoute
   '/rsvp': typeof RsvpRoute
   '/start': typeof StartRoute
+  '/guests/$id': typeof GuestsIdRoute
+  '/guests/export': typeof GuestsExportRoute
   '/guests/import': typeof GuestsImportRoute
   '/i/$token': typeof ITokenRoute
   '/invitation/changes': typeof InvitationChangesRoute
+  '/invitation/check': typeof InvitationCheckRoute
   '/invitation/content': typeof InvitationContentRoute
+  '/invitation/history': typeof InvitationHistoryRoute
   '/invitation/preview': typeof InvitationPreviewRoute
   '/invitation/variants': typeof InvitationVariantsRoute
   '/plan/budget': typeof PlanBudgetRoute
@@ -214,6 +260,9 @@ export interface FileRoutesByFullPath {
   '/guests/import/$batch': typeof GuestsImportBatchRoute
   '/i/$token/expired': typeof ITokenExpiredRoute
   '/i/$token/rsvp': typeof ITokenRsvpRoute
+  '/plan/budget/$id': typeof PlanBudgetIdRoute
+  '/plan/tasks/suggestions': typeof PlanTasksSuggestionsRoute
+  '/wedding/events/$id': typeof WeddingEventsIdRoute
   '/i/$token/rsvp/receipt': typeof ITokenRsvpReceiptRoute
 }
 export interface FileRoutesByTo {
@@ -229,10 +278,14 @@ export interface FileRoutesByTo {
   '/register': typeof RegisterRoute
   '/rsvp': typeof RsvpRoute
   '/start': typeof StartRoute
+  '/guests/$id': typeof GuestsIdRoute
+  '/guests/export': typeof GuestsExportRoute
   '/guests/import': typeof GuestsImportRoute
   '/i/$token': typeof ITokenRoute
   '/invitation/changes': typeof InvitationChangesRoute
+  '/invitation/check': typeof InvitationCheckRoute
   '/invitation/content': typeof InvitationContentRoute
+  '/invitation/history': typeof InvitationHistoryRoute
   '/invitation/preview': typeof InvitationPreviewRoute
   '/invitation/variants': typeof InvitationVariantsRoute
   '/plan/budget': typeof PlanBudgetRoute
@@ -245,6 +298,9 @@ export interface FileRoutesByTo {
   '/guests/import/$batch': typeof GuestsImportBatchRoute
   '/i/$token/expired': typeof ITokenExpiredRoute
   '/i/$token/rsvp': typeof ITokenRsvpRoute
+  '/plan/budget/$id': typeof PlanBudgetIdRoute
+  '/plan/tasks/suggestions': typeof PlanTasksSuggestionsRoute
+  '/wedding/events/$id': typeof WeddingEventsIdRoute
   '/i/$token/rsvp/receipt': typeof ITokenRsvpReceiptRoute
 }
 export interface FileRoutesById {
@@ -261,10 +317,14 @@ export interface FileRoutesById {
   '/register': typeof RegisterRoute
   '/rsvp': typeof RsvpRoute
   '/start': typeof StartRoute
+  '/guests_/$id': typeof GuestsIdRoute
+  '/guests_/export': typeof GuestsExportRoute
   '/guests_/import': typeof GuestsImportRoute
   '/i/$token': typeof ITokenRoute
   '/invitation/changes': typeof InvitationChangesRoute
+  '/invitation/check': typeof InvitationCheckRoute
   '/invitation/content': typeof InvitationContentRoute
+  '/invitation/history': typeof InvitationHistoryRoute
   '/invitation/preview': typeof InvitationPreviewRoute
   '/invitation/variants': typeof InvitationVariantsRoute
   '/plan/budget': typeof PlanBudgetRoute
@@ -277,6 +337,9 @@ export interface FileRoutesById {
   '/guests_/import_/$batch': typeof GuestsImportBatchRoute
   '/i/$token_/expired': typeof ITokenExpiredRoute
   '/i/$token_/rsvp': typeof ITokenRsvpRoute
+  '/plan/budget_/$id': typeof PlanBudgetIdRoute
+  '/plan/tasks_/suggestions': typeof PlanTasksSuggestionsRoute
+  '/wedding/events_/$id': typeof WeddingEventsIdRoute
   '/i/$token_/rsvp_/receipt': typeof ITokenRsvpReceiptRoute
 }
 export interface FileRouteTypes {
@@ -294,10 +357,14 @@ export interface FileRouteTypes {
     | '/register'
     | '/rsvp'
     | '/start'
+    | '/guests/$id'
+    | '/guests/export'
     | '/guests/import'
     | '/i/$token'
     | '/invitation/changes'
+    | '/invitation/check'
     | '/invitation/content'
+    | '/invitation/history'
     | '/invitation/preview'
     | '/invitation/variants'
     | '/plan/budget'
@@ -310,6 +377,9 @@ export interface FileRouteTypes {
     | '/guests/import/$batch'
     | '/i/$token/expired'
     | '/i/$token/rsvp'
+    | '/plan/budget/$id'
+    | '/plan/tasks/suggestions'
+    | '/wedding/events/$id'
     | '/i/$token/rsvp/receipt'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -325,10 +395,14 @@ export interface FileRouteTypes {
     | '/register'
     | '/rsvp'
     | '/start'
+    | '/guests/$id'
+    | '/guests/export'
     | '/guests/import'
     | '/i/$token'
     | '/invitation/changes'
+    | '/invitation/check'
     | '/invitation/content'
+    | '/invitation/history'
     | '/invitation/preview'
     | '/invitation/variants'
     | '/plan/budget'
@@ -341,6 +415,9 @@ export interface FileRouteTypes {
     | '/guests/import/$batch'
     | '/i/$token/expired'
     | '/i/$token/rsvp'
+    | '/plan/budget/$id'
+    | '/plan/tasks/suggestions'
+    | '/wedding/events/$id'
     | '/i/$token/rsvp/receipt'
   id:
     | '__root__'
@@ -356,10 +433,14 @@ export interface FileRouteTypes {
     | '/register'
     | '/rsvp'
     | '/start'
+    | '/guests_/$id'
+    | '/guests_/export'
     | '/guests_/import'
     | '/i/$token'
     | '/invitation/changes'
+    | '/invitation/check'
     | '/invitation/content'
+    | '/invitation/history'
     | '/invitation/preview'
     | '/invitation/variants'
     | '/plan/budget'
@@ -372,6 +453,9 @@ export interface FileRouteTypes {
     | '/guests_/import_/$batch'
     | '/i/$token_/expired'
     | '/i/$token_/rsvp'
+    | '/plan/budget_/$id'
+    | '/plan/tasks_/suggestions'
+    | '/wedding/events_/$id'
     | '/i/$token_/rsvp_/receipt'
   fileRoutesById: FileRoutesById
 }
@@ -388,10 +472,14 @@ export interface RootRouteChildren {
   RegisterRoute: typeof RegisterRoute
   RsvpRoute: typeof RsvpRoute
   StartRoute: typeof StartRoute
+  GuestsIdRoute: typeof GuestsIdRoute
+  GuestsExportRoute: typeof GuestsExportRoute
   GuestsImportRoute: typeof GuestsImportRoute
   ITokenRoute: typeof ITokenRoute
   InvitationChangesRoute: typeof InvitationChangesRoute
+  InvitationCheckRoute: typeof InvitationCheckRoute
   InvitationContentRoute: typeof InvitationContentRoute
+  InvitationHistoryRoute: typeof InvitationHistoryRoute
   InvitationPreviewRoute: typeof InvitationPreviewRoute
   InvitationVariantsRoute: typeof InvitationVariantsRoute
   PlanBudgetRoute: typeof PlanBudgetRoute
@@ -404,6 +492,9 @@ export interface RootRouteChildren {
   GuestsImportBatchRoute: typeof GuestsImportBatchRoute
   ITokenExpiredRoute: typeof ITokenExpiredRoute
   ITokenRsvpRoute: typeof ITokenRsvpRoute
+  PlanBudgetIdRoute: typeof PlanBudgetIdRoute
+  PlanTasksSuggestionsRoute: typeof PlanTasksSuggestionsRoute
+  WeddingEventsIdRoute: typeof WeddingEventsIdRoute
   ITokenRsvpReceiptRoute: typeof ITokenRsvpReceiptRoute
 }
 
@@ -493,6 +584,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StartRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/guests_/$id': {
+      id: '/guests_/$id'
+      path: '/guests/$id'
+      fullPath: '/guests/$id'
+      preLoaderRoute: typeof GuestsIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/guests_/export': {
+      id: '/guests_/export'
+      path: '/guests/export'
+      fullPath: '/guests/export'
+      preLoaderRoute: typeof GuestsExportRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/guests_/import': {
       id: '/guests_/import'
       path: '/guests/import'
@@ -514,11 +619,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof InvitationChangesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/invitation/check': {
+      id: '/invitation/check'
+      path: '/invitation/check'
+      fullPath: '/invitation/check'
+      preLoaderRoute: typeof InvitationCheckRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/invitation/content': {
       id: '/invitation/content'
       path: '/invitation/content'
       fullPath: '/invitation/content'
       preLoaderRoute: typeof InvitationContentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/invitation/history': {
+      id: '/invitation/history'
+      path: '/invitation/history'
+      fullPath: '/invitation/history'
+      preLoaderRoute: typeof InvitationHistoryRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/invitation/preview': {
@@ -605,6 +724,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ITokenRsvpRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/plan/budget_/$id': {
+      id: '/plan/budget_/$id'
+      path: '/plan/budget/$id'
+      fullPath: '/plan/budget/$id'
+      preLoaderRoute: typeof PlanBudgetIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/plan/tasks_/suggestions': {
+      id: '/plan/tasks_/suggestions'
+      path: '/plan/tasks/suggestions'
+      fullPath: '/plan/tasks/suggestions'
+      preLoaderRoute: typeof PlanTasksSuggestionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/wedding/events_/$id': {
+      id: '/wedding/events_/$id'
+      path: '/wedding/events/$id'
+      fullPath: '/wedding/events/$id'
+      preLoaderRoute: typeof WeddingEventsIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/i/$token_/rsvp_/receipt': {
       id: '/i/$token_/rsvp_/receipt'
       path: '/i/$token/rsvp/receipt'
@@ -628,10 +768,14 @@ const rootRouteChildren: RootRouteChildren = {
   RegisterRoute: RegisterRoute,
   RsvpRoute: RsvpRoute,
   StartRoute: StartRoute,
+  GuestsIdRoute: GuestsIdRoute,
+  GuestsExportRoute: GuestsExportRoute,
   GuestsImportRoute: GuestsImportRoute,
   ITokenRoute: ITokenRoute,
   InvitationChangesRoute: InvitationChangesRoute,
+  InvitationCheckRoute: InvitationCheckRoute,
   InvitationContentRoute: InvitationContentRoute,
+  InvitationHistoryRoute: InvitationHistoryRoute,
   InvitationPreviewRoute: InvitationPreviewRoute,
   InvitationVariantsRoute: InvitationVariantsRoute,
   PlanBudgetRoute: PlanBudgetRoute,
@@ -644,6 +788,9 @@ const rootRouteChildren: RootRouteChildren = {
   GuestsImportBatchRoute: GuestsImportBatchRoute,
   ITokenExpiredRoute: ITokenExpiredRoute,
   ITokenRsvpRoute: ITokenRsvpRoute,
+  PlanBudgetIdRoute: PlanBudgetIdRoute,
+  PlanTasksSuggestionsRoute: PlanTasksSuggestionsRoute,
+  WeddingEventsIdRoute: WeddingEventsIdRoute,
   ITokenRsvpReceiptRoute: ITokenRsvpReceiptRoute,
 }
 export const routeTree = rootRouteImport
