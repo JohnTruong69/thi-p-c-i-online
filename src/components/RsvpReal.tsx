@@ -27,7 +27,7 @@ export function GuestRsvpForm({ token, events }: { token: string; events: PubEve
   const [requestKey, setRequestKey] = useState(() => crypto.randomUUID());
   useEffect(() => { const c = readCode(token); setCode(c); if (c) getRsvpReceipt({ data: { token, editCode: c } }).then(r => {
     if (!r) { setCode(null); return; }
-    setForm(f => ({ ...f, name: r.guest_name, answers: Object.fromEntries(ids.map(id => { const a = r.answers.find(x => x.event_id === id); return [id, a ? { attending: a.attending, party: String(a.party_size ?? 1) } : { attending: null, party: '1' }]; })) }));
+    setForm(f => ({ ...f, name: r.guest_name, phone: r.phone ?? '', note: r.note ?? '', answers: Object.fromEntries(ids.map(id => { const a = r.answers.find(x => x.event_id === id); return [id, a ? { attending: a.attending, party: String(a.party_size ?? 1) } : { attending: null, party: '1' }]; })) }));
   }).catch(() => {}); }, [token]); // eslint-disable-line react-hooks/exhaustive-deps
   const m = useMutation({
     mutationFn: () => submitRsvp({ data: { token, requestKey, name: form.name, phone: form.phone, note: form.note, answers: toAnswers(form, ids), editCode: code } }),
@@ -66,7 +66,7 @@ export function GuestRsvpForm({ token, events }: { token: string; events: PubEve
 export function GuestReceipt({ token }: { token: string }) {
   const [code, setCode] = useState<string | null | undefined>(undefined);
   useEffect(() => { setCode(readCode(token)); }, [token]);
-  const q = useQuery({ queryKey: ['rsvp-receipt', token, code], enabled: !!code, queryFn: () => getRsvpReceipt({ data: { token, editCode: code! } }), retry: 1 });
+  const q = useQuery({ queryKey: ['rsvp-receipt', token, code], enabled: !!code, queryFn: () => getRsvpReceipt({ data: { token, editCode: code! } }), retry: 1, gcTime: 0, staleTime: 0 });
   const cached = useMemo<RsvpReceipt | null>(() => { if (typeof window === 'undefined') return null; try { return JSON.parse(sessionStorage.getItem(`rsvp-last:${token}`) ?? 'null'); } catch { return null; } }, [token, code]); // eslint-disable-line react-hooks/exhaustive-deps
   if (code === undefined || (code && q.isPending)) return <div className="pt-16"><Loading label="Đang mở xác nhận…" /></div>;
   const r = q.data ?? (code ? null : cached);

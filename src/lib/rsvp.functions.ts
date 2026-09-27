@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from '@/integrations/supabase/types';
 
-export type RsvpReceipt = { receipt_id: string; guest_name: string; submitted_at: string; edited: boolean; answers: { event_id: string; event_name: string; attending: boolean; party_size: number | null }[]; edit_code?: string; replay?: boolean };
+export type RsvpReceipt = { receipt_id: string; guest_name: string; phone?: string | null; note?: string | null; submitted_at: string; edited: boolean; answers: { event_id: string; event_name: string; attending: boolean; party_size: number | null }[]; edit_code?: string; replay?: boolean };
 export type SubmitResult = { ok: true; receipt: RsvpReceipt } | { ok: false; reason: 'closed' | 'invalid' | 'edit' | 'error' };
 
 function publicClient() {
