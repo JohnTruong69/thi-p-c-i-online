@@ -8,6 +8,7 @@ import { validateEmail, validateLogin } from '@/lib/phase2c';
 import { acceptInvite, friendlyError, inspectInvite, safeRedirect } from '@/lib/wedding-api';
 import { markManualSignOut } from '@/lib/auth-events';
 import { FormField, Header, Note, Panel, inputCls } from './PhaseOne';
+import { AccountEmailButton } from './Presale';
 
 export function PublicShell({ children }: { children: React.ReactNode }) {
   return <div className="min-h-screen bg-background"><div className="mx-auto max-w-xl px-5 pb-16 pt-8 sm:px-8">
@@ -97,8 +98,8 @@ export function ForgotPasswordPage() {
   </Panel></PublicShell>;
 }
 
-export function ResetPasswordPage() {
-  const navigate = useNavigate();
+export function ResetPasswordPage({ next }: { next?: string | undefined } = {}) {
+  const navigate = useNavigate(); const after = safeRedirect(next) ?? '/home';
   const [ready, setReady] = useState<'wait' | 'ok' | 'bad'>('wait'); const [pw, setPw] = useState(''); const [err, setErr] = useState(''); const [msg, setMsg] = useState(''); const [busy, setBusy] = useState(false);
   useEffect(() => {
     const { data: sub } = supabase.auth.onAuthStateChange(ev => { if (ev === 'PASSWORD_RECOVERY' || ev === 'SIGNED_IN') setReady('ok'); });
@@ -109,7 +110,7 @@ export function ResetPasswordPage() {
   const submit = async (e: React.FormEvent) => {
     e.preventDefault(); setMsg(''); if (pw.length < 8) { setErr('Mật khẩu cần ít nhất 8 ký tự.'); return; } setErr('');
     setBusy(true); const { error } = await supabase.auth.updateUser({ password: pw }); setBusy(false);
-    if (error) { setMsg(friendlyError(error)); return; } navigate({ to: '/home', replace: true });
+    if (error) { setMsg(friendlyError(error)); return; } navigate({ to: after as never, replace: true });
   };
   return <PublicShell><Header name="Chọn mật khẩu mới" subtitle="TÀI KHOẢN" /><Panel>
     {ready === 'wait' && <p role="status" className="flex items-center gap-2 text-sm"><Loader2 className="size-4 animate-spin" /> Đang kiểm tra liên kết…</p>}
@@ -144,7 +145,7 @@ export function InviteAcceptPage({ token }: { token: string }) {
     {state.kind === 'loading' && <p role="status" className="flex items-center gap-2 text-sm"><Loader2 className="size-4 animate-spin" /> Đang kiểm tra lời mời…</p>}
     {state.kind === 'error' && <><ErrorBox text={state.text} /><Button size="lg" variant="outline" className="mt-3 min-h-11 w-full" onClick={load}>Thử lại</Button></>}
     {state.kind === 'signedOut' && <><p className="text-sm leading-6">Bạn được mời cùng quản lý một đám cưới. Hãy đăng nhập hoặc tạo tài khoản bằng <strong>đúng email nhận lời mời</strong> để chấp nhận. Trước khi chấp nhận, bạn chưa xem được dữ liệu nào.</p>
-      <div className="mt-4 grid gap-2"><Button asChild size="lg" className="min-h-11"><Link to="/login" search={{ redirect: here }}>Đăng nhập để chấp nhận</Link></Button><Button asChild size="lg" variant="outline" className="min-h-11"><Link to="/register" search={{ redirect: here }}>Tạo tài khoản</Link></Button></div></>}
+      <div className="mt-4 grid gap-2"><Button asChild size="lg" className="min-h-11"><Link to="/login" search={{ redirect: here }}>Đăng nhập để chấp nhận</Link></Button><Button asChild size="lg" variant="outline" className="min-h-11"><Link to="/register" search={{ redirect: here }}>Tạo tài khoản</Link></Button></div>{/^[0-9a-f]{64}$/.test(token) && <AccountEmailButton kind="partner" token={token} />}</>}
     {state.kind === 'info' && (state.status === 'pending' ? (state.matches
       ? <><p className="text-sm leading-6">Sau khi chấp nhận, bạn có quyền như người mời ở mọi việc của đám cưới này.</p><ErrorBox text={msg} /><Button size="lg" className="mt-4 min-h-11 w-full" disabled={busy} onClick={accept}>{busy && <Loader2 className="animate-spin" />}Chấp nhận lời mời</Button></>
       : <><Note tone="warm">Bạn đang đăng nhập bằng <strong>{state.email}</strong>, nhưng lời mời này dành cho một email khác. Hãy đăng xuất rồi đăng nhập bằng email được mời.</Note><Button size="lg" variant="outline" className="mt-4 min-h-11 w-full" onClick={signOut}>Đăng xuất</Button></>)
