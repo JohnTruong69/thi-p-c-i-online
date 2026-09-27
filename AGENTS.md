@@ -16,3 +16,4 @@
 - Guest pages, preview, RSVP and receipt all resolve events via linkView/viewForToken in src/lib/phase2d.ts (same links session config); only DEMO_TOKENS open, off/unknown show a neutral page — keeps preview = guest.
 - RSVP status is stored per guest per Event (rsvp-status session); manual entries are never overwritten by responses; CSV undo removes only guests unchanged since import (fingerprint snapshot).
 - Link readiness requires date, time, venue and address — same rule as the Check screen.
+- Removed Events stay as orphan ids in links (readiness needs-fix 'Buổi đã bị bỏ — cần chọn lại', manual Gỡ); never pre-filter ids before linkReadiness. Demo RSVP stores one key per response (rsvp-demo:<token>:<id>) plus a last-id pointer; legacy per-token key still reads.
