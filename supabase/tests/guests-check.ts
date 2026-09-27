@@ -69,7 +69,9 @@ async function main() {
   // Safe undo
   const ids = (await A.from('guest_import_rows').select('guest_id').eq('batch_id', b1).order('source_row')).data!.map(r => r.guest_id as string);
   await A.rpc('save_guest', { p_wedding_id: wa, p_guest_id: ids[0], p_guest: { name: 'Khách 0 (đã sửa)', phone: '0900000000', side: 'nha-gai', party_size: 1 }, p_assignments: [{ event_id: ev1 }, { event_id: ev2 }] });
-  await A.from('guest_event_assignments').update({ rsvp_status: 'attending' }).eq('guest_id', ids[1]).eq('event_id', ev1);
+  // Since 0009 a manual reply must set intent + source together with the legacy rsvp_status (consistency CHECKs).
+  const rs = await A.from('guest_event_assignments').update({ attendance_intent: 'confirmed', rsvp_status: 'attending', response_source: 'manual' }).eq('guest_id', ids[1]).eq('event_id', ev1);
+  ok(!rs.error, `manual RSVP change after import saved ${rs.error?.message ?? ''}`);
   await A.from('guests').delete().eq('id', ids[2]);
   const u = await A.rpc('undo_guest_batch', { p_batch_id: b1 });
   ok(!u.error && (u.data as any).removed === 147 && (u.data as any).kept === 2 && (u.data as any).missing === 1, `undo counts exact ${JSON.stringify(u.data)}`);
