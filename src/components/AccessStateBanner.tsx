@@ -68,7 +68,7 @@ export function AccessStateBanner({ weddingId }: { weddingId: string }) {
   </div>;
 
   const access = q.data;
-  const locked = !access.writable;
+  const locked = access.writable === false;
   if (access.state === 'trial_not_started' && !locked) return null;
   const expired = locked || access.state === 'trial_expired_read_only' || access.state === 'paid_expired_read_only' || access.state === 'legacy_paid_expired';
   let message: string;
