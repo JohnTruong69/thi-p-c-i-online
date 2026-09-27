@@ -29,6 +29,20 @@
       "when": 1790489486419,
       "tag": "0003_guests_csv_provenance",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1790493141639,
+      "tag": "0004_invitation_duong_hen",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1790493473280,
+      "tag": "0005_invitation_hardening",
+      "breakpoints": true
     }
   ]
 }

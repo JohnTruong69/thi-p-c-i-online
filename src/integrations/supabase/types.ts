@@ -416,6 +416,220 @@ export type Database = {
           },
         ]
       }
+      invitation_links: {
+        Row: {
+          created_at: string
+          enabled: boolean
+          event_ids: string[]
+          id: string
+          invitation_id: string
+          side: string
+          token: string
+          updated_at: string
+          wedding_id: string
+        }
+        Insert: {
+          created_at?: string
+          enabled?: boolean
+          event_ids?: string[]
+          id?: string
+          invitation_id: string
+          side: string
+          token?: string
+          updated_at?: string
+          wedding_id: string
+        }
+        Update: {
+          created_at?: string
+          enabled?: boolean
+          event_ids?: string[]
+          id?: string
+          invitation_id?: string
+          side?: string
+          token?: string
+          updated_at?: string
+          wedding_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invitation_links_invitation_id_wedding_id_fkey"
+            columns: ["invitation_id", "wedding_id"]
+            isOneToOne: false
+            referencedRelation: "invitations"
+            referencedColumns: ["id", "wedding_id"]
+          },
+          {
+            foreignKeyName: "invitation_links_wedding_id_fkey"
+            columns: ["wedding_id"]
+            isOneToOne: false
+            referencedRelation: "weddings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      invitation_photos: {
+        Row: {
+          content_hash: string
+          created_at: string
+          created_by: string | null
+          id: string
+          invitation_id: string
+          mime: string
+          size_bytes: number
+          storage_path: string
+          wedding_id: string
+        }
+        Insert: {
+          content_hash: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          invitation_id: string
+          mime: string
+          size_bytes: number
+          storage_path: string
+          wedding_id: string
+        }
+        Update: {
+          content_hash?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          invitation_id?: string
+          mime?: string
+          size_bytes?: number
+          storage_path?: string
+          wedding_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invitation_photos_invitation_id_wedding_id_fkey"
+            columns: ["invitation_id", "wedding_id"]
+            isOneToOne: false
+            referencedRelation: "invitations"
+            referencedColumns: ["id", "wedding_id"]
+          },
+          {
+            foreignKeyName: "invitation_photos_wedding_id_fkey"
+            columns: ["wedding_id"]
+            isOneToOne: false
+            referencedRelation: "weddings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      invitation_revisions: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          invitation_id: string
+          kind: string
+          note: string
+          revision: number
+          snapshot: Json
+          wedding_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          invitation_id: string
+          kind?: string
+          note?: string
+          revision: number
+          snapshot: Json
+          wedding_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          invitation_id?: string
+          kind?: string
+          note?: string
+          revision?: number
+          snapshot?: Json
+          wedding_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invitation_revisions_invitation_id_wedding_id_fkey"
+            columns: ["invitation_id", "wedding_id"]
+            isOneToOne: false
+            referencedRelation: "invitations"
+            referencedColumns: ["id", "wedding_id"]
+          },
+          {
+            foreignKeyName: "invitation_revisions_wedding_id_fkey"
+            columns: ["wedding_id"]
+            isOneToOne: false
+            referencedRelation: "weddings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      invitations: {
+        Row: {
+          cover_photo_id: string | null
+          created_at: string
+          id: string
+          message: string
+          published_at: string | null
+          published_revision_id: string | null
+          template: string
+          title: string
+          updated_at: string
+          wedding_id: string
+        }
+        Insert: {
+          cover_photo_id?: string | null
+          created_at?: string
+          id?: string
+          message?: string
+          published_at?: string | null
+          published_revision_id?: string | null
+          template?: string
+          title?: string
+          updated_at?: string
+          wedding_id: string
+        }
+        Update: {
+          cover_photo_id?: string | null
+          created_at?: string
+          id?: string
+          message?: string
+          published_at?: string | null
+          published_revision_id?: string | null
+          template?: string
+          title?: string
+          updated_at?: string
+          wedding_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invitations_cover_fk"
+            columns: ["cover_photo_id", "wedding_id"]
+            isOneToOne: false
+            referencedRelation: "invitation_photos"
+            referencedColumns: ["id", "wedding_id"]
+          },
+          {
+            foreignKeyName: "invitations_published_fk"
+            columns: ["published_revision_id", "wedding_id"]
+            isOneToOne: false
+            referencedRelation: "invitation_revisions"
+            referencedColumns: ["id", "wedding_id"]
+          },
+          {
+            foreignKeyName: "invitations_wedding_id_fkey"
+            columns: ["wedding_id"]
+            isOneToOne: true
+            referencedRelation: "weddings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string
@@ -507,6 +721,38 @@ export type Database = {
             foreignKeyName: "tasks_wedding_id_fkey"
             columns: ["wedding_id"]
             isOneToOne: false
+            referencedRelation: "weddings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      wedding_entitlements: {
+        Row: {
+          created_at: string
+          expires_at: string
+          paid_at: string
+          source: string
+          wedding_id: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at: string
+          paid_at: string
+          source: string
+          wedding_id: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string
+          paid_at?: string
+          source?: string
+          wedding_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wedding_entitlements_wedding_id_fkey"
+            columns: ["wedding_id"]
+            isOneToOne: true
             referencedRelation: "weddings"
             referencedColumns: ["id"]
           },
@@ -633,6 +879,7 @@ export type Database = {
     }
     Functions: {
       accept_partner_invite: { Args: { p_token: string }; Returns: string }
+      can_manage_photo_path: { Args: { p_name: string }; Returns: boolean }
       create_partner_invite: {
         Args: { p_email: string; p_wedding_id: string }
         Returns: {
@@ -652,7 +899,12 @@ export type Database = {
         }
         Returns: string
       }
+      ensure_invitation: { Args: { p_wedding_id: string }; Returns: string }
       guest_fingerprint: { Args: { p_guest_id: string }; Returns: string }
+      has_valid_entitlement: {
+        Args: { p_wedding_id: string }
+        Returns: boolean
+      }
       import_guest_batch: {
         Args: {
           p_batch_id: string
@@ -673,8 +925,21 @@ export type Database = {
           status: string
         }[]
       }
+      invitation_snapshot: { Args: { p_invitation_id: string }; Returns: Json }
       is_wedding_manager: { Args: { _wedding_id: string }; Returns: boolean }
+      photo_slot_available: { Args: { p_wedding: string }; Returns: boolean }
+      public_invitation: { Args: { p_token: string }; Returns: Json }
+      public_invitation_photo_paths: {
+        Args: { p_token: string }
+        Returns: Json
+      }
+      publish_invitation: { Args: { p_wedding_id: string }; Returns: Json }
+      register_invitation_photo: {
+        Args: { p_path: string; p_wedding_id: string }
+        Returns: string
+      }
       remove_event: { Args: { p_event_id: string }; Returns: Json }
+      remove_invitation_photo: { Args: { p_photo_id: string }; Returns: string }
       remove_manager: { Args: { p_membership_id: string }; Returns: undefined }
       revoke_partner_invite: {
         Args: { p_invite_id: string }
@@ -698,7 +963,15 @@ export type Database = {
         }
         Returns: string
       }
+      save_invitation_revision: {
+        Args: { p_note?: string; p_wedding_id: string }
+        Returns: Json
+      }
       shares_wedding_with: { Args: { _user_id: string }; Returns: boolean }
+      snapshot_link_ready: {
+        Args: { p_side: string; p_snap: Json }
+        Returns: boolean
+      }
       undo_guest_batch: { Args: { p_batch_id: string }; Returns: Json }
       update_event_with_impact: {
         Args: { p_event_id: string; p_fields: Json; p_shift_task_ids: string[] }

@@ -35,3 +35,6 @@
 
 ## Phase 3 slice 2b
 - [x] Guests/CSV/export persisted, Home guest summary real, DB + browser checks
+
+## Phase 3 slice 3
+- [x] Đường Hẹn invitation persisted: content, private photos ≤50, 3 links, readiness/orphans, revisions + diff, publish denied without entitlement, neutral public page; DB + browser checks
