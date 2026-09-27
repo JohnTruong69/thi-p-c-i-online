@@ -145,7 +145,7 @@ export function SuggestionLibrary({ autoOpen = false }: { autoOpen?: boolean }) 
     e.preventDefault();
     const add = SUGGESTED_TASKS.filter(s => picked.includes(s.id) && !existing.has(s.title));
     if (!add.length) { setMsg('Hãy chọn ít nhất một việc chưa có.'); return; }
-    setTasks(t => [...t, ...add.map((s, i) => ({ id: `sg${Date.now()}-${i}`, title: s.title, event: 'Mọi buổi', due: '', owner: 'Cả hai', status: 'Cần làm' as const, tag: 'Chưa hẹn', bucket: 'Sắp tới' as const, added: true }))]);
+    setTasks(t => [...t, ...add.map((s, i) => ({ id: `sg${Date.now()}-${i}`, title: s.title, event: 'Mọi buổi', due: '', owner: 'Cả hai', status: 'Cần làm' as const, added: true }))]);
     setOpen(false); setPicked([]); setMsg(`Đã thêm ${add.length} việc gợi ý vào danh sách (trong phiên).`);
   };
   return <div className="mt-4"><Panel item="suggestions"><h2 className="text-xl">Thư viện 43 việc gợi ý</h2><p className="mt-1 text-xs text-muted-foreground">Chỉ thêm những việc hai bạn chọn.</p><DemoAction variant="outline" className="mt-3" onClick={() => { setMsg(''); setOpen(true); }}><Plus /> Chọn việc gợi ý</DemoAction>{msg && <p role="status" className="mt-2 text-xs font-semibold text-sage-strong">{msg}</p>}</Panel>
