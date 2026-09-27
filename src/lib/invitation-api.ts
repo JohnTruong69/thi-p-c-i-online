@@ -20,6 +20,7 @@ export const isInvitationNotStartedReadOnly = (e: unknown) => e instanceof Invit
 export type InvitationBundle = { invitation: InvitationRow; links: LinkRow[]; photos: PhotoRow[]; revisions: RevisionRow[]; entitled: boolean };
 export const invitationQuery = (weddingId: string) => queryOptions({
   queryKey: ['invitation', weddingId],
+  retry: (n, e) => !isInvitationNotStartedReadOnly(e) && n < 3,
   queryFn: async (): Promise<InvitationBundle> => {
     // Lazy creation only when no draft exists yet; read-only weddings never create one (the DB gate refuses it).
     const existing = must(await supabase.from('invitations').select('id').eq('wedding_id', weddingId).maybeSingle());
