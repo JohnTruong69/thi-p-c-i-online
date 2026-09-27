@@ -39,7 +39,7 @@ function LockedPackage({ onSale }: { onSale: boolean }) {
   </Panel>;
 }
 
-/** Account package situation: 'loading' | 'none' (no wedding) | 'paid' (active entitlement) | 'legacy_unpaid'. */
+/** Package states distinguish active and expired paid weddings so no renewal CTA appears. */
 function useOwnerPackage(): 'loading' | 'none' | 'paid' | 'expired_paid' | 'legacy_unpaid' {
   const w = useMyWedding(); const acc = useAccessState(w.data?.id);
   if (w.isPending || (w.data && acc.isPending)) return 'loading';
@@ -88,7 +88,7 @@ export function RealCheckoutScreen() {
   const offer = a.data?.available ? a.data.offer : null;
   return <div className="max-w-3xl"><Header name="Thanh toán gói Wedding" subtitle="ĐƠN HÀNG" />
     {a.isPending ? <p className="text-sm text-muted-foreground">Đang kiểm tra…</p> : a.isError ? <Note tone="copper">Chưa kiểm tra được trạng thái thanh toán. <button className="font-semibold underline" onClick={() => a.refetch()}>Thử lại</button></Note>
-      : kind === 'paid' || kind === 'expired_paid' ? <><OwnerPackageStatus kind={kind} expiresAt={acc.data?.paid_expires_at} /><Panel className="mt-4"><SmallLabel>TRẠNG THÁI GÓI</SmallLabel><Row title="Quyền sử dụng" detail={`Còn hiệu lực đến ${vnTime(acc.data?.paid_expires_at)} (giờ Việt Nam)`} /><Row title="Thanh toán" detail="Đã xác minh qua SePay — không cần trả thêm" /></Panel></>
+      : kind === 'paid' || kind === 'expired_paid' ? <><OwnerPackageStatus kind={kind} expiresAt={acc.data?.paid_expires_at} /><Panel className="mt-4"><SmallLabel>TRẠNG THÁI GÓI</SmallLabel><Row title="Quyền sử dụng" detail={`${kind === 'paid' ? 'Còn hiệu lực đến' : 'Đã hết hạn từ'} ${vnTime(acc.data?.paid_expires_at)} (giờ Việt Nam)`} /><Row title="Thanh toán" detail="Đã có quyền sử dụng; V1 không thu lần hai" /></Panel>{kind === 'expired_paid' && <Action to="/settings/data" variant="outline" className="mt-4 w-full">Tải dữ liệu</Action>}</>
       : !offer ? <>{kind !== 'loading' && <OwnerPackageStatus kind={kind} expiresAt={acc.data?.paid_expires_at} />}<LockedPackage onSale={false} /><div className="mt-4"><NotOnSale /></div></>
       : <Panel><SmallLabel>ĐIỀU KHOẢN {offer.terms_version}</SmallLabel><h2 className="text-3xl">{vnd(offer.price_vnd)}</h2><p className="text-sm">Một lần · {offer.duration_months} tháng từ lúc xác minh</p>
         {offer.terms_url && <a href={offer.terms_url} target="_blank" rel="noreferrer" className="mt-2 inline-block text-sm font-semibold underline">Đọc điều khoản</a>}
