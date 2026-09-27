@@ -164,7 +164,7 @@ export function ViewerWeddingScreen({ weddingId }: { weddingId: string }) {
   const q = useQuery(viewerProjectionQuery(weddingId));
   const [tab, setTab] = useState<string | null>(null);
   if (q.isPending) return <ViewerShell><Loading /></ViewerShell>;
-  if (q.isError) return <ViewerShell><Header name="Không mở được" subtitle="NGƯỜI THÂN XEM" /><LoadError error={{ message: viewerError(q.error) }} retry={() => q.refetch()} /><p className="mt-4 text-sm"><Link to="/view" className="underline">Về danh sách</Link></p></ViewerShell>;
+  if (q.isError) return <ViewerShell><Header name="Không mở được" subtitle="NGƯỜI THÂN XEM" /><div role="alert"><Note tone="copper">{viewerError(q.error)}</Note></div><Button variant="outline" size="lg" className="mt-3 min-h-11" onClick={() => q.refetch()}>Thử lại</Button><p className="mt-4 text-sm"><Link to="/view" className="underline">Về danh sách</Link></p></ViewerShell>;
   const p: ViewerProjection = q.data; const active = tab && p.modules.includes(tab) ? tab : p.modules[0]!;
   return <ViewerShell>
     <Header name={`${p.wedding.partner_one_name} & ${p.wedding.partner_two_name}`} subtitle="NGƯỜI THÂN XEM" />
