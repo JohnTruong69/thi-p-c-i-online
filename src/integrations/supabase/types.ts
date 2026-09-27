@@ -14,13 +14,522 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      audit_log: {
+        Row: {
+          action: string
+          actor_id: string | null
+          created_at: string
+          detail: Json
+          id: number
+          wedding_id: string
+        }
+        Insert: {
+          action: string
+          actor_id?: string | null
+          created_at?: string
+          detail?: Json
+          id?: never
+          wedding_id: string
+        }
+        Update: {
+          action?: string
+          actor_id?: string | null
+          created_at?: string
+          detail?: Json
+          id?: never
+          wedding_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "audit_log_wedding_id_fkey"
+            columns: ["wedding_id"]
+            isOneToOne: false
+            referencedRelation: "weddings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      budget_installments: {
+        Row: {
+          amount_vnd: number
+          budget_item_id: string
+          created_at: string
+          due_date: string | null
+          id: string
+          paid_at: string | null
+          updated_at: string
+          wedding_id: string
+        }
+        Insert: {
+          amount_vnd: number
+          budget_item_id: string
+          created_at?: string
+          due_date?: string | null
+          id?: string
+          paid_at?: string | null
+          updated_at?: string
+          wedding_id: string
+        }
+        Update: {
+          amount_vnd?: number
+          budget_item_id?: string
+          created_at?: string
+          due_date?: string | null
+          id?: string
+          paid_at?: string | null
+          updated_at?: string
+          wedding_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "budget_installments_budget_item_id_wedding_id_fkey"
+            columns: ["budget_item_id", "wedding_id"]
+            isOneToOne: false
+            referencedRelation: "budget_items"
+            referencedColumns: ["id", "wedding_id"]
+          },
+          {
+            foreignKeyName: "budget_installments_wedding_id_fkey"
+            columns: ["wedding_id"]
+            isOneToOne: false
+            referencedRelation: "weddings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      budget_items: {
+        Row: {
+          agreed_vnd: number | null
+          category: string
+          created_at: string
+          estimate_vnd: number
+          event_id: string | null
+          id: string
+          label: string
+          note: string | null
+          updated_at: string
+          wedding_id: string
+        }
+        Insert: {
+          agreed_vnd?: number | null
+          category?: string
+          created_at?: string
+          estimate_vnd?: number
+          event_id?: string | null
+          id?: string
+          label: string
+          note?: string | null
+          updated_at?: string
+          wedding_id: string
+        }
+        Update: {
+          agreed_vnd?: number | null
+          category?: string
+          created_at?: string
+          estimate_vnd?: number
+          event_id?: string | null
+          id?: string
+          label?: string
+          note?: string | null
+          updated_at?: string
+          wedding_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "budget_items_event_id_wedding_id_fkey"
+            columns: ["event_id", "wedding_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id", "wedding_id"]
+          },
+          {
+            foreignKeyName: "budget_items_wedding_id_fkey"
+            columns: ["wedding_id"]
+            isOneToOne: false
+            referencedRelation: "weddings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      events: {
+        Row: {
+          address: string | null
+          created_at: string
+          event_date: string | null
+          event_time: string | null
+          id: string
+          name: string
+          side: string
+          status: string
+          updated_at: string
+          venue: string | null
+          wedding_id: string
+        }
+        Insert: {
+          address?: string | null
+          created_at?: string
+          event_date?: string | null
+          event_time?: string | null
+          id?: string
+          name: string
+          side?: string
+          status?: string
+          updated_at?: string
+          venue?: string | null
+          wedding_id: string
+        }
+        Update: {
+          address?: string | null
+          created_at?: string
+          event_date?: string | null
+          event_time?: string | null
+          id?: string
+          name?: string
+          side?: string
+          status?: string
+          updated_at?: string
+          venue?: string | null
+          wedding_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "events_wedding_id_fkey"
+            columns: ["wedding_id"]
+            isOneToOne: false
+            referencedRelation: "weddings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      guest_event_assignments: {
+        Row: {
+          created_at: string
+          event_id: string
+          guest_id: string
+          wedding_id: string
+        }
+        Insert: {
+          created_at?: string
+          event_id: string
+          guest_id: string
+          wedding_id: string
+        }
+        Update: {
+          created_at?: string
+          event_id?: string
+          guest_id?: string
+          wedding_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "guest_event_assignments_event_id_wedding_id_fkey"
+            columns: ["event_id", "wedding_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id", "wedding_id"]
+          },
+          {
+            foreignKeyName: "guest_event_assignments_guest_id_wedding_id_fkey"
+            columns: ["guest_id", "wedding_id"]
+            isOneToOne: false
+            referencedRelation: "guests"
+            referencedColumns: ["id", "wedding_id"]
+          },
+          {
+            foreignKeyName: "guest_event_assignments_wedding_id_fkey"
+            columns: ["wedding_id"]
+            isOneToOne: false
+            referencedRelation: "weddings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      guests: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          note: string | null
+          party_size: number
+          phone: string | null
+          side: string
+          updated_at: string
+          wedding_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          note?: string | null
+          party_size?: number
+          phone?: string | null
+          side?: string
+          updated_at?: string
+          wedding_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          note?: string | null
+          party_size?: number
+          phone?: string | null
+          side?: string
+          updated_at?: string
+          wedding_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "guests_wedding_id_fkey"
+            columns: ["wedding_id"]
+            isOneToOne: false
+            referencedRelation: "weddings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          display_name: string
+          email: string
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          display_name?: string
+          email?: string
+          id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          display_name?: string
+          email?: string
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      tasks: {
+        Row: {
+          created_at: string
+          due_date: string | null
+          event_id: string | null
+          id: string
+          kind: string
+          note: string | null
+          outcome: string | null
+          planned_tables: number | null
+          reserve_tables: number | null
+          source: string
+          status: string
+          title: string
+          updated_at: string
+          wedding_id: string
+        }
+        Insert: {
+          created_at?: string
+          due_date?: string | null
+          event_id?: string | null
+          id?: string
+          kind?: string
+          note?: string | null
+          outcome?: string | null
+          planned_tables?: number | null
+          reserve_tables?: number | null
+          source?: string
+          status?: string
+          title: string
+          updated_at?: string
+          wedding_id: string
+        }
+        Update: {
+          created_at?: string
+          due_date?: string | null
+          event_id?: string | null
+          id?: string
+          kind?: string
+          note?: string | null
+          outcome?: string | null
+          planned_tables?: number | null
+          reserve_tables?: number | null
+          source?: string
+          status?: string
+          title?: string
+          updated_at?: string
+          wedding_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tasks_event_id_wedding_id_fkey"
+            columns: ["event_id", "wedding_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id", "wedding_id"]
+          },
+          {
+            foreignKeyName: "tasks_wedding_id_fkey"
+            columns: ["wedding_id"]
+            isOneToOne: false
+            referencedRelation: "weddings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      wedding_invites: {
+        Row: {
+          accepted_by: string | null
+          created_at: string
+          email: string
+          expires_at: string
+          id: string
+          invited_by: string | null
+          status: string
+          token_hash: string
+          updated_at: string
+          wedding_id: string
+        }
+        Insert: {
+          accepted_by?: string | null
+          created_at?: string
+          email: string
+          expires_at: string
+          id?: string
+          invited_by?: string | null
+          status?: string
+          token_hash: string
+          updated_at?: string
+          wedding_id: string
+        }
+        Update: {
+          accepted_by?: string | null
+          created_at?: string
+          email?: string
+          expires_at?: string
+          id?: string
+          invited_by?: string | null
+          status?: string
+          token_hash?: string
+          updated_at?: string
+          wedding_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wedding_invites_wedding_id_fkey"
+            columns: ["wedding_id"]
+            isOneToOne: false
+            referencedRelation: "weddings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      wedding_memberships: {
+        Row: {
+          created_at: string
+          id: string
+          role: string
+          user_id: string
+          wedding_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role?: string
+          user_id: string
+          wedding_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: string
+          user_id?: string
+          wedding_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wedding_memberships_wedding_id_fkey"
+            columns: ["wedding_id"]
+            isOneToOne: false
+            referencedRelation: "weddings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      weddings: {
+        Row: {
+          created_at: string
+          created_by: string
+          id: string
+          partner_one_name: string
+          partner_two_name: string
+          planned_date: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          id?: string
+          partner_one_name: string
+          partner_two_name: string
+          planned_date?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          id?: string
+          partner_one_name?: string
+          partner_two_name?: string
+          planned_date?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      accept_partner_invite: { Args: { p_token: string }; Returns: string }
+      create_partner_invite: {
+        Args: { p_email: string; p_wedding_id: string }
+        Returns: {
+          expires_at: string
+          invite_id: string
+          token: string
+        }[]
+      }
+      create_wedding_draft: {
+        Args: {
+          p_event_date?: string
+          p_event_name: string
+          p_event_side?: string
+          p_partner_one: string
+          p_partner_two: string
+          p_planned_date: string
+        }
+        Returns: string
+      }
+      inspect_invite: {
+        Args: { p_token: string }
+        Returns: {
+          email_matches: boolean
+          expires_at: string
+          status: string
+        }[]
+      }
+      is_wedding_manager: { Args: { _wedding_id: string }; Returns: boolean }
+      remove_manager: { Args: { p_membership_id: string }; Returns: undefined }
+      revoke_partner_invite: {
+        Args: { p_invite_id: string }
+        Returns: undefined
+      }
+      shares_wedding_with: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
       [_ in never]: never
