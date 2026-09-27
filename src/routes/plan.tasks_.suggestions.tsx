@@ -11,4 +11,4 @@ export const Route = createFileRoute("/plan/tasks_/suggestions")({
   ] }),
   component: Screen,
 });
-function Screen() { return <PhaseOne screen="tasks" />; }
+function Screen() { return <PhaseOne screen="tasks" focusId="suggestions" />; }

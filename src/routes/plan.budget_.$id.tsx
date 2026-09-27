@@ -11,4 +11,4 @@ export const Route = createFileRoute("/plan/budget_/$id")({
   ] }),
   component: Screen,
 });
-function Screen() { return <PhaseOne screen="budget" />; }
+function Screen() { const { id } = Route.useParams(); return <PhaseOne screen="budget" focusId={id} />; }

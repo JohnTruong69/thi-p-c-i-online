@@ -3,6 +3,7 @@ import { Download, Copy, QrCode } from 'lucide-react';
 import { Action, DemoAction, FormField, Header, Note, Panel, Row, SmallLabel, Status, inputCls, initialGuests, validGuests, useEventNames, type DemoGuest } from './PhaseOne';
 import { useLinks, SIDE_LABEL } from './PhaseTwoB';
 import { useDemoSession } from '@/lib/demo-session';
+import { linkReadiness } from '@/lib/phase2';
 import { guestsToCsv, validateLogin, validateEmail } from '@/lib/phase2c';
 
 /* F02 — đăng nhập / khôi phục mật khẩu (minh họa) */
@@ -71,5 +72,21 @@ export function HistoryScreen() {
     <div className="mt-5"><SmallLabel>LỊCH SỬ PHIÊN BẢN (MINH HỌA)</SmallLabel></div>
     <Panel>{snap ? <Row title={`Bản ${snap.revision}`} detail="Mốc “bản đã gửi” đặt trong phiên xem này — chưa gửi cho khách." to="/invitation/changes" /> : <Row title="Chưa có phiên bản" detail="Đặt mốc ở trang Thay đổi sau khi gửi để xem lịch sử." to="/invitation/changes" />}</Panel>
     <Action to="/publish" className="mt-5 w-full">Xem lại trước khi công bố</Action>
+  </div>;
+}
+
+/* F19 — kiểm thiếu thông tin nguồn cho từng link */
+export function CheckScreen() {
+  const events = useEventNames();
+  const [links] = useLinks();
+  const rows = links.map(l => ({ l, r: linkReadiness(l.enabled, l.eventIds.filter(id => events.some(e => e.id === id)), events) }));
+  const eventGaps = events.map(e => ({ e, gaps: [!e.date && 'ngày', !e.time && 'giờ', !e.venue.trim() && 'nơi tổ chức', !e.address.trim() && 'địa chỉ'].filter(Boolean) as string[] })).filter(x => x.gaps.length);
+  return <div className="max-w-3xl"><Header name="Kiểm tra thiệp" subtitle="THIỆP · THÔNG TIN CÒN THIẾU" />
+    <p className="-mt-3 mb-5 text-muted-foreground">Những gì cần bổ sung trước khi một link có thể được công bố. Kiểm tra từ dữ liệu trong phiên xem này.</p>
+    <SmallLabel>THEO TỪNG LINK</SmallLabel>
+    <Panel>{rows.map(({ l, r }) => <Row key={l.side} title={SIDE_LABEL[l.side]} detail={r.readiness === 'ready' ? 'Đủ thông tin' : r.readiness === 'off' ? 'Đang tắt — không công bố' : `Còn thiếu: ${r.missing.join(', ')}`} right={<Status tone={r.readiness === 'ready' ? 'sage' : r.readiness === 'off' ? 'warm' : 'copper'}>{r.readiness === 'ready' ? 'Sẵn sàng' : r.readiness === 'off' ? 'Đang tắt' : 'Cần sửa'}</Status>} to="/invitation/variants" />)}</Panel>
+    <div className="mt-5"><SmallLabel>THEO TỪNG BUỔI LỄ</SmallLabel></div>
+    <Panel>{eventGaps.length ? eventGaps.map(({ e, gaps }) => <div key={e.id} className="flex flex-wrap items-center justify-between gap-2 border-b border-border py-3 last:border-0"><div><strong>{e.name}</strong><p className="text-xs text-muted-foreground">Thiếu {gaps.join(', ')}</p></div><Action to="/wedding/events/$id" params={{ id: e.id }} variant="outline">Sửa buổi này</Action></div>) : <p className="text-sm">Mọi buổi lễ đã có ngày, giờ, nơi và địa chỉ.</p>}</Panel>
+    <Action to="/invitation/preview" variant="outline" className="mt-5 w-full">Xem trước thiệp</Action>
   </div>;
 }

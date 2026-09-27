@@ -120,9 +120,9 @@ export function CsvBatchScreen() {
 }
 
 /* ---------------- Suggested tasks ---------------- */
-export function SuggestionLibrary() {
+export function SuggestionLibrary({ autoOpen = false }: { autoOpen?: boolean }) {
   const [tasks, setTasks] = useDemoSession<DemoTask[]>('tasks', initialTasks, validTasks);
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(autoOpen);
   const [picked, setPicked] = useState<string[]>([]);
   const [msg, setMsg] = useState('');
   const existing = new Set(tasks.map(t => t.title));
@@ -133,8 +133,8 @@ export function SuggestionLibrary() {
     setTasks(t => [...t, ...add.map((s, i) => ({ id: `sg${Date.now()}-${i}`, title: s.title, event: 'Mọi buổi', due: '', owner: 'Cả hai', status: 'Cần làm' as const, tag: 'Chưa hẹn', bucket: 'Sắp tới' as const, added: true }))]);
     setOpen(false); setPicked([]); setMsg(`Đã thêm ${add.length} việc gợi ý vào danh sách (trong phiên).`);
   };
-  return <div className="mt-4"><Panel><h2 className="text-xl">Thư viện 43 việc gợi ý</h2><p className="mt-1 text-xs text-muted-foreground">Chỉ thêm những việc hai bạn chọn.</p><DemoAction variant="outline" className="mt-3" onClick={() => { setMsg(''); setOpen(true); }}><Plus /> Chọn việc gợi ý</DemoAction>{msg && <p role="status" className="mt-2 text-xs font-semibold text-sage-strong">{msg}</p>}</Panel>
-    <DemoDialog open={open} onOpenChange={setOpen} title="Việc gợi ý" description="Đánh dấu việc muốn thêm. Việc đã có sẽ không thêm lại." submitLabel={`Thêm ${picked.length} việc`} onSubmit={submit}>
+  return <div className="mt-4"><Panel item="suggestions"><h2 className="text-xl">Thư viện 43 việc gợi ý</h2><p className="mt-1 text-xs text-muted-foreground">Chỉ thêm những việc hai bạn chọn.</p><DemoAction variant="outline" className="mt-3" onClick={() => { setMsg(''); setOpen(true); }}><Plus /> Chọn việc gợi ý</DemoAction>{msg && <p role="status" className="mt-2 text-xs font-semibold text-sage-strong">{msg}</p>}</Panel>
+    <DemoDialog open={open} onOpenChange={o => { setOpen(o); if (!o && autoOpen) setTimeout(() => document.querySelector<HTMLElement>('[data-item="suggestions"] button')?.focus(), 50); }} title="Việc gợi ý" description="Đánh dấu việc muốn thêm. Việc đã có sẽ không thêm lại." submitLabel={`Thêm ${picked.length} việc`} onSubmit={submit}>
       {(['Sớm', '3 tháng trước', '1 tháng trước', 'Tuần cưới'] as const).map(phase => <fieldset key={phase}><legend className="text-xs font-bold uppercase text-primary">{phase}</legend><div className="mt-1 space-y-1">{SUGGESTED_TASKS.filter(s => s.phase === phase).map(s => { const has = existing.has(s.title); return <label key={s.id} className={`flex min-h-11 items-center gap-3 rounded-md border border-border px-3 text-sm ${has ? 'opacity-60' : ''}`}><input type="checkbox" className="size-4 accent-primary" disabled={has} checked={has || picked.includes(s.id)} onChange={e => setPicked(e.target.checked ? [...picked, s.id] : picked.filter(x => x !== s.id))} />{s.title}{has ? ' · đã có' : ''}</label>; })}</div></fieldset>)}
     </DemoDialog></div>;
 }

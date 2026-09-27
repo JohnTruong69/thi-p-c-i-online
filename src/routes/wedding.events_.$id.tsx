@@ -11,4 +11,4 @@ export const Route = createFileRoute("/wedding/events_/$id")({
   ] }),
   component: Screen,
 });
-function Screen() { return <PhaseOne screen="events" />; }
+function Screen() { const { id } = Route.useParams(); return <PhaseOne screen="events" focusId={id} />; }

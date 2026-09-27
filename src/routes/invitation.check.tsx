@@ -11,4 +11,4 @@ export const Route = createFileRoute("/invitation/check")({
   ] }),
   component: Screen,
 });
-function Screen() { return <PhaseOne screen="preview" />; }
+function Screen() { return <PhaseOne screen="check" />; }
