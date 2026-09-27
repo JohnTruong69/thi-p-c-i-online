@@ -27,8 +27,8 @@ describe('shared link selector', () => {
     expect(viewForToken('toString', links, events).kind).toBe('unknown');
     expect(viewForToken('demo-nha-gai', links.filter(l => l.side !== 'nha-gai'), events).kind).toBe('unknown');
   });
-  it('deleted Events are dropped', () => {
-    expect(linkView('chung', links, [events[1]!])).toMatchObject({ kind: 'ok', events: [events[1]] });
+  it('deleted Events are never silently dropped', () => {
+    expect(linkView('chung', links, [events[1]!]).kind).toBe('broken');
   });
   it('map URL uses the chosen address', () => expect(mapUrl('1 Lê Lợi, Huế')).toContain(encodeURIComponent('1 Lê Lợi, Huế')));
 });
