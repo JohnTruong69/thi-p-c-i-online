@@ -4,8 +4,9 @@ import { Link } from '@tanstack/react-router';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { ArrowRight, Copy, ExternalLink, ImagePlus, Loader2, QrCode, Star, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { WriteButton, useReadOnly } from './AccessStateBanner';
 import { eventsQuery, useMyWedding, type EventRow } from '@/lib/wedding-api';
-import { currentSnapshot, eventToSnap, invitationError, invitationQuery, photoUrlsQuery, publishInvitation, publishedRevision, removePhoto, revisionSnapshot, saveRevision, setCover, updateContent, updateLink, uploadPhoto, type InvitationBundle, type LinkRow } from '@/lib/invitation-api';
+import { isInvitationNotStartedReadOnly, currentSnapshot, eventToSnap, invitationError, invitationQuery, photoUrlsQuery, publishInvitation, publishedRevision, removePhoto, revisionSnapshot, saveRevision, setCover, updateContent, updateLink, uploadPhoto, type InvitationBundle, type LinkRow } from '@/lib/invitation-api';
 import { LINK_LABEL, LINK_SIDES, MAX_MESSAGE, MAX_TITLE, diffInvitation, linkState, validateContent, type LinkSide, type SnapEvent } from '@/lib/invitation';
 import { checkPhotos, MAX_PHOTOS } from '@/lib/phase2';
 import { mapUrl } from '@/lib/phase2d';
@@ -46,6 +47,7 @@ function useInvitation() {
 }
 function Gate({ iq, eq, children }: { iq: { isPending: boolean; isError: boolean; error: unknown; refetch: () => unknown }; eq: { isPending: boolean; isError: boolean; error: unknown; refetch: () => unknown }; children: React.ReactNode }) {
   if (iq.isPending || eq.isPending) return <Loading label="Đang mở thiệp của hai bạn…" />;
+  if (iq.isError && isInvitationNotStartedReadOnly(iq.error)) return <div role="status" className="max-w-xl"><Note tone="warm">Hai bạn chưa bắt đầu soạn thiệp trước khi đám cưới chuyển sang chế độ chỉ xem, nên hiện chưa có thiệp nào để xem. Gói mới chưa mở bán và chưa thể thanh toán, nên chưa tạo thiệp được lúc này. Các dữ liệu khác vẫn được giữ nguyên.</Note><Link to="/settings/data" className="mt-3 inline-block min-h-11 content-center font-semibold text-primary underline">Tải dữ liệu</Link></div>;
   if (iq.isError) return <LoadError error={iq.error} retry={() => iq.refetch()} />;
   if (eq.isError) return <LoadError error={eq.error} retry={() => eq.refetch()} />;
   return <>{children}</>;
@@ -58,7 +60,7 @@ const renderFor = (b: InvitationBundle, events: EventRow[], urls: Record<string,
 function SaveRevisionButton({ weddingId, variant = 'outline' }: { weddingId: string; variant?: 'default' | 'outline' }) {
   const qc = useQueryClient(); const [msg, setMsg] = useState('');
   const m = useMutation({ mutationFn: () => saveRevision(weddingId, ''), onSuccess: r => { setMsg(r.unchanged ? `Không có gì mới so với bản ${r.revision}.` : `Đã lưu thành bản ${r.revision}. Bản này chưa gửi cho khách.`); qc.invalidateQueries({ queryKey: ['invitation', weddingId] }); }, onError: e => setMsg(invitationError(e)) });
-  return <div><Button variant={variant} size="lg" className="min-h-11" disabled={m.isPending} onClick={() => m.mutate()}>{m.isPending && <Loader2 className="animate-spin" />}Lưu thành một bản</Button><p role="status" className="mt-1 text-xs font-semibold text-sage-strong">{msg}</p></div>;
+  return <div><WriteButton variant={variant} size="lg" className="min-h-11" disabled={m.isPending} onClick={() => m.mutate()}>{m.isPending && <Loader2 className="animate-spin" />}Lưu thành một bản</WriteButton><p role="status" className="mt-1 text-xs font-semibold text-sage-strong">{msg}</p></div>;
 }
 
 /* ================= Content + photos ================= */
@@ -85,7 +87,7 @@ function ContentBody({ weddingId, b, events, urls }: { weddingId: string; b: Inv
         <FormField label="Lời mời chung" id="invite-message"><textarea id="invite-message" maxLength={MAX_MESSAGE} value={message} onChange={e => { setMessage(e.target.value); setErr(''); setOk(''); }} rows={5} className="mt-2 w-full rounded-md border border-border bg-background p-3 text-sm" /></FormField>
         {err && <p role="alert" className="text-xs font-semibold text-destructive">{err}</p>}
         <p role="status" className="text-xs font-semibold text-sage-strong">{ok}</p>
-        <div className="flex flex-wrap gap-2"><Button type="submit" size="lg" className="min-h-11" disabled={save.isPending}>{save.isPending && <Loader2 className="animate-spin" />}Lưu nội dung</Button>{dirty && <span className="self-center text-xs text-primary">Có thay đổi chưa lưu</span>}</div>
+        <div className="flex flex-wrap gap-2"><WriteButton type="submit" size="lg" className="min-h-11" disabled={save.isPending}>{save.isPending && <Loader2 className="animate-spin" />}Lưu nội dung</WriteButton>{dirty && <span className="self-center text-xs text-primary">Có thay đổi chưa lưu</span>}</div>
       </form></Panel>
       <Panel><PhotoPanel weddingId={weddingId} b={b} urls={urls} /></Panel>
       <Panel><h2 className="text-xl">Bản lưu</h2><p className="mt-1 text-xs text-muted-foreground">Lưu lại toàn bộ nội dung, ảnh, link và buổi lễ hiện tại thành một bản để xem lịch sử và so sánh. Lưu bản không gửi gì cho khách.</p><div className="mt-3"><SaveRevisionButton weddingId={weddingId} /></div></Panel>
@@ -94,6 +96,7 @@ function ContentBody({ weddingId, b, events, urls }: { weddingId: string; b: Inv
   </div>;
 }
 function PhotoPanel({ weddingId, b, urls }: { weddingId: string; b: InvitationBundle; urls: Record<string, string> }) {
+  const ro = useReadOnly();
   const qc = useQueryClient(); const [busy, setBusy] = useState(''); const [msg, setMsg] = useState<{ ok: string; bad: string[] }>({ ok: '', bad: [] });
   const refresh = () => qc.invalidateQueries({ queryKey: ['invitation', weddingId] });
   const add = async (files: FileList | null) => {
@@ -111,15 +114,15 @@ function PhotoPanel({ weddingId, b, urls }: { weddingId: string; b: InvitationBu
   const cover = async (id: string | null) => { setBusy('Đang đặt ảnh bìa…'); try { await setCover(b.invitation.id, id); setMsg({ ok: id ? 'Đã đặt ảnh bìa.' : 'Đã bỏ ảnh bìa.', bad: [] }); } catch (e) { setMsg({ ok: '', bad: [invitationError(e)] }); } setBusy(''); refresh(); };
   const full = b.photos.length >= MAX_PHOTOS;
   return <div><div className="flex items-center justify-between"><h2 className="text-xl">Ảnh bìa và album</h2><span className="text-xs font-semibold">{b.photos.length}/{MAX_PHOTOS}</span></div>
-    <label className={`mt-3 flex min-h-20 cursor-pointer items-center justify-center gap-2 rounded-md border border-dashed border-border bg-background p-4 text-center text-sm focus-within:ring-2 focus-within:ring-ring ${full || busy ? 'pointer-events-none opacity-50' : ''}`}><ImagePlus className="size-5 shrink-0 text-primary" />{full ? 'Đã đủ 50 ảnh' : 'Chọn ảnh (JPG, PNG, WEBP · tối đa 10 MB/ảnh)'}<input type="file" multiple accept="image/jpeg,image/png,image/webp" className="sr-only" disabled={full || !!busy} onChange={e => { add(e.target.files); e.target.value = ''; }} /></label>
+    <label className={`mt-3 flex min-h-20 cursor-pointer items-center justify-center gap-2 rounded-md border border-dashed border-border bg-background p-4 text-center text-sm focus-within:ring-2 focus-within:ring-ring ${full || busy || ro ? 'pointer-events-none opacity-50' : ''}`}><ImagePlus className="size-5 shrink-0 text-primary" />{full ? 'Đã đủ 50 ảnh' : 'Chọn ảnh (JPG, PNG, WEBP · tối đa 10 MB/ảnh)'}<input type="file" multiple accept="image/jpeg,image/png,image/webp" className="sr-only" disabled={full || !!busy || ro} onChange={e => { add(e.target.files); e.target.value = ''; }} /></label>
     <p className="mt-1 text-[11px] text-muted-foreground">Ảnh được lưu riêng tư trong tài khoản, chỉ hai người quản lý xem được. Tối đa 50 ảnh khác nhau cho một đám cưới, gồm cả ảnh bìa; ảnh giống hệt chỉ tính một lần.</p>
     <div role="status" aria-live="polite" className="mt-2 text-xs">{busy && <p className="flex items-center gap-1 font-semibold"><Loader2 className="size-3 animate-spin" />{busy}</p>}{msg.ok && <p className="font-semibold text-sage-strong">{msg.ok}</p>}{msg.bad.map(x => <p key={x} className="font-semibold text-destructive">{x}</p>)}</div>
     {b.photos.length > 0 && <ul className="mt-2 grid grid-cols-3 gap-2 sm:grid-cols-4">{b.photos.map((p, i) => { const isCover = p.id === b.invitation.cover_photo_id; return <li key={p.id} className="relative">
       {urls[p.storage_path] ? <img src={urls[p.storage_path]} alt={`Ảnh ${i + 1}${isCover ? ' (ảnh bìa)' : ''}`} className={`aspect-square w-full rounded-md object-cover ${isCover ? 'ring-2 ring-primary' : ''}`} /> : <div className="aspect-square w-full rounded-md bg-muted" />}
       {isCover && <span className="absolute left-1 top-1 rounded-full bg-primary px-2 py-0.5 text-[10px] font-semibold text-primary-foreground">Ảnh bìa</span>}
       <div className="absolute bottom-1 right-1 flex gap-1">
-        <button type="button" disabled={!!busy} aria-label={isCover ? `Bỏ ảnh bìa (ảnh ${i + 1})` : `Đặt ảnh ${i + 1} làm ảnh bìa`} onClick={() => cover(isCover ? null : p.id)} className="grid size-9 place-items-center rounded-full bg-card/90 focus:outline-none focus:ring-2 focus:ring-ring"><Star className={`size-4 ${isCover ? 'fill-primary text-primary' : ''}`} /></button>
-        <button type="button" disabled={!!busy} aria-label={`Bỏ ảnh ${i + 1}`} onClick={() => del(p.id)} className="grid size-9 place-items-center rounded-full bg-card/90 focus:outline-none focus:ring-2 focus:ring-ring"><Trash2 className="size-4" /></button>
+        <button type="button" disabled={!!busy || ro} aria-label={isCover ? `Bỏ ảnh bìa (ảnh ${i + 1})` : `Đặt ảnh ${i + 1} làm ảnh bìa`} onClick={() => cover(isCover ? null : p.id)} className="grid size-9 place-items-center rounded-full bg-card/90 focus:outline-none focus:ring-2 focus:ring-ring"><Star className={`size-4 ${isCover ? 'fill-primary text-primary' : ''}`} /></button>
+        <button type="button" disabled={!!busy || ro} aria-label={`Bỏ ảnh ${i + 1}`} onClick={() => del(p.id)} className="grid size-9 place-items-center rounded-full bg-card/90 focus:outline-none focus:ring-2 focus:ring-ring"><Trash2 className="size-4" /></button>
       </div></li>; })}</ul>}
   </div>;
 }
@@ -135,6 +138,7 @@ export function RealLinksScreen() {
   </div>;
 }
 function LinkPanel({ weddingId, link, events }: { weddingId: string; link: LinkRow; events: EventRow[] }) {
+  const ro = useReadOnly();
   const qc = useQueryClient(); const [msg, setMsg] = useState(''); const [err, setErr] = useState('');
   const side = link.side as LinkSide; const snapEvents = events.map(eventToSnap);
   const r = linkState({ side, enabled: link.enabled, event_ids: link.event_ids }, snapEvents);
@@ -142,15 +146,15 @@ function LinkPanel({ weddingId, link, events }: { weddingId: string; link: LinkR
   const m = useMutation({ mutationFn: (p: { enabled?: boolean; event_ids?: string[]; done: string }) => updateLink(link.id, { ...(p.enabled !== undefined && { enabled: p.enabled }), ...(p.event_ids && { event_ids: p.event_ids }) }), onSuccess: (_d, p) => { setErr(''); setMsg(p.done); qc.invalidateQueries({ queryKey: ['invitation', weddingId] }); }, onError: e => { setMsg(''); setErr(invitationError(e)); } });
   return <Panel item={side}>
     <div className="flex flex-wrap items-center justify-between gap-2"><h2 className="text-xl">{LINK_LABEL[side]}</h2><Status tone={r.readiness === 'ready' ? 'sage' : r.readiness === 'off' ? 'warm' : 'copper'}>{r.readiness === 'ready' ? 'Sẵn sàng' : r.readiness === 'off' ? 'Đang tắt' : 'Cần sửa'}</Status></div>
-    <fieldset className="mt-3" disabled={m.isPending}><legend className="text-xs font-semibold">Buổi có trong link</legend>
+    <fieldset className="mt-3" disabled={m.isPending || ro}><legend className="text-xs font-semibold">Buổi có trong link</legend>
       {events.length === 0 && <p className="mt-1 text-xs text-muted-foreground">Chưa có buổi lễ nào. <Link to="/wedding/events" className="font-semibold text-primary underline">Thêm buổi lễ</Link></p>}
       <div className="mt-1 grid gap-1 sm:grid-cols-2">{events.map(e => <label key={e.id} className="flex min-h-11 items-center gap-3 rounded-md border border-border px-3 text-sm"><input type="checkbox" className="size-4 accent-primary" checked={link.event_ids.includes(e.id)} onChange={x => m.mutate({ event_ids: x.target.checked ? [...link.event_ids, e.id] : link.event_ids.filter(id => id !== e.id), done: `Đã ${x.target.checked ? 'thêm' : 'bỏ'} ${e.name}.` })} />{e.name}</label>)}</div>
     </fieldset>
     {r.missing.length > 0 && <p className="mt-2 text-xs font-semibold text-primary">Còn thiếu: {r.missing.join(', ')}</p>}
-    {orphans.length > 0 && <div className="mt-2 rounded-md bg-copper-soft p-2 text-xs"><strong>{orphans.length} buổi trong link đã bị bỏ</strong> — cần chọn lại buổi thay thế rồi gỡ buổi cũ.<Button variant="outline" size="sm" className="ml-2 min-h-9" disabled={m.isPending} onClick={() => m.mutate({ event_ids: link.event_ids.filter(id => !orphans.includes(id)), done: 'Đã gỡ buổi đã bị bỏ. Hãy chọn lại buổi nếu cần.' })}>Gỡ buổi đã bị bỏ</Button></div>}
+    {orphans.length > 0 && <div className="mt-2 rounded-md bg-copper-soft p-2 text-xs"><strong>{orphans.length} buổi trong link đã bị bỏ</strong> — cần chọn lại buổi thay thế rồi gỡ buổi cũ.<WriteButton variant="outline" size="sm" className="ml-2 min-h-9" disabled={m.isPending} onClick={() => m.mutate({ event_ids: link.event_ids.filter(id => !orphans.includes(id)), done: 'Đã gỡ buổi đã bị bỏ. Hãy chọn lại buổi nếu cần.' })}>Gỡ buổi đã bị bỏ</WriteButton></div>}
     {err && <p role="alert" className="mt-2 text-xs font-semibold text-destructive">{err}</p>}
     <p role="status" className="mt-2 text-xs font-semibold text-sage-strong">{msg}</p>
-    <div className="mt-2 flex flex-wrap gap-2"><Button variant="outline" size="lg" className="min-h-11" disabled={m.isPending} onClick={() => m.mutate({ enabled: !link.enabled, done: link.enabled ? 'Đã tắt link.' : 'Đã bật link (chưa công bố).' })}>{m.isPending && <Loader2 className="animate-spin" />}{link.enabled ? 'Tắt link' : 'Bật link'}</Button>{r.missing.some(x => !x.startsWith('Buổi đã bị bỏ')) && <Action to="/invitation/check" variant="ghost">Xem thông tin còn thiếu <ArrowRight /></Action>}</div>
+    <div className="mt-2 flex flex-wrap gap-2"><WriteButton variant="outline" size="lg" className="min-h-11" disabled={m.isPending} onClick={() => m.mutate({ enabled: !link.enabled, done: link.enabled ? 'Đã tắt link.' : 'Đã bật link (chưa công bố).' })}>{m.isPending && <Loader2 className="animate-spin" />}{link.enabled ? 'Tắt link' : 'Bật link'}</WriteButton>{r.missing.some(x => !x.startsWith('Buổi đã bị bỏ')) && <Action to="/invitation/check" variant="ghost">Xem thông tin còn thiếu <ArrowRight /></Action>}</div>
   </Panel>;
 }
 
@@ -246,7 +250,7 @@ export function RealPublishReviewScreen() {
         <Panel>{ready.length ? ready.map(({ s, l }) => <Row key={s} title={LINK_LABEL[s]} detail={l.event_ids.map(id => events.find(e => e.id === id)?.name).filter(Boolean).join(' / ')} right={<Status>Sẵn sàng</Status>} />) : <p className="text-sm text-muted-foreground">Chưa có link nào đủ thông tin.</p>}</Panel>
         <div className="mt-4"><SmallLabel>CHƯA CÔNG BỐ ĐƯỢC</SmallLabel></div>
         <Panel>{rs.filter(x => x.r.readiness !== 'ready').map(({ s, r }) => <Row key={s} title={LINK_LABEL[s]} detail={r.readiness === 'off' ? 'Đang tắt' : `Thiếu: ${r.missing.join(', ')}`} to="/invitation/variants" />)}</Panel>
-        <Button size="lg" className="mt-5 min-h-11 w-full" disabled={m.isPending || ready.length === 0} onClick={() => { setRes(null); m.mutate(); }}>{m.isPending && <Loader2 className="animate-spin" />}Công bố thiệp</Button>
+        <WriteButton size="lg" className="mt-5 min-h-11 w-full" disabled={m.isPending || ready.length === 0} onClick={() => { setRes(null); m.mutate(); }}>{m.isPending && <Loader2 className="animate-spin" />}Công bố thiệp</WriteButton>
         {ready.length === 0 && <p className="mt-1 text-xs text-muted-foreground">Chưa bấm được: cần ít nhất một link đang bật và đủ thông tin.</p>}
         {res && <p role={res.ok ? 'status' : 'alert'} className={`mt-2 text-sm font-semibold ${res.ok ? 'text-sage-strong' : 'text-destructive'}`}>{res.text}</p>}
         <Action to="/plans" variant="outline" className="mt-3 w-full">Xem gói thiệp cưới</Action>

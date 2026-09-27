@@ -3,6 +3,7 @@ import { Link, useNavigate } from '@tanstack/react-router';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Copy, Eye, Loader2, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { WriteButton } from './AccessStateBanner';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { supabase } from '@/integrations/supabase/client';
 import { markManualSignOut } from '@/lib/auth-events';
@@ -68,7 +69,7 @@ export function ViewerTeamPanel() {
       {viewers.map(v => <div key={v.id} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-b border-border py-4 last:border-0">
         <div className="min-w-0"><div className="font-display text-[17px] font-semibold break-words">{v.email}</div><p className="mt-1 text-xs text-muted-foreground break-words">Chỉ xem: {grantSummary(v)}</p></div>
         <div className="flex flex-col items-end gap-1"><Status>Người thân xem</Status>
-          <Button variant="ghost" size="sm" className="min-h-11" onClick={() => { setEditErr(''); setEdit({ id: v.id, label: v.email, modules: v.modules as ViewerModule[], sides: v.sides as ViewerSide[] }); }}>Sửa quyền</Button>
+          <WriteButton variant="ghost" size="sm" className="min-h-11" onClick={() => { setEditErr(''); setEdit({ id: v.id, label: v.email, modules: v.modules as ViewerModule[], sides: v.sides as ViewerSide[] }); }}>Sửa quyền</WriteButton>
           <Button variant="ghost" size="sm" className="min-h-11" onClick={() => setConfirm({ kind: 'viewer', id: v.id, label: v.email })}>Rút quyền</Button></div>
       </div>)}
       {pending.map(i => <div key={i.id} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-b border-border py-4 last:border-0">
@@ -83,7 +84,7 @@ export function ViewerTeamPanel() {
       <div className="mt-3 flex flex-col gap-2 sm:flex-row"><input readOnly aria-label="Đường dẫn lời mời xem" className={`${inputCls} mt-0`} value={created.url} onFocus={e => e.currentTarget.select()} /><Button size="lg" className="min-h-11" onClick={async () => { try { await navigator.clipboard.writeText(created.url); setCopied(true); } catch { setCopied(false); } }}><Copy className="size-4" />{copied ? 'Đã sao chép' : 'Sao chép'}</Button></div>
     </Panel></div>}
     <div className="mt-4">{used < MAX_VIEWERS
-      ? <Button size="lg" variant="outline" className="min-h-11" onClick={() => { setEmail(''); setErr(''); setMods(['events']); setSides(['chung']); setOpen(true); }}><Plus className="size-4" /> Mời người thân xem</Button>
+      ? <WriteButton size="lg" variant="outline" className="min-h-11" onClick={() => { setEmail(''); setErr(''); setMods(['events']); setSides(['chung']); setOpen(true); }}><Plus className="size-4" /> Mời người thân xem</WriteButton>
       : <p className="text-xs text-muted-foreground">Đã đủ hai người thân. Hủy lời mời hoặc rút quyền để mời người khác.</p>}</div>
     <DemoDialog real open={open} onOpenChange={setOpen} title="Mời người thân xem" description="Người thân chỉ xem được phần và bên hai bạn chọn; không sửa được gì." submitLabel={inv.isPending ? 'Đang tạo…' : 'Tạo lời mời'} busy={inv.isPending} onSubmit={submit}>
       <FormField id="viewer-email" label="Email người thân *" error={err}><input id="viewer-email" autoFocus type="email" autoComplete="email" maxLength={255} className={inputCls} value={email} aria-invalid={!!err} onChange={e => { setEmail(e.target.value); setErr(''); }} /></FormField>
