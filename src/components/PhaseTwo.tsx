@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from '@tanstack/react-router';
 import { ArrowRight, Check, Download, Plus, Undo2, Upload } from 'lucide-react';
 import { useDemoSession } from '@/lib/demo-session';
 import { buildPreview, guessColumns, parseCsv, summarize, PREVIEW_LIMIT, SAMPLE_CSV, SUGGESTED_TASKS, matchResponse, canClientSet, type ColumnMap, type CsvRow, type CsvTable, type OrderStatus } from '@/lib/phase2';
@@ -12,6 +13,7 @@ export function CsvImportScreen() {
   const [guests, setGuests] = useDemoSession<DemoGuest[]>('guests', initialGuests, validGuests);
   const [, setBatch] = useDemoSession<DemoBatch | null>('csv-batch', null, validBatch);
   const events = useEventNames();
+  const navigate = useNavigate();
   const [step, setStep] = useState(0);
   const [file, setFile] = useState('');
   const [table, setTable] = useState<CsvTable | null>(null);
@@ -49,7 +51,7 @@ export function CsvImportScreen() {
     const created: DemoGuest[] = add.map((r, i) => ({ id: `csv${stamp}-${i}`, name: r.name, phone: r.phone, side: r.side, events: eventIds, party: r.party, state: 'Chưa gửi', added: true }));
     setGuests(g => [...created, ...g]);
     setBatch({ id: `b${stamp}`, filename: file, addedIds: created.map(c => c.id), skipped: rows.length - add.length - sum.invalid, invalid: sum.invalid, undone: false, at: new Date().toISOString() });
-    location.assign('/guests/import/demo-batch');
+    navigate({ to: '/guests/import/$batch', params: { batch: 'demo-batch' } });
   };
   const setDecision = (row: number, decision: CsvRow['decision']) => setRows(rs => rs.map(r => (r.row === row ? { ...r, decision } : r)));
 
@@ -111,7 +113,7 @@ export function CsvBatchScreen() {
   if (!batch) return <div className="max-w-3xl"><Header name="Kết quả nhập" subtitle="NHẬP CSV" /><Note tone="warm">Chưa có lần nhập nào trong phiên xem này.</Note><Action to="/guests/import" className="mt-5 w-full">Nhập file CSV</Action></div>;
   const undo = () => { const ids = new Set(batch.addedIds); setGuests(g => g.filter(x => !ids.has(x.id))); setBatch({ ...batch, undone: true }); };
   return <div className="max-w-3xl"><Header name="Kết quả nhập" subtitle="NHẬP CSV · BƯỚC 3/3" />
-    <Panel className="bg-foreground text-primary-foreground" role="status"><div className="text-xs">{batch.filename}</div><div className="mt-1 font-display text-4xl">{batch.undone ? 'Đã hoàn tác' : `${batch.addedIds.length} khách đã thêm`}</div><p className="mt-2 text-xs">{batch.skipped} dòng bỏ qua · {batch.invalid} dòng lỗi · chỉ trong phiên xem này</p></Panel>
+    <Panel className="bg-foreground text-primary-foreground"><div className="text-xs">{batch.filename}</div><div className="mt-1 font-display text-4xl">{batch.undone ? 'Đã hoàn tác' : `${batch.addedIds.length} khách đã thêm`}</div><p className="mt-2 text-xs">{batch.skipped} dòng bỏ qua · {batch.invalid} dòng lỗi · chỉ trong phiên xem này</p></Panel>
     {!batch.undone && <DemoAction variant="outline" className="mt-4 w-full" onClick={undo}><Undo2 /> Hoàn tác lần nhập này</DemoAction>}
     <Action to="/guests" className="mt-3 w-full">Về sổ khách <ArrowRight /></Action>
   </div>;
@@ -183,6 +185,6 @@ export function OrderStatusDemo() {
   return <Panel className="mt-4"><SmallLabel>TRẠNG THÁI ĐƠN MINH HỌA</SmallLabel><div role="status" className="font-display text-2xl">{LABEL[status]}</div>
     <p className="mt-1 text-xs text-muted-foreground">{status === 'verifying' ? 'Trong bản thật, hệ thống tự đối chiếu giao dịch; trang này không tự chuyển sang đã trả.' : status === 'needs_support' ? 'Trong bản thật, hai bạn gửi mã đơn để được hỗ trợ. Bản dùng thử chưa có kênh hỗ trợ.' : 'Chưa ghi nhận giao dịch.'}</p>
     <div className="mt-3 flex flex-wrap gap-2">{(['order_pending', 'verifying', 'needs_support'] as OrderStatus[]).filter(s => s !== status).map(s => <DemoAction key={s} variant="outline" onClick={() => canClientSet(status, s) && setStatus(s)} className={canClientSet(status, s) ? '' : 'hidden'}>Xem “{LABEL[s]}”</DemoAction>)}
-      <DemoAction variant="outline" className="opacity-60" onClick={() => undefined}>Đã xác minh — cần hệ thống thanh toán</DemoAction></div>
+      <Status tone="warm">Đã xác minh: chỉ hệ thống thanh toán thật bật được</Status></div>
     <p className="mt-2 text-xs text-muted-foreground">Trạng thái “Đã xác minh” chỉ có thể đến từ giao dịch thật được hệ thống xác nhận, không bật được trong bản dùng thử.</p></Panel>;
 }
