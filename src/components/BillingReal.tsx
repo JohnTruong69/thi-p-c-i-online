@@ -49,7 +49,7 @@ function useOwnerPackage(): 'loading' | 'none' | 'paid' | 'legacy_unpaid' {
 }
 
 /** What this account should do about the package: already covered, existing wedding waiting for sale, or no wedding yet (go to /goi). */
-function OwnerPackageStatus({ kind, expiresAt }: { kind: 'none' | 'paid' | 'legacy_unpaid'; expiresAt?: string | null }) {
+function OwnerPackageStatus({ kind, expiresAt }: { kind: 'none' | 'paid' | 'legacy_unpaid'; expiresAt?: string | null | undefined }) {
   if (kind === 'none') return <Note tone="warm">Tài khoản này chưa có đám cưới. Khách hàng mới thanh toán gói trước ở trang gói, sau đó dùng đường dẫn đơn để tạo đám cưới. <Link to="/goi" className="font-semibold text-primary underline">Xem gói và cách thanh toán</Link></Note>;
   if (kind === 'paid') return <Note tone="sage"><strong>Đám cưới này đã có quyền sử dụng</strong> đến {vnTime(expiresAt)} (giờ Việt Nam). Hai bạn không cần thanh toán thêm.</Note>;
   return <Note tone="sage"><strong>Đám cưới của hai bạn vẫn dùng bình thường.</strong> Hai bạn chưa phải trả khoản nào; dữ liệu được giữ nguyên. Nếu sau này có phương án chuyển sang gói mới cho đám cưới hiện có, đó vẫn là cùng một gói duy nhất ở trên — không phải khoản thu riêng cho thiệp — và sẽ được thông báo rõ trước khi áp dụng.</Note>;
