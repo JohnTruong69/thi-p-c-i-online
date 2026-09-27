@@ -156,3 +156,59 @@ export function linkReadiness(enabled: boolean, eventIds: string[], events: Read
 
 export const MAX_PHOTOS = 50;
 export const MAX_LINKS = 3;
+
+// ---------- Event date change impact ----------
+export const dayDiff = (from: string, to: string) => Math.round((Date.parse(to + 'T00:00:00Z') - Date.parse(from + 'T00:00:00Z')) / 86400000);
+export const shiftDate = (d: string, days: number) => new Date(Date.parse(d + 'T00:00:00Z') + days * 86400000).toISOString().slice(0, 10);
+export type ImpactTask = { id: string; title: string; event: string; due: string };
+export type ImpactCost = { id: string; title: string; event: string; installments: { label: string; due: string }[] };
+export type ImpactLink = { side: string; enabled: boolean; eventIds: string[] };
+export type DateImpact = {
+  deltaDays: number;
+  /** Tasks tied to the event with a due date: shifted by the same number of days (relative to the event), only if the user accepts. */
+  tasks: { id: string; title: string; from: string; to: string }[];
+  /** Deposits / fixed-date payments: warning only, never changed automatically. */
+  costWarnings: { title: string; label: string; due: string }[];
+  /** Enabled links containing the event: need review before any public update. */
+  linksToReview: string[];
+};
+export function computeDateImpact(eventId: string, oldDate: string, newDate: string, tasks: ImpactTask[], costs: ImpactCost[], links: ImpactLink[]): DateImpact {
+  const deltaDays = oldDate && newDate ? dayDiff(oldDate, newDate) : 0;
+  return {
+    deltaDays,
+    tasks: deltaDays ? tasks.filter(t => t.event === eventId && t.due).map(t => ({ id: t.id, title: t.title, from: t.due, to: shiftDate(t.due, deltaDays) })) : [],
+    costWarnings: costs.filter(c => c.event === eventId).flatMap(c => c.installments.filter(i => i.due).map(i => ({ title: c.title, label: i.label, due: i.due }))),
+    linksToReview: links.filter(l => l.enabled && l.eventIds.includes(eventId)).map(l => l.side),
+  };
+}
+
+// ---------- Photos ----------
+export const PHOTO_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+export const MAX_PHOTO_BYTES = 8 * 1024 * 1024;
+export function checkPhotos(files: { name: string; type: string; size: number }[], current: number) {
+  const accepted: number[] = []; const rejected: { name: string; reason: string }[] = [];
+  files.forEach((f, i) => {
+    if (!PHOTO_TYPES.includes(f.type)) rejected.push({ name: f.name, reason: 'Chỉ nhận JPG, PNG hoặc WEBP' });
+    else if (f.size > MAX_PHOTO_BYTES) rejected.push({ name: f.name, reason: 'Ảnh lớn hơn 8 MB' });
+    else if (current + accepted.length >= MAX_PHOTOS) rejected.push({ name: f.name, reason: `Đã đủ ${MAX_PHOTOS} ảnh` });
+    else accepted.push(i);
+  });
+  return { accepted, rejected };
+}
+
+// ---------- Invitation snapshot diff ----------
+export type Snapshot = { revision: number; title: string; message: string; events: { id: string; name: string; date: string; time: string; venue: string; address: string }[] };
+export type Change = { field: string; before: string; after: string; eventId?: string };
+export function diffSnapshot(sent: Snapshot, current: Omit<Snapshot, 'revision'>): Change[] {
+  const out: Change[] = [];
+  if (sent.title !== current.title) out.push({ field: 'Tên hiển thị', before: sent.title, after: current.title });
+  if (sent.message !== current.message) out.push({ field: 'Lời mời', before: sent.message, after: current.message });
+  const keys = [['name', 'Tên buổi'], ['date', 'Ngày'], ['time', 'Giờ'], ['venue', 'Nơi'], ['address', 'Địa chỉ']] as const;
+  for (const e of sent.events) {
+    const now = current.events.find(x => x.id === e.id);
+    if (!now) { out.push({ field: `${e.name}`, before: 'Có trong thiệp', after: 'Đã bỏ buổi', eventId: e.id }); continue; }
+    for (const [k, l] of keys) if (e[k] !== now[k]) out.push({ field: `${now.name} · ${l}`, before: e[k] || '(trống)', after: now[k] || '(trống)', eventId: e.id });
+  }
+  for (const n of current.events) if (!sent.events.some(e => e.id === n.id)) out.push({ field: n.name, before: '(chưa có)', after: 'Buổi mới', eventId: n.id });
+  return out;
+}

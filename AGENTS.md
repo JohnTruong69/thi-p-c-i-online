@@ -11,3 +11,4 @@
 - Owner navigation groups persistent desktop child links by task while mobile keeps exactly five primary tabs and exposes child routes inside their parent screens; this preserves discoverability without changing V3 structure.
 - Phase 2 state logic (CSV parse/validate/dedupe, 43 suggested tasks, RSVP matching, order transitions, link readiness) lives in pure src/lib/phase2.ts with vitest tests; UI never marks an order paid client-side and ambiguous RSVP names are never auto-merged.
 - CSV files are parsed in the browser only (never uploaded); imported guests and undo live in the tab session.
+- Event date edits go through a computed impact review (tasks shift only on consent, payment dates warn only, enabled links flagged); link versions live in tab session and publication is always 'unpublished' client-side; invitation photos are object URLs in tab memory only.
