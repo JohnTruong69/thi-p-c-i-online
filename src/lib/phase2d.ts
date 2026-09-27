@@ -15,6 +15,8 @@ export type LinkCfg = { side: EventSide; enabled: boolean; eventIds: string[] };
 export type LinkView<E> =
   | { kind: 'unknown' }
   | { kind: 'off'; side: EventSide }
+  /** Enabled but references a removed Event or has no existing Event: guests see a neutral page. */
+  | { kind: 'broken'; side: EventSide }
   | { kind: 'ok'; side: EventSide; events: E[] };
 
 /** Events a link shows: only enabled links, only chosen Events that still exist, in Event order. */
@@ -23,7 +25,9 @@ export function linkView<E extends { id: string }>(side: EventSide | undefined, 
   const l = links.find(x => x.side === side);
   if (!l) return { kind: 'unknown' };
   if (!l.enabled) return { kind: 'off', side };
-  return { kind: 'ok', side, events: events.filter(e => l.eventIds.includes(e.id)) };
+  const shown = events.filter(e => l.eventIds.includes(e.id));
+  if (!shown.length || l.eventIds.some(id => !events.some(e => e.id === id))) return { kind: 'broken', side };
+  return { kind: 'ok', side, events: shown };
 }
 export const viewForToken = <E extends { id: string }>(token: string, links: LinkCfg[], events: E[]) =>
   linkView(Object.prototype.hasOwnProperty.call(DEMO_TOKENS, token) ? DEMO_TOKENS[token] : undefined, links, events);

@@ -27,8 +27,8 @@ describe('shared link selector', () => {
     expect(viewForToken('toString', links, events).kind).toBe('unknown');
     expect(viewForToken('demo-nha-gai', links.filter(l => l.side !== 'nha-gai'), events).kind).toBe('unknown');
   });
-  it('deleted Events are dropped', () => {
-    expect(linkView('chung', links, [events[1]!])).toMatchObject({ kind: 'ok', events: [events[1]] });
+  it('deleted Events are never silently dropped', () => {
+    expect(linkView('chung', links, [events[1]!]).kind).toBe('broken');
   });
   it('map URL uses the chosen address', () => expect(mapUrl('1 Lê Lợi, Huế')).toContain(encodeURIComponent('1 Lê Lợi, Huế')));
 });
@@ -112,5 +112,20 @@ describe('clearing an Event date', () => {
     expect(i.tasks).toEqual([]);
     expect(i.costWarnings).toHaveLength(1);
     expect(i.linksToReview).toEqual(['chung']);
+  });
+});
+
+describe('enabled link with removed Events', () => {
+  const evs = [{ id: 'e1', name: 'Lễ' }];
+  it('only orphan ids → broken (neutral page, no RSVP)', () => {
+    expect(linkView('chung', [{ side: 'chung', enabled: true, eventIds: ['gone'] }], evs).kind).toBe('broken');
+    expect(linkView('chung', [{ side: 'chung', enabled: true, eventIds: [] }], evs).kind).toBe('broken');
+  });
+  it('valid + orphan → broken until owners fix it', () => {
+    expect(viewForToken('demo-chung', [{ side: 'chung', enabled: true, eventIds: ['e1', 'gone'] }], evs).kind).toBe('broken');
+  });
+  it('valid-only link still opens; off stays off', () => {
+    expect(linkView('chung', [{ side: 'chung', enabled: true, eventIds: ['e1'] }], evs).kind).toBe('ok');
+    expect(linkView('chung', [{ side: 'chung', enabled: false, eventIds: ['gone'] }], evs).kind).toBe('off');
   });
 });
