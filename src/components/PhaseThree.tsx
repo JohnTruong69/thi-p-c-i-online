@@ -39,7 +39,7 @@ export function WeddingGate({ children, allowWithout }: { children: React.ReactN
   const q = useMyWedding();
   if (q.isPending) return <Loading label="Đang mở đám cưới của hai bạn…" />;
   if (q.isError) return <LoadError error={q.error} retry={() => q.refetch()} />;
-  if (isEmptyWedding(q.data) && !allowWithout) return <div className="mx-auto max-w-xl"><Header name="Bắt đầu đám cưới của hai bạn" subtitle="CHƯA CÓ ĐÁM CƯỚI" /><Note>Tài khoản này chưa có đám cưới nào. Hãy ghi tên hai bạn và buổi lễ đầu tiên; mọi thứ sẽ được lưu vào tài khoản. Nếu người còn lại đã mời bạn, hãy mở đường dẫn lời mời họ gửi.</Note><Button asChild size="lg" className="mt-5 min-h-11 w-full"><Link to="/wedding/new">Tạo đám cưới <ArrowRight /></Link></Button></div>;
+  if (isEmptyWedding(q.data) && !allowWithout) return <div className="mx-auto max-w-xl"><Header name="Bắt đầu đám cưới của hai bạn" subtitle="CHƯA CÓ ĐÁM CƯỚI" /><Note>Tài khoản này chưa có đám cưới nào. Hãy ghi tên hai bạn và buổi lễ đầu tiên; mọi thứ sẽ được lưu vào tài khoản. Nếu người còn lại đã mời bạn, hãy mở đường dẫn lời mời họ gửi.</Note><Button asChild size="lg" className="mt-5 min-h-11 w-full"><Link to="/wedding/new">Tạo đám cưới <ArrowRight /></Link></Button><Button asChild size="lg" variant="outline" className="mt-2 min-h-11 w-full"><Link to="/view">Xem kế hoạch người thân chia sẻ</Link></Button></div>;
   return <>{q.data && <AccessStateBanner weddingId={q.data.id} />}{children}</>;
 }
 

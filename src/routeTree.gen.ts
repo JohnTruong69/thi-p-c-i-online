@@ -24,8 +24,10 @@ import { Route as AuthenticatedHomeRouteImport } from './routes/_authenticated/h
 import { Route as AuthenticatedPlansRouteImport } from './routes/_authenticated/plans'
 import { Route as AuthenticatedPublishRouteImport } from './routes/_authenticated/publish'
 import { Route as AuthenticatedRsvpRouteImport } from './routes/_authenticated/rsvp'
+import { Route as AuthenticatedViewRouteImport } from './routes/_authenticated/view'
 import { Route as ITokenRouteImport } from './routes/i.$token'
 import { Route as InviteTokenRouteImport } from './routes/invite.$token'
+import { Route as ViewerInviteTokenRouteImport } from './routes/viewer-invite.$token'
 import { Route as AuthenticatedGuestsIdRouteImport } from './routes/_authenticated/guests_.$id'
 import { Route as AuthenticatedGuestsExportRouteImport } from './routes/_authenticated/guests_.export'
 import { Route as AuthenticatedGuestsImportRouteImport } from './routes/_authenticated/guests_.import'
@@ -39,6 +41,7 @@ import { Route as AuthenticatedPlanBudgetRouteImport } from './routes/_authentic
 import { Route as AuthenticatedPlanTasksRouteImport } from './routes/_authenticated/plan.tasks'
 import { Route as AuthenticatedSettingsDataRouteImport } from './routes/_authenticated/settings.data'
 import { Route as AuthenticatedSettingsTeamRouteImport } from './routes/_authenticated/settings.team'
+import { Route as AuthenticatedViewWeddingIdRouteImport } from './routes/_authenticated/view_.$weddingId'
 import { Route as AuthenticatedWeddingEventsRouteImport } from './routes/_authenticated/wedding.events'
 import { Route as AuthenticatedWeddingNewRouteImport } from './routes/_authenticated/wedding.new'
 import { Route as ITokenExpiredRouteImport } from './routes/i.$token_.expired'
@@ -125,6 +128,11 @@ const AuthenticatedRsvpRoute = AuthenticatedRsvpRouteImport.update({
   path: '/rsvp',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedViewRoute = AuthenticatedViewRouteImport.update({
+  id: '/view',
+  path: '/view',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const ITokenRoute = ITokenRouteImport.update({
   id: '/i/$token',
   path: '/i/$token',
@@ -133,6 +141,11 @@ const ITokenRoute = ITokenRouteImport.update({
 const InviteTokenRoute = InviteTokenRouteImport.update({
   id: '/invite/$token',
   path: '/invite/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ViewerInviteTokenRoute = ViewerInviteTokenRouteImport.update({
+  id: '/viewer-invite/$token',
+  path: '/viewer-invite/$token',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedGuestsIdRoute = AuthenticatedGuestsIdRouteImport.update({
@@ -208,6 +221,12 @@ const AuthenticatedSettingsTeamRoute =
   AuthenticatedSettingsTeamRouteImport.update({
     id: '/settings/team',
     path: '/settings/team',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedViewWeddingIdRoute =
+  AuthenticatedViewWeddingIdRouteImport.update({
+    id: '/view_/$weddingId',
+    path: '/view/$weddingId',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedWeddingEventsRoute =
@@ -288,8 +307,10 @@ export interface FileRoutesByFullPath {
   '/plans': typeof AuthenticatedPlansRoute
   '/publish': typeof AuthenticatedPublishRoute
   '/rsvp': typeof AuthenticatedRsvpRoute
+  '/view': typeof AuthenticatedViewRoute
   '/i/$token': typeof ITokenRoute
   '/invite/$token': typeof InviteTokenRoute
+  '/viewer-invite/$token': typeof ViewerInviteTokenRoute
   '/guests/$id': typeof AuthenticatedGuestsIdRoute
   '/guests/export': typeof AuthenticatedGuestsExportRoute
   '/guests/import': typeof AuthenticatedGuestsImportRoute
@@ -303,6 +324,7 @@ export interface FileRoutesByFullPath {
   '/plan/tasks': typeof AuthenticatedPlanTasksRoute
   '/settings/data': typeof AuthenticatedSettingsDataRoute
   '/settings/team': typeof AuthenticatedSettingsTeamRoute
+  '/view/$weddingId': typeof AuthenticatedViewWeddingIdRoute
   '/wedding/events': typeof AuthenticatedWeddingEventsRoute
   '/wedding/new': typeof AuthenticatedWeddingNewRoute
   '/i/$token/expired': typeof ITokenExpiredRoute
@@ -330,8 +352,10 @@ export interface FileRoutesByTo {
   '/plans': typeof AuthenticatedPlansRoute
   '/publish': typeof AuthenticatedPublishRoute
   '/rsvp': typeof AuthenticatedRsvpRoute
+  '/view': typeof AuthenticatedViewRoute
   '/i/$token': typeof ITokenRoute
   '/invite/$token': typeof InviteTokenRoute
+  '/viewer-invite/$token': typeof ViewerInviteTokenRoute
   '/guests/$id': typeof AuthenticatedGuestsIdRoute
   '/guests/export': typeof AuthenticatedGuestsExportRoute
   '/guests/import': typeof AuthenticatedGuestsImportRoute
@@ -345,6 +369,7 @@ export interface FileRoutesByTo {
   '/plan/tasks': typeof AuthenticatedPlanTasksRoute
   '/settings/data': typeof AuthenticatedSettingsDataRoute
   '/settings/team': typeof AuthenticatedSettingsTeamRoute
+  '/view/$weddingId': typeof AuthenticatedViewWeddingIdRoute
   '/wedding/events': typeof AuthenticatedWeddingEventsRoute
   '/wedding/new': typeof AuthenticatedWeddingNewRoute
   '/i/$token/expired': typeof ITokenExpiredRoute
@@ -374,8 +399,10 @@ export interface FileRoutesById {
   '/_authenticated/plans': typeof AuthenticatedPlansRoute
   '/_authenticated/publish': typeof AuthenticatedPublishRoute
   '/_authenticated/rsvp': typeof AuthenticatedRsvpRoute
+  '/_authenticated/view': typeof AuthenticatedViewRoute
   '/i/$token': typeof ITokenRoute
   '/invite/$token': typeof InviteTokenRoute
+  '/viewer-invite/$token': typeof ViewerInviteTokenRoute
   '/_authenticated/guests_/$id': typeof AuthenticatedGuestsIdRoute
   '/_authenticated/guests_/export': typeof AuthenticatedGuestsExportRoute
   '/_authenticated/guests_/import': typeof AuthenticatedGuestsImportRoute
@@ -389,6 +416,7 @@ export interface FileRoutesById {
   '/_authenticated/plan/tasks': typeof AuthenticatedPlanTasksRoute
   '/_authenticated/settings/data': typeof AuthenticatedSettingsDataRoute
   '/_authenticated/settings/team': typeof AuthenticatedSettingsTeamRoute
+  '/_authenticated/view_/$weddingId': typeof AuthenticatedViewWeddingIdRoute
   '/_authenticated/wedding/events': typeof AuthenticatedWeddingEventsRoute
   '/_authenticated/wedding/new': typeof AuthenticatedWeddingNewRoute
   '/i/$token_/expired': typeof ITokenExpiredRoute
@@ -418,8 +446,10 @@ export interface FileRouteTypes {
     | '/plans'
     | '/publish'
     | '/rsvp'
+    | '/view'
     | '/i/$token'
     | '/invite/$token'
+    | '/viewer-invite/$token'
     | '/guests/$id'
     | '/guests/export'
     | '/guests/import'
@@ -433,6 +463,7 @@ export interface FileRouteTypes {
     | '/plan/tasks'
     | '/settings/data'
     | '/settings/team'
+    | '/view/$weddingId'
     | '/wedding/events'
     | '/wedding/new'
     | '/i/$token/expired'
@@ -460,8 +491,10 @@ export interface FileRouteTypes {
     | '/plans'
     | '/publish'
     | '/rsvp'
+    | '/view'
     | '/i/$token'
     | '/invite/$token'
+    | '/viewer-invite/$token'
     | '/guests/$id'
     | '/guests/export'
     | '/guests/import'
@@ -475,6 +508,7 @@ export interface FileRouteTypes {
     | '/plan/tasks'
     | '/settings/data'
     | '/settings/team'
+    | '/view/$weddingId'
     | '/wedding/events'
     | '/wedding/new'
     | '/i/$token/expired'
@@ -503,8 +537,10 @@ export interface FileRouteTypes {
     | '/_authenticated/plans'
     | '/_authenticated/publish'
     | '/_authenticated/rsvp'
+    | '/_authenticated/view'
     | '/i/$token'
     | '/invite/$token'
+    | '/viewer-invite/$token'
     | '/_authenticated/guests_/$id'
     | '/_authenticated/guests_/export'
     | '/_authenticated/guests_/import'
@@ -518,6 +554,7 @@ export interface FileRouteTypes {
     | '/_authenticated/plan/tasks'
     | '/_authenticated/settings/data'
     | '/_authenticated/settings/team'
+    | '/_authenticated/view_/$weddingId'
     | '/_authenticated/wedding/events'
     | '/_authenticated/wedding/new'
     | '/i/$token_/expired'
@@ -541,6 +578,7 @@ export interface RootRouteChildren {
   StartRoute: typeof StartRoute
   ITokenRoute: typeof ITokenRoute
   InviteTokenRoute: typeof InviteTokenRoute
+  ViewerInviteTokenRoute: typeof ViewerInviteTokenRoute
   ITokenExpiredRoute: typeof ITokenExpiredRoute
   ITokenRsvpRoute: typeof ITokenRsvpRoute
   ITokenRsvpReceiptRoute: typeof ITokenRsvpReceiptRoute
@@ -653,6 +691,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRsvpRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/view': {
+      id: '/_authenticated/view'
+      path: '/view'
+      fullPath: '/view'
+      preLoaderRoute: typeof AuthenticatedViewRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/i/$token': {
       id: '/i/$token'
       path: '/i/$token'
@@ -665,6 +710,13 @@ declare module '@tanstack/react-router' {
       path: '/invite/$token'
       fullPath: '/invite/$token'
       preLoaderRoute: typeof InviteTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/viewer-invite/$token': {
+      id: '/viewer-invite/$token'
+      path: '/viewer-invite/$token'
+      fullPath: '/viewer-invite/$token'
+      preLoaderRoute: typeof ViewerInviteTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/guests_/$id': {
@@ -758,6 +810,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSettingsTeamRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/view_/$weddingId': {
+      id: '/_authenticated/view_/$weddingId'
+      path: '/view/$weddingId'
+      fullPath: '/view/$weddingId'
+      preLoaderRoute: typeof AuthenticatedViewWeddingIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/wedding/events': {
       id: '/_authenticated/wedding/events'
       path: '/wedding/events'
@@ -847,6 +906,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedPlansRoute: typeof AuthenticatedPlansRoute
   AuthenticatedPublishRoute: typeof AuthenticatedPublishRoute
   AuthenticatedRsvpRoute: typeof AuthenticatedRsvpRoute
+  AuthenticatedViewRoute: typeof AuthenticatedViewRoute
   AuthenticatedGuestsIdRoute: typeof AuthenticatedGuestsIdRoute
   AuthenticatedGuestsExportRoute: typeof AuthenticatedGuestsExportRoute
   AuthenticatedGuestsImportRoute: typeof AuthenticatedGuestsImportRoute
@@ -860,6 +920,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedPlanTasksRoute: typeof AuthenticatedPlanTasksRoute
   AuthenticatedSettingsDataRoute: typeof AuthenticatedSettingsDataRoute
   AuthenticatedSettingsTeamRoute: typeof AuthenticatedSettingsTeamRoute
+  AuthenticatedViewWeddingIdRoute: typeof AuthenticatedViewWeddingIdRoute
   AuthenticatedWeddingEventsRoute: typeof AuthenticatedWeddingEventsRoute
   AuthenticatedWeddingNewRoute: typeof AuthenticatedWeddingNewRoute
   AuthenticatedCheckoutStatusIdRoute: typeof AuthenticatedCheckoutStatusIdRoute
@@ -879,6 +940,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedPlansRoute: AuthenticatedPlansRoute,
   AuthenticatedPublishRoute: AuthenticatedPublishRoute,
   AuthenticatedRsvpRoute: AuthenticatedRsvpRoute,
+  AuthenticatedViewRoute: AuthenticatedViewRoute,
   AuthenticatedGuestsIdRoute: AuthenticatedGuestsIdRoute,
   AuthenticatedGuestsExportRoute: AuthenticatedGuestsExportRoute,
   AuthenticatedGuestsImportRoute: AuthenticatedGuestsImportRoute,
@@ -892,6 +954,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedPlanTasksRoute: AuthenticatedPlanTasksRoute,
   AuthenticatedSettingsDataRoute: AuthenticatedSettingsDataRoute,
   AuthenticatedSettingsTeamRoute: AuthenticatedSettingsTeamRoute,
+  AuthenticatedViewWeddingIdRoute: AuthenticatedViewWeddingIdRoute,
   AuthenticatedWeddingEventsRoute: AuthenticatedWeddingEventsRoute,
   AuthenticatedWeddingNewRoute: AuthenticatedWeddingNewRoute,
   AuthenticatedCheckoutStatusIdRoute: AuthenticatedCheckoutStatusIdRoute,
@@ -916,6 +979,7 @@ const rootRouteChildren: RootRouteChildren = {
   StartRoute: StartRoute,
   ITokenRoute: ITokenRoute,
   InviteTokenRoute: InviteTokenRoute,
+  ViewerInviteTokenRoute: ViewerInviteTokenRoute,
   ITokenExpiredRoute: ITokenExpiredRoute,
   ITokenRsvpRoute: ITokenRsvpRoute,
   ITokenRsvpReceiptRoute: ITokenRsvpReceiptRoute,
