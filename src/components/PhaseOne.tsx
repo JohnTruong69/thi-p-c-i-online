@@ -280,7 +280,7 @@ function GuestScreen({screen,token}:{screen:ScreenName;token:string}){
  const [links]=useLinks();
  const view=viewForToken(token,links,events);
  const sideKey:EventSide=view.kind==='unknown'?'chung':view.side;
- const side=sideKey==='chung'?'Link chung':SIDE_LABEL[sideKey].replace('Link ','Nhà ').replace('Nhà nhà','Nhà');
+ const side=({chung:'Link chung','nha-gai':'Nhà gái','nha-trai':'Nhà trai'} as const)[sideKey];
  const shown=view.kind==='ok'?view.events:[];
  const firstAddr=shown.find(e=>e.address.trim());
  const [answers,setAnswers]=useState<Record<string,DemoAnswer>>({});
