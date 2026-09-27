@@ -15,7 +15,7 @@ export function useFocusId(){return useContext(FocusCtx)}
 /** Mở đúng mục từ URL một lần; trả thông báo nếu không có; khi đóng trả focus về nút Sửa của mục. */
 export function useDeepLink<T extends {id:string}>(items:T[],open:(x:T)=>void,label:string){const id=useFocusId();const [missing,setMissing]=useState('');const did=useRef(false);
  const ref=useRef({items,open});ref.current={items,open};
- useEffect(()=>{if(!id||did.current)return;did.current=true;const t=setTimeout(()=>{const x=ref.current.items.find(i=>i.id===id);if(x)ref.current.open(x);else setMissing(`Không tìm thấy ${label} có mã “${id.slice(0,40)}” trong phiên xem này. Có thể mục đã bị xóa hoặc dữ liệu dùng thử đã được đặt lại.`)},30);return()=>clearTimeout(t)},[id,label]);
+ useEffect(()=>{if(!id||did.current)return;const t=setTimeout(()=>{did.current=true;const x=ref.current.items.find(i=>i.id===id);if(x)ref.current.open(x);else setMissing(`Không tìm thấy ${label} có mã “${id.slice(0,40)}” trong phiên xem này. Có thể mục đã bị xóa hoặc dữ liệu dùng thử đã được đặt lại.`)},30);return()=>clearTimeout(t)},[id,label]);
  const onClosed=()=>{if(!id)return;setTimeout(()=>{const b=[...document.querySelectorAll<HTMLElement>(`[data-item="${CSS.escape(id)}"] button`)].find(e=>/Sửa/.test(e.textContent||''));(b??document.querySelector<HTMLElement>('h1'))?.focus()},50)};
  return {missing,onClosed}}
 function MissingNote({text}:{text:string}){return text?<div role="alert" className="mb-4"><Note tone="copper">{text}</Note></div>:null}
