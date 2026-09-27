@@ -50,7 +50,7 @@ export const getPublicInvitation = createServerFn({ method: 'GET' })
     if (paths.length) {
       const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
       const s = await supabaseAdmin.storage.from('invitation-photos').createSignedUrls([...new Set(paths)], 3600);
-      urls = Object.fromEntries((s.data ?? []).filter(x => x.signedUrl && x.path).map(x => [x.path as string, x.signedUrl]));
+      urls = Object.fromEntries((s.data ?? []).filter(x => x.signedUrl && x.path).map(x => [x.path as string, x.signedUrl as string]));
     }
     return { open: true, side: v.side ?? 'chung', title: v.title ?? '', message: v.message ?? '', coverUrl: v.cover ? urls[v.cover] ?? null : null, photoUrls: (v.photos ?? []).filter(p => p !== v.cover).map(p => urls[p]).filter((u): u is string => !!u), events: v.events ?? [] };
   });

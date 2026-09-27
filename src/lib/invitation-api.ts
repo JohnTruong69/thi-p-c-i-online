@@ -35,7 +35,7 @@ export const photoUrlsQuery = (paths: string[]) => queryOptions({
   staleTime: 30 * 60_000,
   queryFn: async (): Promise<Record<string, string>> => {
     const r = must(await supabase.storage.from(BUCKET).createSignedUrls(paths, 3600));
-    return Object.fromEntries(r.filter(x => x.signedUrl && x.path).map(x => [x.path as string, x.signedUrl]));
+    return Object.fromEntries(r.filter(x => x.signedUrl && x.path).map(x => [x.path as string, x.signedUrl as string]));
   },
 });
 
