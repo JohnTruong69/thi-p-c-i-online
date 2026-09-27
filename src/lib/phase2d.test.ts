@@ -114,3 +114,18 @@ describe('clearing an Event date', () => {
     expect(i.linksToReview).toEqual(['chung']);
   });
 });
+
+describe('enabled link with removed Events', () => {
+  const evs = [{ id: 'e1', name: 'Lễ' }];
+  it('only orphan ids → broken (neutral page, no RSVP)', () => {
+    expect(linkView('chung', [{ side: 'chung', enabled: true, eventIds: ['gone'] }], evs).kind).toBe('broken');
+    expect(linkView('chung', [{ side: 'chung', enabled: true, eventIds: [] }], evs).kind).toBe('broken');
+  });
+  it('valid + orphan → broken until owners fix it', () => {
+    expect(viewForToken('demo-chung', [{ side: 'chung', enabled: true, eventIds: ['e1', 'gone'] }], evs).kind).toBe('broken');
+  });
+  it('valid-only link still opens; off stays off', () => {
+    expect(linkView('chung', [{ side: 'chung', enabled: true, eventIds: ['e1'] }], evs).kind).toBe('ok');
+    expect(linkView('chung', [{ side: 'chung', enabled: false, eventIds: ['gone'] }], evs).kind).toBe('off');
+  });
+});
