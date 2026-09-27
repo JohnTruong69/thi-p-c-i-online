@@ -33,7 +33,7 @@ describe('access status shown to a couple', () => {
   });
 
   it.each([
-    ['trial_active', 'dùng thử Planner', '04/10/2026 07:00'],
+    ['trial_active', 'Planner mở đến', '04/10/2026 07:00'],
     ['paid_active', 'Đã thanh toán', '27/09/2029 07:00'],
     ['legacy_paid_active', 'Gói thiệp cũ còn hạn', '27/09/2029 07:00'],
   ])('shows %s with its relevant Vietnam-time deadline', (state, copy, date) => {
@@ -44,7 +44,7 @@ describe('access status shown to a couple', () => {
   });
 
   it.each([
-    ['trial_expired_read_only', 'Thời gian dùng thử đã kết thúc'],
+    ['trial_expired_read_only', 'Thời gian sử dụng đã kết thúc'],
     ['paid_expired_read_only', 'Thời hạn gói đã kết thúc'],
     ['legacy_paid_expired', 'Gói thiệp cũ đã hết hạn'],
   ])('offers data export after %s', (state, copy) => {
