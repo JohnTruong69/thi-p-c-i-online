@@ -1705,6 +1705,10 @@ export type Database = {
         Returns: Json
       }
       photo_slot_available: { Args: { p_wedding: string }; Returns: boolean }
+      presale_settings_valid: {
+        Args: { s: Database["public"]["Tables"]["billing_settings"]["Row"] }
+        Returns: boolean
+      }
       public_invitation: { Args: { p_token: string }; Returns: Json }
       public_invitation_photo_paths: {
         Args: { p_token: string }

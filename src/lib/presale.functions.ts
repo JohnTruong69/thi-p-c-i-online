@@ -3,7 +3,7 @@ import { createServerFn } from '@tanstack/react-start';
 import { getRequestHeader } from '@tanstack/react-start/server';
 import { z } from 'zod';
 import { checkoutEnvReady } from './sepay';
-import { PRESALE_PRICE_VND, maskEmail, sepayQrUrl } from './presale';
+import { PRESALE_PRICE_VND, maskEmail, presaleLive, sepayQrUrl } from './presale';
 
 const envState = () => checkoutEnvReady({ secret: process.env['SEPAY_WEBHOOK_SECRET'], goLive: process.env['CHECKOUT_GO_LIVE'] });
 
@@ -14,9 +14,9 @@ async function sha256Hex(s: string) {
 
 async function liveSettings() {
   const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
-  const s = (await supabaseAdmin.from('billing_settings').select('live_enabled, terms_version, terms_url, price_vnd').maybeSingle()).data;
+  const s = (await supabaseAdmin.from('billing_settings').select('live_enabled, terms_version, terms_url, price_vnd, plan_version, terms_approved_at').maybeSingle()).data;
   const env = envState();
-  return { s, live: !!s?.live_enabled && env.goLive && env.webhookSecret };
+  return { s, live: presaleLive(s, env) };
 }
 
 export const getPublicOffer = createServerFn({ method: 'GET' }).handler(async () => {
@@ -51,7 +51,7 @@ export const getPresaleStatus = createServerFn({ method: 'GET' })
     const { live } = await liveSettings();
     const expired = o.status === 'expired' || (o.status === 'pending' && new Date(o.expires_at) <= new Date());
     const status = expired ? 'expired' : o.status;
-    const showPayment = status === 'pending' && live;
+    const showPayment = status === 'pending' && live && Number(o.amount_vnd) === PRESALE_PRICE_VND;
     return {
       found: true as const, status, maskedEmail: maskEmail(o.email), amountVnd: Number(o.amount_vnd), expiresAt: o.expires_at, paidAt: o.paid_at, claimExpiresAt: o.claim_expires_at,
       payment: showPayment ? { code: o.code, bank: o.bank_gateway, account: o.bank_account_number, accountName: o.bank_account_name, qr: sepayQrUrl(o.bank_account_number, o.bank_gateway, Number(o.amount_vnd), o.code) } : null,
