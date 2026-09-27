@@ -142,14 +142,15 @@ export function canClientSet(from: OrderStatus, to: OrderStatus) {
 }
 
 // ---------- Link readiness ----------
-export type ReadinessEvent = { id: string; name: string; date?: string; time?: string; venue?: string };
+export type ReadinessEvent = { id: string; name: string; date?: string; time?: string; venue?: string; address?: string };
+/** Ngày, giờ, nơi và địa chỉ đều bắt buộc — cùng quy tắc với trang Kiểm tra thiệp. */
 export function linkReadiness(enabled: boolean, eventIds: string[], events: ReadinessEvent[]) {
   if (!enabled) return { readiness: 'off' as const, missing: [] as string[] };
   if (!eventIds.length) return { readiness: 'needs-fix' as const, missing: ['Chưa chọn buổi nào'] };
   const missing = eventIds.flatMap(id => {
     const e = events.find(x => x.id === id);
     if (!e) return ['Buổi đã bị bỏ'];
-    return [!e.date && `${e.name}: ngày`, !e.time && `${e.name}: giờ`, !e.venue && `${e.name}: địa điểm`].filter((x): x is string => !!x);
+    return [!e.date && `${e.name}: ngày`, !e.time && `${e.name}: giờ`, !e.venue?.trim() && `${e.name}: nơi tổ chức`, !e.address?.trim() && `${e.name}: địa chỉ`].filter((x): x is string => !!x);
   });
   return { readiness: missing.length ? ('needs-fix' as const) : ('ready' as const), missing };
 }
