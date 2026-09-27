@@ -52,6 +52,7 @@ import { Route as AuthenticatedPlanBudgetIdRouteImport } from './routes/_authent
 import { Route as AuthenticatedPlanTasksIdRouteImport } from './routes/_authenticated/plan.tasks_.$id'
 import { Route as AuthenticatedPlanTasksSuggestionsRouteImport } from './routes/_authenticated/plan.tasks_.suggestions'
 import { Route as AuthenticatedWeddingEventsIdRouteImport } from './routes/_authenticated/wedding.events_.$id'
+import { Route as ApiPublicSepayWebhookRouteImport } from './routes/api/public/sepay/webhook'
 import { Route as ITokenRsvpReceiptRouteImport } from './routes/i.$token_.rsvp_.receipt'
 
 const IndexRoute = IndexRouteImport.update({
@@ -286,6 +287,11 @@ const AuthenticatedWeddingEventsIdRoute =
     path: '/wedding/events/$id',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const ApiPublicSepayWebhookRoute = ApiPublicSepayWebhookRouteImport.update({
+  id: '/api/public/sepay/webhook',
+  path: '/api/public/sepay/webhook',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ITokenRsvpReceiptRoute = ITokenRsvpReceiptRouteImport.update({
   id: '/i/$token_/rsvp_/receipt',
   path: '/i/$token/rsvp/receipt',
@@ -335,6 +341,7 @@ export interface FileRoutesByFullPath {
   '/plan/tasks/$id': typeof AuthenticatedPlanTasksIdRoute
   '/plan/tasks/suggestions': typeof AuthenticatedPlanTasksSuggestionsRoute
   '/wedding/events/$id': typeof AuthenticatedWeddingEventsIdRoute
+  '/api/public/sepay/webhook': typeof ApiPublicSepayWebhookRoute
   '/i/$token/rsvp/receipt': typeof ITokenRsvpReceiptRoute
 }
 export interface FileRoutesByTo {
@@ -380,6 +387,7 @@ export interface FileRoutesByTo {
   '/plan/tasks/$id': typeof AuthenticatedPlanTasksIdRoute
   '/plan/tasks/suggestions': typeof AuthenticatedPlanTasksSuggestionsRoute
   '/wedding/events/$id': typeof AuthenticatedWeddingEventsIdRoute
+  '/api/public/sepay/webhook': typeof ApiPublicSepayWebhookRoute
   '/i/$token/rsvp/receipt': typeof ITokenRsvpReceiptRoute
 }
 export interface FileRoutesById {
@@ -427,6 +435,7 @@ export interface FileRoutesById {
   '/_authenticated/plan/tasks_/$id': typeof AuthenticatedPlanTasksIdRoute
   '/_authenticated/plan/tasks_/suggestions': typeof AuthenticatedPlanTasksSuggestionsRoute
   '/_authenticated/wedding/events_/$id': typeof AuthenticatedWeddingEventsIdRoute
+  '/api/public/sepay/webhook': typeof ApiPublicSepayWebhookRoute
   '/i/$token_/rsvp_/receipt': typeof ITokenRsvpReceiptRoute
 }
 export interface FileRouteTypes {
@@ -474,6 +483,7 @@ export interface FileRouteTypes {
     | '/plan/tasks/$id'
     | '/plan/tasks/suggestions'
     | '/wedding/events/$id'
+    | '/api/public/sepay/webhook'
     | '/i/$token/rsvp/receipt'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -519,6 +529,7 @@ export interface FileRouteTypes {
     | '/plan/tasks/$id'
     | '/plan/tasks/suggestions'
     | '/wedding/events/$id'
+    | '/api/public/sepay/webhook'
     | '/i/$token/rsvp/receipt'
   id:
     | '__root__'
@@ -565,6 +576,7 @@ export interface FileRouteTypes {
     | '/_authenticated/plan/tasks_/$id'
     | '/_authenticated/plan/tasks_/suggestions'
     | '/_authenticated/wedding/events_/$id'
+    | '/api/public/sepay/webhook'
     | '/i/$token_/rsvp_/receipt'
   fileRoutesById: FileRoutesById
 }
@@ -581,6 +593,7 @@ export interface RootRouteChildren {
   ViewerInviteTokenRoute: typeof ViewerInviteTokenRoute
   ITokenExpiredRoute: typeof ITokenExpiredRoute
   ITokenRsvpRoute: typeof ITokenRsvpRoute
+  ApiPublicSepayWebhookRoute: typeof ApiPublicSepayWebhookRoute
   ITokenRsvpReceiptRoute: typeof ITokenRsvpReceiptRoute
 }
 
@@ -887,6 +900,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedWeddingEventsIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/public/sepay/webhook': {
+      id: '/api/public/sepay/webhook'
+      path: '/api/public/sepay/webhook'
+      fullPath: '/api/public/sepay/webhook'
+      preLoaderRoute: typeof ApiPublicSepayWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/i/$token_/rsvp_/receipt': {
       id: '/i/$token_/rsvp_/receipt'
       path: '/i/$token/rsvp/receipt'
@@ -982,6 +1002,7 @@ const rootRouteChildren: RootRouteChildren = {
   ViewerInviteTokenRoute: ViewerInviteTokenRoute,
   ITokenExpiredRoute: ITokenExpiredRoute,
   ITokenRsvpRoute: ITokenRsvpRoute,
+  ApiPublicSepayWebhookRoute: ApiPublicSepayWebhookRoute,
   ITokenRsvpReceiptRoute: ITokenRsvpReceiptRoute,
 }
 export const routeTree = rootRouteImport
