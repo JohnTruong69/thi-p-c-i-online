@@ -76,18 +76,6 @@ export function validateEventForm(f: EventForm): string {
 }
 export async function insertEvent(weddingId: string, f: EventForm) { must(await supabase.from('events').insert({ wedding_id: weddingId, ...toRow(f) })); }
 export async function updateEvent(id: string, f: EventForm) { must(await supabase.from('events').update(toRow(f)).eq('id', id)); }
-export async function deleteEvent(id: string) { must(await supabase.from('events').delete().eq('id', id)); }
-/** Real references that removal would touch (tasks/budget keep the row but lose the Event link; guest assignments are removed). */
-export async function eventReferences(id: string) {
-  const [t, b, g] = await Promise.all([
-    supabase.from('tasks').select('id', { count: 'exact', head: true }).eq('event_id', id),
-    supabase.from('budget_items').select('id', { count: 'exact', head: true }).eq('event_id', id),
-    supabase.from('guest_event_assignments').select('guest_id', { count: 'exact', head: true }).eq('event_id', id),
-  ]);
-  for (const r of [t, b, g]) if (r.error) throw r.error;
-  return { tasks: t.count ?? 0, budget: b.count ?? 0, guests: g.count ?? 0 };
-}
-
 export const teamQuery = (weddingId: string) => queryOptions({
   queryKey: ['team', weddingId],
   queryFn: async () => {

@@ -56,6 +56,7 @@ export type Database = {
           created_at: string
           due_date: string | null
           id: string
+          label: string
           paid_at: string | null
           updated_at: string
           wedding_id: string
@@ -66,6 +67,7 @@ export type Database = {
           created_at?: string
           due_date?: string | null
           id?: string
+          label?: string
           paid_at?: string | null
           updated_at?: string
           wedding_id: string
@@ -76,6 +78,7 @@ export type Database = {
           created_at?: string
           due_date?: string | null
           id?: string
+          label?: string
           paid_at?: string | null
           updated_at?: string
           wedding_id?: string
@@ -101,37 +104,55 @@ export type Database = {
         Row: {
           agreed_vnd: number | null
           category: string
+          category_detail: string | null
           created_at: string
+          deposit_vnd: number
           estimate_vnd: number
           event_id: string | null
+          extra_vnd: number
           id: string
           label: string
           note: string | null
+          paid_vnd: number
+          payer: string
           updated_at: string
+          vendor: string | null
           wedding_id: string
         }
         Insert: {
           agreed_vnd?: number | null
           category?: string
+          category_detail?: string | null
           created_at?: string
+          deposit_vnd?: number
           estimate_vnd?: number
           event_id?: string | null
+          extra_vnd?: number
           id?: string
           label: string
           note?: string | null
+          paid_vnd?: number
+          payer?: string
           updated_at?: string
+          vendor?: string | null
           wedding_id: string
         }
         Update: {
           agreed_vnd?: number | null
           category?: string
+          category_detail?: string | null
           created_at?: string
+          deposit_vnd?: number
           estimate_vnd?: number
           event_id?: string | null
+          extra_vnd?: number
           id?: string
           label?: string
           note?: string | null
+          paid_vnd?: number
+          payer?: string
           updated_at?: string
+          vendor?: string | null
           wedding_id?: string
         }
         Relationships: [
@@ -314,6 +335,7 @@ export type Database = {
       }
       tasks: {
         Row: {
+          assignee: string
           created_at: string
           due_date: string | null
           event_id: string | null
@@ -325,11 +347,13 @@ export type Database = {
           reserve_tables: number | null
           source: string
           status: string
+          template_id: string | null
           title: string
           updated_at: string
           wedding_id: string
         }
         Insert: {
+          assignee?: string
           created_at?: string
           due_date?: string | null
           event_id?: string | null
@@ -341,11 +365,13 @@ export type Database = {
           reserve_tables?: number | null
           source?: string
           status?: string
+          template_id?: string | null
           title: string
           updated_at?: string
           wedding_id: string
         }
         Update: {
+          assignee?: string
           created_at?: string
           due_date?: string | null
           event_id?: string | null
@@ -357,6 +383,7 @@ export type Database = {
           reserve_tables?: number | null
           source?: string
           status?: string
+          template_id?: string | null
           title?: string
           updated_at?: string
           wedding_id?: string
@@ -459,6 +486,7 @@ export type Database = {
       }
       weddings: {
         Row: {
+          budget_cap_vnd: number | null
           created_at: string
           created_by: string
           id: string
@@ -469,6 +497,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          budget_cap_vnd?: number | null
           created_at?: string
           created_by: string
           id?: string
@@ -479,6 +508,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          budget_cap_vnd?: number | null
           created_at?: string
           created_by?: string
           id?: string
@@ -524,12 +554,26 @@ export type Database = {
         }[]
       }
       is_wedding_manager: { Args: { _wedding_id: string }; Returns: boolean }
+      remove_event: { Args: { p_event_id: string }; Returns: Json }
       remove_manager: { Args: { p_membership_id: string }; Returns: undefined }
       revoke_partner_invite: {
         Args: { p_invite_id: string }
         Returns: undefined
       }
+      save_budget_item: {
+        Args: {
+          p_installments: Json
+          p_item: Json
+          p_item_id: string
+          p_wedding_id: string
+        }
+        Returns: string
+      }
       shares_wedding_with: { Args: { _user_id: string }; Returns: boolean }
+      update_event_with_impact: {
+        Args: { p_event_id: string; p_fields: Json; p_shift_task_ids: string[] }
+        Returns: number
+      }
     }
     Enums: {
       [_ in never]: never
