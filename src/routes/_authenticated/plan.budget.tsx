@@ -2,10 +2,10 @@ import { createFileRoute } from "@tanstack/react-router";
 import { PhaseOne } from "@/components/PhaseOne";
 export const Route = createFileRoute("/_authenticated/plan/budget")({
   head: () => ({ meta: [
-    { title: "budget | Thiệp Cưới Online Việt" },
-    { name: "description", content: "budget — trải nghiệm minh họa Thiệp Cưới Online Việt, Phase 1." },
-    { property: "og:title", content: "budget | Thiệp Cưới Online Việt" },
-    { property: "og:description", content: "budget — trải nghiệm minh họa Thiệp Cưới Online Việt, Phase 1." },
+    { title: "Ngân sách cưới | Thiệp Cưới Online Việt" },
+    { name: "description", content: "Ngân sách cưới lưu vào tài khoản: dự tính, giá chốt, đã trả, lịch trả nhà cung cấp." },
+    { property: "og:title", content: "Ngân sách cưới | Thiệp Cưới Online Việt" },
+    { property: "og:description", content: "Ngân sách cưới lưu vào tài khoản: dự tính, giá chốt, đã trả, lịch trả nhà cung cấp." },
     { property: "og:type", content: "website" },
     { name: "twitter:card", content: "summary" },
   ] }),

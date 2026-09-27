@@ -2,10 +2,10 @@ import { createFileRoute } from "@tanstack/react-router";
 import { PhaseOne } from "@/components/PhaseOne";
 export const Route = createFileRoute("/_authenticated/plan/tasks")({
   head: () => ({ meta: [
-    { title: "tasks | Thiệp Cưới Online Việt" },
-    { name: "description", content: "tasks — trải nghiệm minh họa Thiệp Cưới Online Việt, Phase 1." },
-    { property: "og:title", content: "tasks | Thiệp Cưới Online Việt" },
-    { property: "og:description", content: "tasks — trải nghiệm minh họa Thiệp Cưới Online Việt, Phase 1." },
+    { title: "Việc cần làm | Thiệp Cưới Online Việt" },
+    { name: "description", content: "Việc cần làm của hai bạn, lưu vào tài khoản: hạn, trạng thái, số bàn và việc gợi ý." },
+    { property: "og:title", content: "Việc cần làm | Thiệp Cưới Online Việt" },
+    { property: "og:description", content: "Việc cần làm của hai bạn, lưu vào tài khoản: hạn, trạng thái, số bàn và việc gợi ý." },
     { property: "og:type", content: "website" },
     { name: "twitter:card", content: "summary" },
   ] }),
