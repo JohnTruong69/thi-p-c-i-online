@@ -2,6 +2,7 @@ import { Link } from '@tanstack/react-router';
 import { createContext, useContext } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '../integrations/supabase/client';
+import { Button } from '@/components/ui/button';
 import type { Json } from '../integrations/supabase/types';
 
 type AccessState = {
@@ -86,4 +87,10 @@ export function AccessStateBanner({ weddingId }: { weddingId: string }) {
       {locked && <Link to="/checkout" className="min-h-11 content-center font-semibold text-primary underline">Xem gói Wedding</Link>}
     </span>
   </div>;
+}
+
+/** A Button for persisted edits: disabled with an explanation when the wedding is read-only. The server still enforces. */
+export function WriteButton({ disabled, title, ...props }: React.ComponentProps<typeof Button>) {
+  const ro = useReadOnly();
+  return <Button {...props} disabled={ro || disabled} aria-disabled={ro || disabled || undefined} title={ro ? READ_ONLY_REASON : title} />;
 }
