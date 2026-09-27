@@ -38,6 +38,14 @@ export const createCheckoutOrder = createServerFn({ method: 'POST' })
     return r as { order_id: string; reused: boolean };
   });
 
+/** True when the signed-in account has the admin role (for showing the admin entry point only; server still re-checks). */
+export const getIsAdmin = createServerFn({ method: 'GET' })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { data } = await context.supabase.rpc('has_role', { _user_id: context.userId, _role: 'admin' });
+    return data === true;
+  });
+
 async function requireAdmin(context: { supabase: any; userId: string }) {
   const { data } = await context.supabase.rpc('has_role', { _user_id: context.userId, _role: 'admin' });
   if (data !== true) throw new Error('forbidden');
