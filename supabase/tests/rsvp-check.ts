@@ -46,7 +46,9 @@ async function main() {
   ok(/missing answer/.test((await submit(chung.token, uuid(), { [ev1]: { attending: true, party_size: 2 } })).error?.message ?? ''), 'missing event answer rejected');
   ok(/party/.test((await submit(chung.token, uuid(), { [ev1]: { attending: true, party_size: 0 }, [ev2]: { attending: false } })).error?.message ?? ''), 'party 0 rejected');
   ok(/party/.test((await submit(chung.token, uuid(), { [ev1]: { attending: true, party_size: 1.5 }, [ev2]: { attending: false } })).error?.message ?? ''), 'fractional party rejected');
-  ok(!!(await submit(chung.token, uuid(), { [ev1]: { attending: false, party_size: 3 }, [ev2]: { attending: false } })).error, 'party with "no" rejected');
+  const sn = await submit(chung.token, uuid(), { [ev1]: { attending: false, party_size: 3 }, [ev2]: { attending: false } });
+  ok(!sn.error && (sn.data as { answers: { party_size: number | null }[] }).answers.every(a => a.party_size === null), 'party sent with "no" is ignored (stored as none)');
+  await admin.from('rsvp_responses').delete().eq('id', sn.data!.receipt_id);
   ok(!!(await submit(chung.token, uuid(), good, ' ')).error, 'blank name rejected');
   ok(((await admin.from('rsvp_responses').select('id').eq('wedding_id', wa)).data ?? []).length === 0, 'rejected submissions left no rows');
 
