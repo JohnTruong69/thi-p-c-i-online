@@ -7,7 +7,7 @@
 - Budget planned totals use agreed price when available, otherwise estimates, once per item; supplier payments and schedules are separate from Wedding checkout.
 
 - Ceremony removal previews affected demo records and reassigns task/cost links while removing guest invitations; session writes occur outside React state updaters so replay cannot duplicate records.
-- V1 membership is at most two equal managers (creator is metadata only; server auth by Wedding membership, audit revoke/delete, never zero managers); invitation and role states are browser-tab-only demos, never evidence of email delivery or actual access.
+- V1 membership is at most two equal managers enforced in Postgres (RLS via is_wedding_manager, transactional security-definer RPCs for draft/invite/accept/remove, audit_log append-only, never zero managers); creator is metadata only; invites store only a token hash and pending invitees have zero data access.
 - Owner navigation groups persistent desktop child links by task while mobile keeps exactly five primary tabs and exposes child routes inside their parent screens; this preserves discoverability without changing V3 structure.
 - Phase 2 logic is tested; no client-paid or ambiguous RSVP merge. Planner due uses Vietnam date, upcoming ≤14 days; only typed table tasks keep counts. Guard old reads.
 - CSV files are parsed in the browser only (never uploaded); imported guests and undo live in the tab session.
@@ -17,3 +17,6 @@
 - RSVP status is stored per guest per Event (rsvp-status session); manual entries are never overwritten by responses; CSV undo removes only guests unchanged since import (fingerprint snapshot).
 - Link readiness requires date, time, venue and address — same rule as the Check screen.
 - Removed Events stay as orphan ids in links (readiness needs-fix 'Buổi đã bị bỏ — cần chọn lại', manual Gỡ); never pre-filter ids before linkReadiness. Demo RSVP stores one key per response (rsvp-demo:<token>:<id>) plus a last-id pointer; legacy per-token key still reads.
+- Phase 3: schema lives in drizzle/migrations (applied via migration tool); owner routes sit under src/routes/_authenticated (ssr:false gate → /login?redirect); real data goes through src/lib/wedding-api.ts; screens still on demo session state keep their demo label.
+- One Wedding per account in V1: create_wedding_draft is idempotent under a per-user advisory lock so retries/tabs never duplicate.
+- RLS verification is supabase/tests/rls-check.ts, run against the live API as confirmed rlstest-* accounts and self-cleaning.
