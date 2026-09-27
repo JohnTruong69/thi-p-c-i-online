@@ -127,6 +127,13 @@
       "when": 1790523014146,
       "tag": "0017_presale_enforce_locked_offer",
       "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1790523328592,
+      "tag": "0018_server_provisioned_accounts",
+      "breakpoints": true
     }
   ]
 }
