@@ -17,10 +17,10 @@ export function LoginScreen({ register = false }: { register?: boolean }) {
     const n = mode === 'recover' ? validateEmail(f.email) : validateLogin(f, register);
     setErr(n); if (Object.keys(n).length) return;
     setMsg(mode === 'recover'
-      ? 'Bản dùng thử không gửi email khôi phục. Khi có tài khoản thật, liên kết đặt lại mật khẩu sẽ được gửi tới email này.'
-      : register ? 'Thông tin hợp lệ. Bản dùng thử chưa tạo tài khoản thật; bạn có thể xem ứng dụng minh họa.' : 'Thông tin hợp lệ. Bản dùng thử chưa đăng nhập thật; bạn có thể xem ứng dụng minh họa.');
+      ? 'Bản minh họa không gửi email khôi phục. Khi có tài khoản thật, liên kết đặt lại mật khẩu sẽ được gửi tới email này.'
+      : register ? 'Thông tin hợp lệ. Bản minh họa chưa tạo tài khoản thật; bạn có thể xem ứng dụng minh họa.' : 'Thông tin hợp lệ. Bản minh họa chưa đăng nhập thật; bạn có thể xem ứng dụng minh họa.');
   };
-  return <div className="mx-auto max-w-xl"><Header name={mode === 'recover' ? 'Lấy lại mật khẩu' : register ? 'Tạo tài khoản' : 'Chào mừng trở lại'} subtitle="TÀI KHOẢN · BẢN DÙNG THỬ" />
+  return <div className="mx-auto max-w-xl"><Header name={mode === 'recover' ? 'Lấy lại mật khẩu' : register ? 'Tạo tài khoản' : 'Chào mừng trở lại'} subtitle="TÀI KHOẢN · BẢN MINH HỌA" />
     <Panel><form noValidate onSubmit={submit} className="space-y-4">
       {register && mode === 'login' && <FormField label="Tên của bạn *" id="lg-name" error={err['name']}><input id="lg-name" className={inputCls} value={f.name} maxLength={80} onChange={e => setF({ ...f, name: e.target.value })} /></FormField>}
       <FormField label="Email *" id="lg-email" error={err['email']}><input id="lg-email" type="email" autoComplete="email" className={inputCls} value={f.email} maxLength={255} onChange={e => setF({ ...f, email: e.target.value })} /></FormField>
@@ -31,7 +31,7 @@ export function LoginScreen({ register = false }: { register?: boolean }) {
       {msg && mode === 'login' && <Action to="/home" className="mt-3 w-full">Xem ứng dụng minh họa</Action>}
       {!register && <DemoAction variant="ghost" className="mt-2 w-full" onClick={() => { setMode(mode === 'login' ? 'recover' : 'login'); setErr({}); setMsg(''); }}>{mode === 'login' ? 'Quên mật khẩu?' : 'Quay lại đăng nhập'}</DemoAction>}
       <Action to={register ? '/login' : '/register'} variant="ghost" className="mt-2 w-full">{register ? 'Đã có tài khoản?' : 'Tạo tài khoản'}</Action>
-      <Note tone="warm">Chưa có đăng nhập, tạo tài khoản hay gửi email thật trong bản dùng thử.</Note>
+      <Note tone="warm">Chưa có đăng nhập, tạo tài khoản hay gửi email thật trong bản minh họa.</Note>
     </Panel></div>;
 }
 
