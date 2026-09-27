@@ -11,4 +11,4 @@ export const Route = createFileRoute("/_authenticated/guests_/import_/$batch")({
   ] }),
   component: Screen,
 });
-function Screen() { return <PhaseOne screen="batch" />; }
+function Screen() { const { batch } = Route.useParams(); return <PhaseOne screen="batch" focusId={batch} />; }

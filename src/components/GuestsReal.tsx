@@ -199,7 +199,7 @@ export function RealCsvBatchScreen() {
 
 /* ================= Export ================= */
 export function RealGuestsExportScreen() {
-  const { w, gq, eq, events } = useGuestData(); const [done, setDone] = useState(''); const [err, setErr] = useState(''); const [busy, setBusy] = useState(false);
+  const { gq, eq, events } = useGuestData(); const [done, setDone] = useState(''); const [err, setErr] = useState(''); const [busy, setBusy] = useState(false);
   if (gq.isPending || eq.isPending) return <Loading label="Đang tải sổ khách…" />;
   if (gq.isError || eq.isError) return <LoadError error={gq.error ?? eq.error} retry={() => { gq.refetch(); eq.refetch(); }} />;
   const run = async () => {
@@ -219,7 +219,6 @@ export function RealGuestsExportScreen() {
     {done && <p role="status" className="mt-3 rounded-md bg-sage p-3 text-sm font-semibold">{done}</p>}
     {err && <p role="alert" className="mt-3 rounded-md bg-copper-soft p-3 text-sm font-semibold text-destructive">{err}</p>}
     <Note tone="warm">File có số điện thoại của khách. Hãy giữ riêng tư, chỉ chia sẻ với người cần. Ô bắt đầu bằng = + - @ được thêm dấu ’ để bảng tính không chạy như công thức.</Note>
-    <p className="mt-2 text-xs text-muted-foreground">Mã đám cưới: {w.id.slice(0, 8)}</p>
   </div>;
 }
 
