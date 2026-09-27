@@ -129,8 +129,7 @@ function RootComponent() {
         const manual = consumeManualSignOut();
         queryClient.clear();
         const path = router.state.location.pathname;
-        const isPublic = path === "/" || ["/login", "/register", "/forgot-password", "/reset-password", "/invite/", "/i/", "/start"].some((p) => path.startsWith(p));
-        if (!isPublic) router.navigate({ to: "/login", search: manual ? {} : { reason: "expired" }, replace: true });
+        if (isProtectedPath(path)) router.navigate({ to: "/login", search: manual ? {} : { reason: "expired" }, replace: true });
         return;
       }
       router.invalidate();
