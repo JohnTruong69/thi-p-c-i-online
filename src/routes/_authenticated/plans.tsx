@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PhaseOne } from "@/components/PhaseOne";
-export const Route = createFileRoute("/plans")({
+export const Route = createFileRoute("/_authenticated/plans")({
   head: () => ({ meta: [
     { title: "Công bố thiệp | Thiệp Cưới Online Việt" },
     { name: "description", content: "Chuẩn bị miễn phí, xem gói thiệp cưới 149.000 đ và thời hạn công bố thiệp 24 tháng." },

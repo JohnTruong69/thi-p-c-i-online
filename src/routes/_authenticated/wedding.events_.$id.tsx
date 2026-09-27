@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PhaseOne } from "@/components/PhaseOne";
-export const Route = createFileRoute("/wedding/events_/$id")({
+export const Route = createFileRoute("/_authenticated/wedding/events_/$id")({
   head: () => ({ meta: [
     { title: "Sửa buổi lễ | Thiệp Cưới Online Việt" },
     { name: "description", content: "Sửa buổi lễ — bản dùng thử Thiệp Cưới Online Việt." },

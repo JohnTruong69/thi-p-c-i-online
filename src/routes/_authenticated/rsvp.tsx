@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PhaseOne } from "@/components/PhaseOne";
-export const Route = createFileRoute("/rsvp")({
+export const Route = createFileRoute("/_authenticated/rsvp")({
   head: () => ({ meta: [
     { title: "rsvp | Thiệp Cưới Online Việt" },
     { name: "description", content: "rsvp — trải nghiệm minh họa Thiệp Cưới Online Việt, Phase 1." },
