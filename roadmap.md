@@ -40,3 +40,6 @@
 - [x] Đường Hẹn invitation persisted: content, private photos ≤50, 3 links, readiness/orphans, revisions + diff, publish denied without entitlement, neutral public page; DB + browser checks
 - [x] Real RSVP per Event (public gated submit/receipt, idempotent, edit rule, owner reconcile, audit, CSV undo keeps matched guests) + 10 MB photo limit + public meta cleanup
 - [ ] Phase 3 remaining: account data export/delete, email delivery checks (confirm/reset/invite)
+
+## Phase 3 family viewers
+- [x] Up to 2 read-only family viewers: migration 0011 (grants, hashed invites, projection), team UI, /view routes, DB + browser QA
