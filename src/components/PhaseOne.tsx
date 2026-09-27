@@ -250,7 +250,7 @@ function UtilityScreen({screen}:{screen:ScreenName}){const [partner]=useDemoSess
 type DemoAnswer={choice:'yes'|'no';count:number};
 type DemoReceipt={name:string;answers:Record<string,DemoAnswer>};
 const demoReceiptKey=(token:string)=>`rsvp-demo:${token}`;
-function readDemoReceipt(token:string):DemoReceipt|null {try{const v:unknown=JSON.parse(sessionStorage.getItem(demoReceiptKey(token))||'null');if(!v||typeof v!=='object')return null;const r=v as Partial<DemoReceipt>;if(typeof r.name!=='string'||!r.name.trim()||!r.answers||typeof r.answers!=='object')return null;for(const a of Object.values(r.answers))if(!a||(a.choice!=='yes'&&a.choice!=='no')||!Number.isInteger(a.count)||a.count<1||a.count>20)return null;return {name:r.name.slice(0,100),answers:r.answers}}catch{return null}}
+export function readDemoReceipt(token:string):DemoReceipt|null {try{const v:unknown=JSON.parse(sessionStorage.getItem(demoReceiptKey(token))||'null');if(!v||typeof v!=='object')return null;const r=v as Partial<DemoReceipt>;if(typeof r.name!=='string'||!r.name.trim()||!r.answers||typeof r.answers!=='object')return null;for(const a of Object.values(r.answers))if(!a||(a.choice!=='yes'&&a.choice!=='no')||!Number.isInteger(a.count)||a.count<1||a.count>20)return null;return {name:r.name.slice(0,100),answers:r.answers}}catch{return null}}
 function GuestScreen({screen,token}:{screen:ScreenName;token:string}){
  const side=token==='demo'?'Link chung':token.includes('gai')?'Nhà gái':token.includes('trai')?'Nhà trai':'Link chung';
  const [events]=useDemoSession<DemoEvent[]>('events',initialEvents,validEvents);
