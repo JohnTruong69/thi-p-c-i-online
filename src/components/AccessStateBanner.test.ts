@@ -75,8 +75,8 @@ describe('staged write gate (read-only)', () => {
   });
   it('disables write buttons with a reason in read-only mode', () => {
     const html = (ro: boolean) => renderToStaticMarkup(React.createElement(ReadOnlyContext.Provider, { value: ro }, React.createElement(WriteButton, null, 'Lưu')));
-    expect(html(true)).toContain('disabled');
+    expect(html(true)).toContain('disabled=""');
     expect(html(true)).toContain('chế độ chỉ xem');
-    expect(html(false)).not.toContain('disabled');
+    expect(html(false)).not.toContain('disabled=""');
   });
 });
