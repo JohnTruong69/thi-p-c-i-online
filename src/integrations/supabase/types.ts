@@ -925,6 +925,7 @@ export type Database = {
           created_at: string
           expires_at: string
           paid_at: string
+          plan_version: string
           source: string
           wedding_id: string
         }
@@ -932,6 +933,7 @@ export type Database = {
           created_at?: string
           expires_at: string
           paid_at: string
+          plan_version?: string
           source: string
           wedding_id: string
         }
@@ -939,6 +941,7 @@ export type Database = {
           created_at?: string
           expires_at?: string
           paid_at?: string
+          plan_version?: string
           source?: string
           wedding_id?: string
         }
@@ -1041,6 +1044,8 @@ export type Database = {
           partner_two_name: string
           planned_date: string | null
           status: string
+          trial_ends_at: string | null
+          trial_started_at: string | null
           updated_at: string
         }
         Insert: {
@@ -1052,6 +1057,8 @@ export type Database = {
           partner_two_name: string
           planned_date?: string | null
           status?: string
+          trial_ends_at?: string | null
+          trial_started_at?: string | null
           updated_at?: string
         }
         Update: {
@@ -1063,6 +1070,8 @@ export type Database = {
           partner_two_name?: string
           planned_date?: string | null
           status?: string
+          trial_ends_at?: string | null
+          trial_started_at?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -1104,6 +1113,7 @@ export type Database = {
         Args: { p_wedding_id: string }
         Returns: boolean
       }
+      wedding_access_state: { Args: { p_wedding_id: string }; Returns: Json }
       import_guest_batch: {
         Args: {
           p_batch_id: string
