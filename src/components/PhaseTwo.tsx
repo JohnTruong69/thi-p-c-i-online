@@ -120,9 +120,9 @@ export function CsvBatchScreen() {
 }
 
 /* ---------------- Suggested tasks ---------------- */
-export function SuggestionLibrary() {
+export function SuggestionLibrary({ autoOpen = false }: { autoOpen?: boolean }) {
   const [tasks, setTasks] = useDemoSession<DemoTask[]>('tasks', initialTasks, validTasks);
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(autoOpen);
   const [picked, setPicked] = useState<string[]>([]);
   const [msg, setMsg] = useState('');
   const existing = new Set(tasks.map(t => t.title));
