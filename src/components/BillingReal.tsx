@@ -39,27 +39,40 @@ function LockedPackage({ onSale }: { onSale: boolean }) {
   </Panel>;
 }
 
-/** What this account should do about the package: already covered, existing wedding waiting for sale, or no wedding yet (go to /goi). */
-function OwnerPackageStatus() {
+/** Account package situation: 'loading' | 'none' (no wedding) | 'paid' (active entitlement) | 'legacy_unpaid'. */
+function useOwnerPackage(): 'loading' | 'none' | 'paid' | 'legacy_unpaid' {
   const w = useMyWedding(); const acc = useAccessState(w.data?.id);
-  if (w.isPending || (w.data && acc.isPending)) return null;
-  if (!w.data) return <Note tone="warm">Tài khoản này chưa có đám cưới. Khách hàng mới thanh toán gói trước ở trang gói, sau đó dùng đường dẫn đơn để tạo đám cưới. <Link to="/goi" className="font-semibold text-primary underline">Xem gói và cách thanh toán</Link></Note>;
+  if (w.isPending || (w.data && acc.isPending)) return 'loading';
+  if (!w.data) return 'none';
   const st = acc.data?.state;
-  if (st === 'paid_active' || st === 'legacy_paid_active') return <Note tone="sage"><strong>Đám cưới này đã có quyền sử dụng</strong> đến {vnTime(acc.data?.paid_expires_at)} (giờ Việt Nam). Hai bạn không cần thanh toán thêm.</Note>;
-  return <Note tone="sage"><strong>Đám cưới của hai bạn vẫn dùng bình thường.</strong> Hai bạn chưa phải trả khoản nào; dữ liệu được giữ nguyên. Khi gói mở bán, việc thanh toán để công bố thiệp sẽ thực hiện ngay tại đây.</Note>;
+  return st === 'paid_active' || st === 'legacy_paid_active' ? 'paid' : 'legacy_unpaid';
+}
+
+/** What this account should do about the package: already covered, existing wedding waiting for sale, or no wedding yet (go to /goi). */
+function OwnerPackageStatus({ kind, expiresAt }: { kind: 'none' | 'paid' | 'legacy_unpaid'; expiresAt?: string | null | undefined }) {
+  if (kind === 'none') return <Note tone="warm">Tài khoản này chưa có đám cưới. Khách hàng mới thanh toán gói trước ở trang gói, sau đó dùng đường dẫn đơn để tạo đám cưới. <Link to="/goi" className="font-semibold text-primary underline">Xem gói và cách thanh toán</Link></Note>;
+  if (kind === 'paid') return <Note tone="sage"><strong>Đám cưới này đã có quyền sử dụng</strong> đến {vnTime(expiresAt)} (giờ Việt Nam). Hai bạn không cần thanh toán thêm.</Note>;
+  return <Note tone="sage"><strong>Đám cưới của hai bạn vẫn dùng bình thường.</strong> Hai bạn chưa phải trả khoản nào; dữ liệu được giữ nguyên. Nếu sau này có phương án chuyển sang gói mới cho đám cưới hiện có, đó vẫn là cùng một gói duy nhất ở trên — không phải khoản thu riêng cho thiệp — và sẽ được thông báo rõ trước khi áp dụng.</Note>;
 }
 
 export function RealPlansScreen() {
   const a = useAvailability(); const onSale = !!(a.data?.available && a.data.offer);
+  const w = useMyWedding(); const acc = useAccessState(w.data?.id);
+  const kind = useOwnerPackage();
   return <div className="max-w-3xl"><Header name="Gói thiệp cưới" subtitle="CÔNG BỐ THIỆP" /><InvitationTabs active="publish" />
-    <OwnerPackageStatus />
+    {kind !== 'loading' && <OwnerPackageStatus kind={kind} expiresAt={acc.data?.paid_expires_at} />}
     <LockedPackage onSale={onSale} />
-    {onSale ? <Action to="/checkout" className="mt-4 w-full">Xem đơn và thanh toán</Action> : <div className="mt-4"><NotOnSale /></div>}
+    {kind === 'paid'
+      ? <Panel className="mt-4"><SmallLabel>TRẠNG THÁI GÓI</SmallLabel><Row title="Quyền sử dụng" detail={`Còn hiệu lực đến ${vnTime(acc.data?.paid_expires_at)} (giờ Việt Nam)`} /><Row title="Thanh toán" detail="Đã xác minh qua SePay — không cần trả thêm" /></Panel>
+      : onSale && kind === 'legacy_unpaid' ? <Action to="/checkout" className="mt-4 w-full">Xem đơn và thanh toán</Action>
+      : onSale && kind === 'none' ? <Action to="/goi" className="mt-4 w-full">Xem gói và cách thanh toán</Action>
+      : <div className="mt-4"><NotOnSale /></div>}
   </div>;
 }
 
 export function RealCheckoutScreen() {
   const a = useAvailability(); const w = useMyWedding(); const qc = useQueryClient(); const navigate = useNavigate();
+  const acc = useAccessState(w.data?.id); const kind = useOwnerPackage();
   const create = useServerFn(createCheckoutOrder);
   const [agree, setAgree] = useState(false);
   const orders = useQuery({ enabled: !!w.data, queryKey: ['billing-orders', w.data?.id], queryFn: async () => {
@@ -71,7 +84,8 @@ export function RealCheckoutScreen() {
   const offer = a.data?.available ? a.data.offer : null;
   return <div className="max-w-3xl"><Header name="Thanh toán gói Wedding" subtitle="ĐƠN HÀNG" />
     {a.isPending ? <p className="text-sm text-muted-foreground">Đang kiểm tra…</p> : a.isError ? <Note tone="copper">Chưa kiểm tra được trạng thái thanh toán. <button className="font-semibold underline" onClick={() => a.refetch()}>Thử lại</button></Note>
-      : !offer ? <><OwnerPackageStatus /><LockedPackage onSale={false} /><div className="mt-4"><NotOnSale /></div></>
+      : kind === 'paid' ? <><OwnerPackageStatus kind="paid" expiresAt={acc.data?.paid_expires_at} /><Panel className="mt-4"><SmallLabel>TRẠNG THÁI GÓI</SmallLabel><Row title="Quyền sử dụng" detail={`Còn hiệu lực đến ${vnTime(acc.data?.paid_expires_at)} (giờ Việt Nam)`} /><Row title="Thanh toán" detail="Đã xác minh qua SePay — không cần trả thêm" /></Panel></>
+      : !offer ? <>{kind !== 'loading' && <OwnerPackageStatus kind={kind} expiresAt={acc.data?.paid_expires_at} />}<LockedPackage onSale={false} /><div className="mt-4"><NotOnSale /></div></>
       : <Panel><SmallLabel>ĐIỀU KHOẢN {offer.terms_version}</SmallLabel><h2 className="text-3xl">{vnd(offer.price_vnd)}</h2><p className="text-sm">Một lần · {offer.duration_months} tháng từ lúc xác minh</p>
         {offer.terms_url && <a href={offer.terms_url} target="_blank" rel="noreferrer" className="mt-2 inline-block text-sm font-semibold underline">Đọc điều khoản</a>}
         <label className="mt-3 flex items-start gap-2 text-sm"><input type="checkbox" checked={agree} onChange={e => setAgree(e.target.checked)} className="mt-1" />Tôi đã đọc và đồng ý điều khoản {offer.terms_version}.</label>
