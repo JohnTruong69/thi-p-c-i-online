@@ -35,7 +35,7 @@ export function friendlyError(e: unknown): string {
   if (m.includes('check constraint')) return 'Thông tin chưa hợp lệ. Hãy kiểm tra lại các ô.';
   return 'Có lỗi xảy ra. Hãy thử lại.';
 }
-const must = <T,>(r: { data: T; error: unknown }): T => { if (r.error) throw r.error; return r.data; };
+const must = <T,>(r: { data: T | null; error: unknown }): T => { if (r.error) throw r.error; return (r.data ?? (null as unknown)) as T; };
 
 export const authUserQuery = queryOptions({
   queryKey: ['auth-user'],

@@ -2,8 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { LoginPage } from "@/components/AuthScreens";
 export const Route = createFileRoute("/login")({
   validateSearch: (s: Record<string, unknown>): { redirect?: string; reason?: string } => ({
-    ...(typeof s.redirect === "string" ? { redirect: s.redirect } : {}),
-    ...(typeof s.reason === "string" ? { reason: s.reason } : {}),
+    ...(typeof s['redirect'] === "string" ? { redirect: s['redirect'] } : {}),
+    ...(typeof s['reason'] === "string" ? { reason: s['reason'] } : {}),
   }),
   head: () => ({ meta: [
     { title: "Đăng nhập | Thiệp Cưới Online Việt" },
@@ -15,4 +15,4 @@ export const Route = createFileRoute("/login")({
   ] }),
   component: Screen,
 });
-function Screen() { const s = Route.useSearch(); return <LoginPage redirect={s.redirect} reason={s.reason} />; }
+function Screen() { const s = Route.useSearch() as { redirect?: string; reason?: string }; return <LoginPage redirect={s.redirect} reason={s.reason} />; }

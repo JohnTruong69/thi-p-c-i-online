@@ -18,7 +18,7 @@ function Submit({ busy, children }: { busy: boolean; children: React.ReactNode }
 }
 function ErrorBox({ text }: { text: string }) { return text ? <div role="alert" className="rounded-lg bg-copper-soft p-4 text-[13px] font-semibold text-primary">{text}</div> : null; }
 
-export function LoginPage({ redirect, reason }: { redirect?: string; reason?: string }) {
+export function LoginPage({ redirect, reason }: { redirect?: string | undefined; reason?: string | undefined }) {
   const navigate = useNavigate(); const qc = useQueryClient();
   const [f, setF] = useState({ name: '', email: '', password: '' });
   const [err, setErr] = useState<Record<string, string>>({}); const [msg, setMsg] = useState(''); const [busy, setBusy] = useState(false);
@@ -51,7 +51,7 @@ export function LoginPage({ redirect, reason }: { redirect?: string; reason?: st
     </Panel></PublicShell>;
 }
 
-export function RegisterPage({ redirect }: { redirect?: string }) {
+export function RegisterPage({ redirect }: { redirect?: string | undefined }) {
   const [f, setF] = useState({ name: '', email: '', password: '' });
   const [err, setErr] = useState<Record<string, string>>({}); const [msg, setMsg] = useState(''); const [busy, setBusy] = useState(false); const [sent, setSent] = useState(false);
   const back = safeRedirect(redirect);
