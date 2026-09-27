@@ -11,6 +11,8 @@ import { CATEGORIES, INSTALLMENT_LABELS, PAYERS, STATUS_FROM_UI, agreedCost, bud
 import { inTaskFilter, taskDue, validateTableCount, vietnamToday, type DemoTask } from '@/lib/task-demo';
 import { SUGGESTED_TASKS, dayDiff, shiftDate } from '@/lib/phase2';
 import { DemoDialog, FormField, Header, Note, Panel, PlannerTabs, SmallLabel, Status, fmtDate, inputCls, useFocusId } from './PhaseOne';
+import { guestsQuery } from '@/lib/guests-api';
+import { eventTotals, guestTotals } from '@/lib/guests';
 import { LoadError, Loading, coupleName } from './PhaseThree';
 
 const fullDate = (d: string | null) => (d ? `${d.slice(8, 10)}/${d.slice(5, 7)}/${d.slice(0, 4)}` : 'Chưa ghi ngày');
@@ -254,7 +256,7 @@ export function EventRemovalSummary({ eventId }: { eventId: string }) {
 /* ================= Home: nearest real tasks + payments ================= */
 export function RealHomeScreen() {
   const w = useMyWedding().data!;
-  const tq = useQuery(tasksQuery(w.id)), bq = useQuery(budgetQuery(w.id)), eq = useQuery(eventsQuery(w.id));
+  const gsq = useQuery(guestsQuery(w.id)); const tq = useQuery(tasksQuery(w.id)), bq = useQuery(budgetQuery(w.id)), eq = useQuery(eventsQuery(w.id));
   const [today, setToday] = useState(''); useEffect(() => setToday(vietnamToday()), []);
   if (tq.isPending || bq.isPending || eq.isPending) return <Loading label="Đang tải tổng quan…" />;
   const failed = [tq, bq, eq].find(q => q.isError);
@@ -269,6 +271,6 @@ export function RealHomeScreen() {
     <div className="grid gap-6 lg:grid-cols-[1.25fr_.75fr]"><div><SmallLabel>VIỆC CÓ HẠN GẦN NHẤT</SmallLabel><Panel className="border-l-[3px] border-l-primary">{first ? card(first) : <p className="text-sm text-muted-foreground">Chưa có việc chưa xong nào được đặt hạn.</p>}<Button asChild variant="ghost" className="mt-3 min-h-11 px-0 text-primary"><Link to="/plan/tasks">{first ? 'Mở danh sách việc' : 'Lập kế hoạch và đặt hạn'} <ArrowRight /></Link></Button></Panel>
       <div className="mt-7"><SmallLabel>TIẾP THEO</SmallLabel><div className="grid gap-3 sm:grid-cols-2"><Panel>{second ? card(second) : <p className="text-sm text-muted-foreground">Chưa có việc có hạn tiếp theo.</p>}<Button asChild variant="ghost" className="mt-2 min-h-11 px-0 text-primary"><Link to="/plan/tasks">Xem việc <ArrowRight /></Link></Button></Panel>
         <Panel><div className="mb-3"><Status>{nextPay ? 'KHOẢN SẮP PHẢI TRẢ' : 'CHƯA GHI HẠN TRẢ'}</Status></div><h2 className="text-xl">{nextPay ? fmtVnd(nextPay.i.amount_vnd) : unpaid > 0 ? fmtVnd(unpaid) : 'Chưa có khoản cần trả'}</h2><p className="mt-1 text-xs text-muted-foreground">{nextPay ? `${nextPay.c.label} · ${nextPay.i.label} · ${fullDate(nextPay.i.due_date)}` : unpaid > 0 ? 'Còn phải trả, chưa ghi hạn' : 'Xem sổ chi tiêu'}</p>{nextPay ? <Button asChild variant="ghost" className="mt-2 min-h-11 px-0 text-primary"><Link to="/plan/budget/$id" params={{ id: nextPay.c.id }}>Xem khoản <ArrowRight /></Link></Button> : <Button asChild variant="ghost" className="mt-2 min-h-11 px-0 text-primary"><Link to="/plan/budget">Xem ngân sách <ArrowRight /></Link></Button>}</Panel></div></div></div>
-      <div><SmallLabel>KHÁCH MỜI</SmallLabel><Panel className="bg-sage"><p className="text-sm">Sổ khách vẫn là bản dùng thử trong phiên xem, chưa lưu vào tài khoản.</p><Button asChild variant="ghost" className="mt-3 min-h-11 px-0 text-primary"><Link to="/guests">Xem sổ khách <ArrowRight /></Link></Button></Panel>
+      <div><SmallLabel>KHÁCH MỜI</SmallLabel><Panel className="bg-sage">{gsq.isPending ? <p className="text-sm">Đang tải sổ khách…</p> : gsq.isError ? <p className="text-sm">Chưa tải được sổ khách. <button className="underline" onClick={() => gsq.refetch()}>Thử lại</button></p> : (() => { const t = guestTotals(gsq.data); const att = events.reduce((s, e) => s + eventTotals(gsq.data, e.id).attendingPeople, 0); return t.records ? <><h2 className="text-xl">{t.records} hồ sơ khách · {t.plannedPeople} người dự kiến</h2><p className="mt-1 text-xs">Mỗi khách đếm một lần dù mời nhiều buổi. Đã ghi {att} lượt người sẽ đến (cộng theo từng buổi).</p></> : <p className="text-sm">Sổ khách còn trống.</p>; })()}<Button asChild variant="ghost" className="mt-3 min-h-11 px-0 text-primary"><Link to="/guests">Xem sổ khách <ArrowRight /></Link></Button></Panel>
         <div className="mt-7"><SmallLabel>HÀNH TRÌNH CỦA MÌNH</SmallLabel><Panel><p className="text-sm">{events.length} buổi lễ · {(tq.data ?? []).length} việc · {(bq.data ?? []).length} khoản chi đã lưu</p><Button asChild variant="ghost" className="mt-2 min-h-11 px-0 text-primary"><Link to="/wedding/events">Các buổi lễ <ArrowRight /></Link></Button></Panel></div></div></div></div>;
 }

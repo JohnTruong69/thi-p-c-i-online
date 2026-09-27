@@ -32,3 +32,6 @@
 - [x] Persist Planner: tasks (template id, assignee, table count), budget (payer/Khác/paid/deposit/extra/schedule/cap), server money checks
 - [x] Event date impact review (per-task consent) + transactional Event removal with links
 - [x] Pure + DB tests; browser create/edit/reload 375px + desktop
+
+## Phase 3 slice 2b
+- [x] Guests/CSV/export persisted, Home guest summary real, DB + browser checks

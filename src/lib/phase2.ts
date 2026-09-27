@@ -55,7 +55,7 @@ export function guessColumns(headers: string[]): ColumnMap {
 export type ExistingGuest = { id: string; name: string; phone: string };
 export type CsvRow = {
   row: number; name: string; phone: string; side: 'Nhà gái' | 'Nhà trai' | 'Cả hai'; party: number;
-  errors: string[]; duplicateOf?: string; decision: 'add' | 'skip';
+  errors: string[]; duplicateOf?: string; duplicateReason?: 'phone' | 'name'; decision: 'add' | 'skip';
 };
 export const PREVIEW_LIMIT = 100;
 
@@ -79,11 +79,11 @@ export function buildPreview(table: CsvTable, map: ColumnMap, existing: Existing
     const errors: string[] = [];
     if (!name) errors.push('Thiếu tên khách');
     if (phone && !/^\+?\d{8,15}$/.test(normalizePhone(phone))) errors.push('Số điện thoại chưa hợp lệ');
-    if (!Number.isInteger(party) || party < 1 || party > 20) errors.push('Số người phải từ 1 đến 20');
+    if (!Number.isInteger(party) || party < 1 || party > 50) errors.push('Số người phải là số nguyên từ 1 đến 50');
     const dup = errors.length ? undefined : seen.find(g =>
       (phone && g.phone && normalizePhone(g.phone) === normalizePhone(phone)) || normalizeText(g.name) === normalizeText(name));
     const r: CsvRow = { row: i + 2, name, phone, side: toSide(cells[si] ?? ''), party: Number.isFinite(party) ? party : 1, errors, decision: errors.length || dup ? 'skip' : 'add' };
-    if (dup) r.duplicateOf = dup.name;
+    if (dup) { r.duplicateOf = dup.name; r.duplicateReason = phone && dup.phone && normalizePhone(dup.phone) === normalizePhone(phone) ? 'phone' : 'name'; }
     if (!errors.length) seen.push({ id: `row${r.row}`, name, phone });
     return r;
   });
