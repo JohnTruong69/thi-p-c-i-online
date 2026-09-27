@@ -7,12 +7,12 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { eventsQuery, friendlyError, useMyWedding, type EventForm, type EventRow, type WeddingRow } from '@/lib/wedding-api';
 import { addSuggestedTasks, budgetQuery, deleteBudgetItem, eventImpactData, saveBudgetItem, setBudgetCap, tasksQuery, insertTask, updateTask, type BudgetItemWithSchedule, type TaskRow } from '@/lib/planner-api';
-import { CATEGORIES, INSTALLMENT_LABELS, PAYERS, STATUS_FROM_UI, agreedCost, budgetTotals, fmtVnd, missingTemplates, payerLabel, plannedCost, toStatusUi, unpaidCost, validateCap, validateCost, type CostDraft, type CostMoney } from '@/lib/planner';
+import { CATEGORIES, INSTALLMENT_LABELS, PAYERS, STATUS_FROM_UI, agreedCost, budgetTotals, dueWindow, fmtVnd, missingTemplates, payerLabel, plannedCost, toStatusUi, unpaidCost, validateCap, validateCost, type CostDraft, type CostMoney } from '@/lib/planner';
 import { inTaskFilter, taskDue, validateTableCount, vietnamToday, type DemoTask } from '@/lib/task-demo';
 import { SUGGESTED_TASKS, dayDiff, shiftDate } from '@/lib/phase2';
 import { DemoDialog, FormField, Header, Note, Panel, PlannerTabs, SmallLabel, Status, fmtDate, inputCls, useFocusId } from './PhaseOne';
 import { guestsQuery } from '@/lib/guests-api';
-import { eventTotals, guestTotals } from '@/lib/guests';
+import { eventTotals, followupCount, guestTotals, needsFollowup } from '@/lib/guests';
 import { LoadError, Loading, coupleName } from './PhaseThree';
 
 const fullDate = (d: string | null) => (d ? `${d.slice(8, 10)}/${d.slice(5, 7)}/${d.slice(0, 4)}` : 'Chưa ghi ngày');
@@ -266,8 +266,22 @@ export function RealHomeScreen() {
   const [first, second] = open;
   const pays = (bq.data ?? []).flatMap(c => c.installments.filter(i => !i.paid_at && i.due_date).map(i => ({ i, c }))).sort((a, b) => a.i.due_date!.localeCompare(b.i.due_date!));
   const nextPay = pays[0]; const unpaid = budgetTotals((bq.data ?? []).map(money)).unpaid;
+  const overdueTasks = open.filter(t => dueWindow(t.due_date, today) === 'overdue');
+  const weekTasks = open.filter(t => dueWindow(t.due_date, today) === 'seven_days');
+  const undatedTasks = (tq.data ?? []).filter(t => t.status !== 'done' && !t.due_date).length;
+  const overduePays = pays.filter(({ i }) => dueWindow(i.due_date, today) === 'overdue');
+  const weekPays = pays.filter(({ i }) => dueWindow(i.due_date, today) === 'seven_days');
+  const monthPays = pays.filter(({ i }) => dueWindow(i.due_date, today) === 'thirty_days');
+  const followupGuest = gsq.data?.find(g => g.assignments.some(needsFollowup));
   const card = (t: TaskRow) => { const d = taskDue(asDemo(t), today); const st = toStatusUi(t.status); return <><div className="flex flex-wrap items-start justify-between gap-2"><div className="min-w-0 flex-1"><h2 className="break-words font-display text-xl font-semibold">{t.title}</h2><p className="mt-1 text-xs text-muted-foreground">{evName(t.event_id)} · {assigneeLabel(t.assignee, w)} phụ trách</p></div><Status tone={st === 'Chờ chốt' ? 'warm' : 'copper'}>{st}</Status></div><p className={`mt-2 text-sm ${d.group === 'overdue' ? 'font-semibold text-destructive' : 'text-muted-foreground'}`}>{d.label}</p></>; };
   return <div><Header name="Hôm nay, mình làm gì?" subtitle={today ? new Intl.DateTimeFormat('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh', weekday: 'long', day: 'numeric', month: 'long' }).format(new Date()) : 'TỔNG QUAN'} /><p className="-mt-3 mb-7 text-muted-foreground">Những điều hai bạn đang chuẩn bị cho ngày cưới.</p>
+    <section className="mb-7" aria-label="Việc cần chú ý"><SmallLabel>CẦN CHÚ Ý</SmallLabel>
+      <div className="grid gap-3 sm:grid-cols-3">
+        <Panel className="border-l-[3px] border-l-primary p-4"><p className="text-xs font-semibold text-muted-foreground">Việc cần làm</p><h2 className="mt-1 font-display text-2xl">{today ? overdueTasks.length : '…'} quá hạn</h2><p className="mt-1 text-xs">{today ? `${weekTasks.length} việc đến hạn trong 7 ngày · ${undatedTasks} việc chưa đặt hạn` : 'Đang tính hạn theo giờ Việt Nam…'}</p><Button asChild variant="ghost" className="mt-2 min-h-11 px-0 text-primary">{overdueTasks[0] || weekTasks[0] ? <Link to="/plan/tasks/$id" params={{ id: (overdueTasks[0] ?? weekTasks[0])!.id }}>Xem việc cần làm <ArrowRight /></Link> : <Link to="/plan/tasks">Xem việc cần làm <ArrowRight /></Link>}</Button></Panel>
+        <Panel className="border-l-[3px] border-l-destructive p-4"><p className="text-xs font-semibold text-muted-foreground">Lịch trả tiền</p><h2 className="mt-1 font-display text-2xl">{today ? overduePays.length : '…'} khoản quá hạn</h2><p className="mt-1 text-xs">{today ? `${weekPays.length} khoản trong 7 ngày · ${monthPays.length} khoản trong 8–30 ngày` : 'Đang tính hạn theo giờ Việt Nam…'}</p><Button asChild variant="ghost" className="mt-2 min-h-11 px-0 text-primary">{overduePays[0] || weekPays[0] ? <Link to="/plan/budget/$id" params={{ id: (overduePays[0] ?? weekPays[0])!.c.id }}>Xem lịch trả tiền <ArrowRight /></Link> : <Link to="/plan/budget">Xem lịch trả tiền <ArrowRight /></Link>}</Button></Panel>
+        <Panel className="border-l-[3px] border-l-sage-strong p-4"><p className="text-xs font-semibold text-muted-foreground">Khách cần hỏi lại</p><h2 className="mt-1 font-display text-2xl">{gsq.isPending ? '…' : gsq.isError ? 'Chưa tải được' : `${followupCount(gsq.data ?? [])} hồ sơ`}</h2><p className="mt-1 text-xs">Đã mời nhưng chưa rõ hoặc mới nói có thể đến.</p><Button asChild variant="ghost" className="mt-2 min-h-11 px-0 text-primary">{followupGuest ? <Link to="/guests/$id" params={{ id: followupGuest.id }}>Xem sổ khách <ArrowRight /></Link> : <Link to="/guests">Xem sổ khách <ArrowRight /></Link>}</Button></Panel>
+      </div>
+    </section>
     <div className="grid gap-6 lg:grid-cols-[1.25fr_.75fr]"><div><SmallLabel>VIỆC CÓ HẠN GẦN NHẤT</SmallLabel><Panel className="border-l-[3px] border-l-primary">{first ? card(first) : <p className="text-sm text-muted-foreground">Chưa có việc chưa xong nào được đặt hạn.</p>}<Button asChild variant="ghost" className="mt-3 min-h-11 px-0 text-primary"><Link to="/plan/tasks">{first ? 'Mở danh sách việc' : 'Lập kế hoạch và đặt hạn'} <ArrowRight /></Link></Button></Panel>
       <div className="mt-7"><SmallLabel>TIẾP THEO</SmallLabel><div className="grid gap-3 sm:grid-cols-2"><Panel>{second ? card(second) : <p className="text-sm text-muted-foreground">Chưa có việc có hạn tiếp theo.</p>}<Button asChild variant="ghost" className="mt-2 min-h-11 px-0 text-primary"><Link to="/plan/tasks">Xem việc <ArrowRight /></Link></Button></Panel>
         <Panel><div className="mb-3"><Status>{nextPay ? 'KHOẢN SẮP PHẢI TRẢ' : 'CHƯA GHI HẠN TRẢ'}</Status></div><h2 className="text-xl">{nextPay ? fmtVnd(nextPay.i.amount_vnd) : unpaid > 0 ? fmtVnd(unpaid) : 'Chưa có khoản cần trả'}</h2><p className="mt-1 text-xs text-muted-foreground">{nextPay ? `${nextPay.c.label} · ${nextPay.i.label} · ${fullDate(nextPay.i.due_date)}` : unpaid > 0 ? 'Còn phải trả, chưa ghi hạn' : 'Xem sổ chi tiêu'}</p>{nextPay ? <Button asChild variant="ghost" className="mt-2 min-h-11 px-0 text-primary"><Link to="/plan/budget/$id" params={{ id: nextPay.c.id }}>Xem khoản <ArrowRight /></Link></Button> : <Button asChild variant="ghost" className="mt-2 min-h-11 px-0 text-primary"><Link to="/plan/budget">Xem ngân sách <ArrowRight /></Link></Button>}</Panel></div></div></div>

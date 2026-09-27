@@ -263,32 +263,53 @@ export type Database = {
       guest_event_assignments: {
         Row: {
           attending_count: number | null
+          attendance_intent: string
           created_at: string
           event_id: string
+          expected_count: number | null
           guest_id: string
+          invitation_method: string
           invite_status: string
+          responded_at: string | null
+          response_by: string | null
+          response_source: string
           rsvp_status: string
           updated_at: string
+          updated_by: string | null
           wedding_id: string
         }
         Insert: {
           attending_count?: number | null
+          attendance_intent?: string
           created_at?: string
           event_id: string
+          expected_count?: number | null
           guest_id: string
+          invitation_method?: string
           invite_status?: string
+          responded_at?: string | null
+          response_by?: string | null
+          response_source?: string
           rsvp_status?: string
           updated_at?: string
+          updated_by?: string | null
           wedding_id: string
         }
         Update: {
           attending_count?: number | null
+          attendance_intent?: string
           created_at?: string
           event_id?: string
+          expected_count?: number | null
           guest_id?: string
+          invitation_method?: string
           invite_status?: string
+          responded_at?: string | null
+          response_by?: string | null
+          response_source?: string
           rsvp_status?: string
           updated_at?: string
+          updated_by?: string | null
           wedding_id?: string
         }
         Relationships: [

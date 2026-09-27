@@ -1,5 +1,15 @@
 /** Pure Planner rules shared by the real (persisted) tasks + budget screens. Money is exact integer VND. */
 import type { DemoTask } from './task-demo';
+import { shiftDate } from './phase2';
+
+/** Rolling windows in local calendar dates. A missing date is never treated as zero or overdue. */
+export function dueWindow(date: string | null, today: string): 'unknown' | 'overdue' | 'seven_days' | 'thirty_days' | 'later' {
+  if (!date || !today) return 'unknown';
+  if (date < today) return 'overdue';
+  if (date <= shiftDate(today, 7)) return 'seven_days';
+  if (date <= shiftDate(today, 30)) return 'thirty_days';
+  return 'later';
+}
 
 export type TaskStatusDb = 'todo' | 'doing' | 'waiting' | 'done';
 export const STATUS_TO_UI: Record<TaskStatusDb, DemoTask['status']> = { todo: 'Cần làm', doing: 'Đang làm', waiting: 'Chờ chốt', done: 'Xong' };
