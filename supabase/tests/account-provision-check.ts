@@ -62,6 +62,7 @@ async function main() {
     ok(p2.ok && p2.link?.userId === (p1.ok ? p1.link?.userId : 'x'), 'retry reuses the same account (idempotent, no duplicate user)');
     // Opening the link proves ownership of the order email.
     const o = await openLink(p2.ok ? p2.link!.hashed_token : '', 'recovery');
+    console.log('DBG', o.error?.message, o.user?.email);
     ok(!o.error && o.user?.email === email('buyer'), 'link sign-in lands on the order email account');
     ok(!!o.user?.email_confirmed_at, 'opening the emailed link confirms email ownership');
     const stale = p1.ok ? await openLink(p1.link!.hashed_token, 'invite') : null;
@@ -71,7 +72,7 @@ async function main() {
     ok(!cl.error && typeof cl.data === 'string', 'provisioned user claims wedding + entitlement');
     const wid = cl.data as string;
     ok((await prov('presale', T) as { reason?: string }).reason !== undefined && !(await prov('presale', T)).ok, 'claimed order: no further account emails');
-    const again = mk(); ok(!(await again.auth.signInWithPassword({ email: email('buyer'), password: PW })).error, 'provisioned user logs in with password later');
+    const again = mk(); const sg = await again.auth.signInWithPassword({ email: email('buyer'), password: PW }); console.log('DBG2', sg.error?.message); ok(!sg.error, 'provisioned user logs in with password later');
 
     // 3. Account recovery for a provisioned user uses the standard recovery link.
     const rec = await admin.auth.admin.generateLink({ type: 'recovery', email: email('buyer') });
@@ -79,7 +80,7 @@ async function main() {
 
     // 4. Already-existing confirmed email: no new user, no email; they sign in and claim.
     const TL = tok('l'); await order(email('legacy'), TL); await pay(TL, 2);
-    ok((await prov('presale', TL) as { reason?: string }).reason === 'existing_account', 'existing confirmed account: told to log in, nothing created');
+    const pl = await prov('presale', TL); console.log('DBG3', JSON.stringify(pl)); ok((pl as { reason?: string }).reason === 'existing_account', 'existing confirmed account: told to log in, nothing created');
     ok(!(await claim(L, TL)).error, 'existing account claims its paid order after normal login');
 
     // 5. Existing unconfirmed self-signup (legacy of open-signup era): recovery link, same account.
