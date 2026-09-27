@@ -78,6 +78,13 @@
       "when": 1790501700000,
       "tag": "0010_trial_and_one_payment_foundation",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1790516824057,
+      "tag": "0011_family_viewers",
+      "breakpoints": true
     }
   ]
 }
