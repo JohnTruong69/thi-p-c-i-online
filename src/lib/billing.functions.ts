@@ -54,7 +54,7 @@ export const getBillingAdminOverview = createServerFn({ method: 'GET' })
     const orders = (await supabaseAdmin.from('billing_orders').select('id, code, status, amount_vnd, created_at, paid_at, expires_at').order('created_at', { ascending: false }).limit(50)).data ?? [];
     return {
       checklist: {
-        offerInstalled: !!s, termsApproved: !!s?.terms_approved_at, accountEnabled: !!s?.account_enabled,
+        offerInstalled: !!s, termsApproved: !!s?.terms_approved_at, accountEnabled: !!s?.account_enabled, sandboxVerified: !!s?.sandbox_verified_at,
         accountLast4: s?.bank_account_number ? s.bank_account_number.slice(-4) : null, liveEnabled: !!s?.live_enabled,
         webhookSecret: env.webhookSecret, goLive: env.goLive,
       },

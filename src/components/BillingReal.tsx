@@ -18,7 +18,7 @@ function useAvailability() {
 }
 
 function NotOnSale() {
-  return <Note tone="warm"><strong>Gói mới đang hoàn thiện, chưa thể thanh toán.</strong><br />Hiện chưa có giá, điều khoản hay tài khoản nhận tiền được duyệt, nên ứng dụng không tạo đơn và không nhận chuyển khoản. Hai bạn vẫn chuẩn bị miễn phí và dữ liệu được giữ nguyên.</Note>;
+  return <Note tone="warm"><strong>Gói mới đang hoàn thiện, chưa thể thanh toán.</strong><br />Hiện chưa có giá, điều khoản hay tài khoản nhận tiền được duyệt, nên ứng dụng chưa tạo đơn và chưa nhận thanh toán. Khi mở, thanh toán chỉ qua SePay và quyền được mở tự động sau khi SePay xác nhận. Hai bạn vẫn chuẩn bị miễn phí và dữ liệu được giữ nguyên.</Note>;
 }
 
 function ProposedRights() {
@@ -81,7 +81,7 @@ export function RealOrderStatusScreen({ id }: { id?: string | undefined }) {
       : o.status === 'pending' ? <Panel><SmallLabel>CHỜ CHUYỂN KHOẢN · HẾT HẠN {vnTime(o.expires_at)}</SmallLabel>
           <div className="border-t border-border"><Row title="Ngân hàng" detail={o.bank_gateway} /><Row title="Số tài khoản" detail={o.bank_account_number} /><Row title="Chủ tài khoản" detail={o.bank_account_name} /><Row title="Số tiền chính xác" detail={vnd(o.amount_vnd)} /><Row title="Nội dung chuyển khoản" detail={o.code} /></div>
           <img alt={`QR chuyển khoản cho đơn ${o.code}`} className="mx-auto mt-3 w-56" src={`https://qr.sepay.vn/img?acc=${encodeURIComponent(o.bank_account_number)}&bank=${encodeURIComponent(o.bank_gateway)}&amount=${o.amount_vnd}&des=${o.code}`} />
-          <p className="mt-2 text-xs text-muted-foreground">Trang tự cập nhật khi hệ thống nhận và xác minh giao dịch. Chuyển đúng số tiền và nội dung; sai lệch sẽ cần đối soát thủ công.</p></Panel>
+          <p className="mt-2 text-xs text-muted-foreground">Trang tự cập nhật khi hệ thống nhận và xác minh giao dịch. Chỉ thanh toán qua SePay. Chuyển đúng số tiền và nội dung; quyền mở tự động khi SePay xác nhận giao dịch. Nếu sai lệch, bộ phận hỗ trợ chỉ đối soát giao dịch đã được SePay xác nhận.</p></Panel>
       : <Note tone="warm">Đơn {o.code}: {STATUS[o.status]}. Chưa có thanh toán nào được xác minh cho đơn này.</Note>}
     <Action to="/checkout" variant="outline" className="mt-4 w-full">Về trang đơn hàng</Action>
   </div>;
@@ -98,9 +98,9 @@ export function RealAdminScreen() {
   const item = (ok: boolean, label: string) => <Row title={label} detail={ok ? 'Đã có' : 'Chưa có'} right={<Status tone={ok ? 'sage' : 'warm'}>{ok ? 'OK' : 'Thiếu'}</Status>} />;
   return <div className="max-w-3xl"><Header name="Vận hành thanh toán" subtitle="QUẢN TRỊ" />
     <Panel><SmallLabel>ĐIỀU KIỆN MỞ THANH TOÁN (CHỈ ĐỌC)</SmallLabel>
-      {item(c.offerInstalled, 'Giá và phiên bản gói')}{item(c.termsApproved, 'Điều khoản đã duyệt')}{item(c.accountEnabled, `Tài khoản nhận tiền${c.accountLast4 ? ' ••' + c.accountLast4 : ''}`)}{item(c.webhookSecret, 'Khóa ký webhook SePay')}{item(c.goLive, 'Công tắc mở bán trên máy chủ')}{item(c.liveEnabled, 'Công tắc mở bán trong dữ liệu')}
+      {item(c.offerInstalled, 'Giá và phiên bản gói')}{item(c.termsApproved, 'Điều khoản đã duyệt')}{item(c.accountEnabled, `Tài khoản nhận tiền${c.accountLast4 ? ' ••' + c.accountLast4 : ''}`)}{item(c.webhookSecret, 'Khóa ký webhook SePay')}{item(c.sandboxVerified, 'Đã kiểm tra SePay sandbox đầu-cuối')}{item(c.goLive, 'Công tắc mở bán trên máy chủ')}{item(c.liveEnabled, 'Công tắc mở bán trong dữ liệu')}
       <p className="mt-2 text-xs text-muted-foreground">Các mục này chỉ được cài bởi người vận hành ngoài ứng dụng sau khi điều khoản được duyệt.</p></Panel>
-    <Panel className="mt-4"><SmallLabel>GIAO DỊCH CẦN ĐỐI SOÁT</SmallLabel>{q.data.unmatched.length === 0 ? <p className="text-sm text-muted-foreground">Không có giao dịch chờ.</p> : q.data.unmatched.map(t => <div key={t.id} className="border-b border-border py-3 last:border-0"><div className="font-semibold">#{t.sepay_id} · {vnd(t.transfer_amount)} · {t.unmatched_reason ?? t.match_status}</div><p className="text-xs text-muted-foreground break-words">{t.transaction_date} · {t.content}</p><Button variant="outline" className="mt-2" onClick={() => setForm({ tx: t.id, code: t.code ?? '', note: '' })}>Đối soát với đơn</Button></div>)}</Panel>
+    <Panel className="mt-4"><SmallLabel>GIAO DỊCH SEPAY CẦN ĐỐI SOÁT</SmallLabel><p className="mb-2 text-xs text-muted-foreground">Chỉ gồm giao dịch SePay đã xác thực chữ ký. Không có cách đánh dấu đã trả thủ công.</p>{q.data.unmatched.length === 0 ? <p className="text-sm text-muted-foreground">Không có giao dịch chờ.</p> : q.data.unmatched.map(t => <div key={t.id} className="border-b border-border py-3 last:border-0"><div className="font-semibold">#{t.sepay_id} · {vnd(t.transfer_amount)} · {t.unmatched_reason ?? t.match_status}</div><p className="text-xs text-muted-foreground break-words">{t.transaction_date} · {t.content}</p><Button variant="outline" className="mt-2" onClick={() => setForm({ tx: t.id, code: t.code ?? '', note: '' })}>Gắn giao dịch SePay này với đơn</Button></div>)}</Panel>
     {form && <Panel className="mt-4"><label className="block text-xs font-semibold">Mã đơn<input className={inputCls} value={form.code} onChange={e => setForm({ ...form, code: e.target.value })} /></label><label className="mt-2 block text-xs font-semibold">Lý do (bắt buộc, lưu nhật ký)<input className={inputCls} value={form.note} onChange={e => setForm({ ...form, note: e.target.value })} /></label>
       {m.data && m.data.result !== 'matched' && <p role="alert" className="mt-2 text-xs font-semibold text-destructive">Không khớp: {m.data.reason}</p>}{m.isError && <p role="alert" className="mt-2 text-xs text-destructive">Chưa đối soát được.</p>}
       <Button className="mt-3" disabled={m.isPending || form.note.trim().length < 5} onClick={() => m.mutate()}>Xác nhận đối soát</Button></Panel>}
