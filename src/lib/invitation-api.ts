@@ -13,11 +13,21 @@ export type RevisionRow = Database['public']['Tables']['invitation_revisions']['
 const must = <T,>(r: { data: T | null; error: unknown }): T => { if (r.error) throw r.error; return (r.data ?? (null as unknown)) as T; };
 const BUCKET = 'invitation-photos';
 
+/** A read-only wedding that never opened its invitation: there is no draft and none may be created. */
+export class InvitationNotStartedReadOnly extends Error { constructor() { super('invitation not started (read-only)'); this.name = 'InvitationNotStartedReadOnly'; } }
+export const isInvitationNotStartedReadOnly = (e: unknown) => e instanceof InvitationNotStartedReadOnly || (e instanceof Error && e.name === 'InvitationNotStartedReadOnly');
+
 export type InvitationBundle = { invitation: InvitationRow; links: LinkRow[]; photos: PhotoRow[]; revisions: RevisionRow[]; entitled: boolean };
 export const invitationQuery = (weddingId: string) => queryOptions({
   queryKey: ['invitation', weddingId],
   queryFn: async (): Promise<InvitationBundle> => {
-    must(await supabase.rpc('ensure_invitation', { p_wedding_id: weddingId }));
+    // Lazy creation only when no draft exists yet; read-only weddings never create one (the DB gate refuses it).
+    const existing = must(await supabase.from('invitations').select('id').eq('wedding_id', weddingId).maybeSingle());
+    if (!existing) {
+      const r = await supabase.rpc('ensure_invitation', { p_wedding_id: weddingId });
+      if (r.error && /read-only/i.test(r.error.message ?? '')) throw new InvitationNotStartedReadOnly();
+      must(r);
+    }
     const [inv, links, photos, revisions, ent] = await Promise.all([
       supabase.from('invitations').select('*').eq('wedding_id', weddingId).single(),
       supabase.from('invitation_links').select('*').eq('wedding_id', weddingId),

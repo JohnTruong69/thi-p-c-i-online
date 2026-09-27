@@ -6,7 +6,7 @@ import { ArrowRight, Copy, ExternalLink, ImagePlus, Loader2, QrCode, Star, Trash
 import { Button } from '@/components/ui/button';
 import { WriteButton, useReadOnly } from './AccessStateBanner';
 import { eventsQuery, useMyWedding, type EventRow } from '@/lib/wedding-api';
-import { currentSnapshot, eventToSnap, invitationError, invitationQuery, photoUrlsQuery, publishInvitation, publishedRevision, removePhoto, revisionSnapshot, saveRevision, setCover, updateContent, updateLink, uploadPhoto, type InvitationBundle, type LinkRow } from '@/lib/invitation-api';
+import { isInvitationNotStartedReadOnly, currentSnapshot, eventToSnap, invitationError, invitationQuery, photoUrlsQuery, publishInvitation, publishedRevision, removePhoto, revisionSnapshot, saveRevision, setCover, updateContent, updateLink, uploadPhoto, type InvitationBundle, type LinkRow } from '@/lib/invitation-api';
 import { LINK_LABEL, LINK_SIDES, MAX_MESSAGE, MAX_TITLE, diffInvitation, linkState, validateContent, type LinkSide, type SnapEvent } from '@/lib/invitation';
 import { checkPhotos, MAX_PHOTOS } from '@/lib/phase2';
 import { mapUrl } from '@/lib/phase2d';
@@ -47,6 +47,7 @@ function useInvitation() {
 }
 function Gate({ iq, eq, children }: { iq: { isPending: boolean; isError: boolean; error: unknown; refetch: () => unknown }; eq: { isPending: boolean; isError: boolean; error: unknown; refetch: () => unknown }; children: React.ReactNode }) {
   if (iq.isPending || eq.isPending) return <Loading label="Đang mở thiệp của hai bạn…" />;
+  if (iq.isError && isInvitationNotStartedReadOnly(iq.error)) return <div role="status" className="max-w-xl"><Note tone="warm">Hai bạn chưa bắt đầu soạn thiệp trước khi đám cưới chuyển sang chế độ chỉ xem, nên hiện chưa có thiệp nào để xem. Gói mới chưa mở bán và chưa thể thanh toán, nên chưa tạo thiệp được lúc này. Các dữ liệu khác vẫn được giữ nguyên.</Note><Link to="/settings/data" className="mt-3 inline-block min-h-11 content-center font-semibold text-primary underline">Tải dữ liệu</Link></div>;
   if (iq.isError) return <LoadError error={iq.error} retry={() => iq.refetch()} />;
   if (eq.isError) return <LoadError error={eq.error} retry={() => eq.refetch()} />;
   return <>{children}</>;
