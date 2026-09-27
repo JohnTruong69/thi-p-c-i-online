@@ -4,7 +4,7 @@ import { createClient } from '@supabase/supabase-js';
 import type { Database } from '@/integrations/supabase/types';
 
 export type RsvpReceipt = { receipt_id: string; guest_name: string; phone?: string | null; note?: string | null; submitted_at: string; edited: boolean; answers: { event_id: string; event_name: string; attending: boolean; party_size: number | null }[]; edit_code?: string; replay?: boolean };
-export type SubmitResult = { ok: true; receipt: RsvpReceipt } | { ok: false; reason: 'closed' | 'invalid' | 'edit' | 'error' };
+export type SubmitResult = { ok: true; receipt: RsvpReceipt } | { ok: false; reason: 'closed' | 'invalid' | 'edit' | 'rate' | 'error' };
 
 function publicClient() {
   const key = process.env['SUPABASE_PUBLISHABLE_KEY']!;
@@ -27,6 +27,7 @@ export const submitRsvp = createServerFn({ method: 'POST' })
     if (r.error) {
       const m = r.error.message;
       if (m.includes('closed')) return { ok: false, reason: 'closed' };
+      if (m.includes('rate_limited')) return { ok: false, reason: 'rate' };
       if (m.includes('edit code')) return { ok: false, reason: 'edit' };
       if (/invalid|missing|not on link/.test(m)) return { ok: false, reason: 'invalid' };
       console.error('submit_rsvp failed', r.error.code);

@@ -1,8 +1,16 @@
 import { describe, expect, it } from 'vitest';
-import { budgetTotals, missingTemplates, parseVnd, validateCap, validateCost, toStatusUi, type CostDraft } from './planner';
+import { budgetTotals, dueWindow, missingTemplates, parseVnd, validateCap, validateCost, toStatusUi, type CostDraft } from './planner';
 import { inTaskFilter, taskDue, validateTableCount, type DemoTask } from './task-demo';
 
 const draft = (o: Partial<CostDraft> = {}): CostDraft => ({ title: 'Tiệc', category: 'tiec', categoryDetail: '', eventId: '', payer: 'couple', estimate: '', agreed: '', paid: '0', deposit: '0', extra: '0', vendor: '', installments: [], ...o });
+
+it('separates overdue, rolling 7/30-day deadlines and missing dates', () => {
+  expect(dueWindow('2026-09-26', '2026-09-27')).toBe('overdue');
+  expect(dueWindow('2026-10-04', '2026-09-27')).toBe('seven_days');
+  expect(dueWindow('2026-10-05', '2026-09-27')).toBe('thirty_days');
+  expect(dueWindow('2026-10-28', '2026-09-27')).toBe('later');
+  expect(dueWindow(null, '2026-09-27')).toBe('unknown');
+});
 
 describe('budget totals', () => {
   it('uses agreed (with confirmed extra) else estimate, once per item; paid includes deposit', () => {
