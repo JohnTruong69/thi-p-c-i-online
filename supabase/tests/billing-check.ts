@@ -100,10 +100,27 @@ async function main() {
   const typo = await tx(base + 9, { content: 'TCO typo khong khop' });
   ok(res(typo)?.reason === 'no_code', 'typo payment queued');
   const row = (await admin.from('sepay_transactions').select('id').eq('sepay_id', base + 9).single()).data!;
-  const rc = await admin.rpc('match_sepay_transaction', { p_tx: row.id, p_order_id: oB.order_id, p_actor: userIds[0]!, p_note: 'QA reconcile' });
-  ok(res(rc)?.result === 'matched', 'operator reconciliation activates order');
+  ok(!!(await admin.rpc('match_sepay_transaction', { p_tx: row.id, p_order_id: oB.order_id, p_actor: B.id, p_note: 'Khách ghi sai mã chuyển khoản SePay' })).error, 'non-admin actor cannot reconcile');
+  await admin.from('user_roles').insert({ user_id: A.id, role: 'admin' });
+  ok(res(await admin.rpc('match_sepay_transaction', { p_tx: row.id, p_order_id: oB.order_id, p_actor: A.id, p_note: 'sai mã' }))?.reason === 'reason_required', 'differing code requires a clear exceptional reason');
+  ok((await admin.from('billing_orders').select('status').eq('id', oB.order_id).single()).data?.status === 'pending', 'refused reconcile leaves order pending');
+  const rc = await admin.rpc('match_sepay_transaction', { p_tx: row.id, p_order_id: oB.order_id, p_actor: A.id, p_note: 'Khách ghi sai mã chuyển khoản SePay, đã đối chiếu số tiền' });
+  ok(res(rc)?.result === 'matched', 'operator relinks verified SePay tx with reason');
+  ok(res(await admin.rpc('match_sepay_transaction', { p_tx: row.id, p_order_id: oB.order_id, p_actor: A.id, p_note: 'Khách ghi sai mã chuyển khoản SePay, đã đối chiếu số tiền' }))?.result === 'already_matched', 'reconcile is idempotent');
+  // Expired / cancelled / paid orders are never matched by an operator
+  const wE = await draft((await user('e')).c, 'E'); const eId = userIds[userIds.length - 1]!;
+  const oE = (await admin.rpc('create_billing_order', { p_wedding_id: wE, p_user_id: eId })).data as { order_id: string };
+  await admin.from('billing_orders').update({ expires_at: new Date(Date.now() - 1000).toISOString() }).eq('id', oE.order_id);
+  const late = await tx(base + 10, { content: 'thanh toan tre' });
+  const lateRow = (await admin.from('sepay_transactions').select('id').eq('sepay_id', base + 10).single()).data!;
+  ok(res(late)?.reason === 'no_code', 'late payment queued');
+  ok(res(await admin.rpc('match_sepay_transaction', { p_tx: lateRow.id, p_order_id: oE.order_id, p_actor: A.id, p_note: 'Thanh toán SePay đến sau khi đơn hết hạn' }))?.reason === 'order_expired', 'operator cannot match expired order');
+  await admin.from('billing_orders').update({ status: 'cancelled' }).eq('id', oE.order_id);
+  ok(res(await admin.rpc('match_sepay_transaction', { p_tx: lateRow.id, p_order_id: oE.order_id, p_actor: A.id, p_note: 'Thanh toán SePay đến sau khi đơn bị hủy' }))?.reason === 'order_cancelled', 'operator cannot match cancelled order');
+  ok(res(await admin.rpc('match_sepay_transaction', { p_tx: lateRow.id, p_order_id: oB.order_id, p_actor: A.id, p_note: 'Gắn thử vào đơn đã thanh toán trước đó' }))?.reason === 'order_already_paid', 'operator cannot match paid order');
+  ok(!(await admin.from('wedding_entitlements').select('wedding_id').eq('wedding_id', wE).maybeSingle()).data, 'no entitlement from refused reconciliations');
   const bad = (await admin.from('sepay_transactions').select('id').eq('sepay_id', base + 2).single()).data!;
-  ok(res(await admin.rpc('match_sepay_transaction', { p_tx: bad.id, p_order_id: oB.order_id, p_actor: userIds[0]!, p_note: 'x' }))?.reason !== undefined, 'reconciliation still refuses wrong amount/paid order');
+  ok(res(await admin.rpc('match_sepay_transaction', { p_tx: bad.id, p_order_id: oB.order_id, p_actor: A.id, p_note: 'Thử gắn sai số tiền vào đơn' }))?.reason !== undefined, 'reconciliation still refuses wrong amount/paid order');
 
   // Legacy entitlement preserved
   const legacyPaid = new Date(Date.now() - 30 * 864e5); const legacyExp = new Date(legacyPaid.getTime() + 300 * 864e5);
@@ -123,6 +140,7 @@ async function cleanup() {
   }
   if (sepayIds.length) await admin.from('sepay_transactions').delete().in('sepay_id', sepayIds);
   if (weddings.length) { await admin.from('billing_orders').delete().in('wedding_id', weddings); await admin.from('weddings').delete().in('id', weddings); }
+  if (userIds.length) await admin.from('user_roles').delete().in('user_id', userIds);
   for (const id of userIds) await admin.auth.admin.deleteUser(id);
   console.log('AFTER', JSON.stringify(await counts()));
 }
