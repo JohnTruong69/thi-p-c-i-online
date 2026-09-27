@@ -1,22 +1,17 @@
--- V1 transition foundation. This migration records trial dates and versions paid
--- rights; it does not activate the trial write gate before the matching UI exists.
+-- V1 transition foundation. This migration provides trial fields and versions
+-- paid rights. A later coordinated rollout starts clocks and enables the write
+-- gate only when checkout and read-only/export states are ready.
 
 ALTER TABLE public.weddings
   ADD COLUMN trial_started_at timestamptz,
   ADD COLUMN trial_ends_at timestamptz;
 
--- Existing drafts get a fresh seven-day window when this migration is applied.
--- Do not backdate their trial to created_at and silently expire their work.
-UPDATE public.weddings
-SET trial_started_at = now(), trial_ends_at = now() + interval '7 days';
-
 ALTER TABLE public.weddings
-  ALTER COLUMN trial_started_at SET DEFAULT now(),
-  ALTER COLUMN trial_ends_at SET DEFAULT (now() + interval '7 days'),
-  ALTER COLUMN trial_started_at SET NOT NULL,
-  ALTER COLUMN trial_ends_at SET NOT NULL,
   ADD CONSTRAINT weddings_trial_seven_days
-    CHECK (trial_ends_at = trial_started_at + interval '7 days');
+    CHECK (
+      (trial_started_at IS NULL AND trial_ends_at IS NULL)
+      OR (trial_started_at IS NOT NULL AND trial_ends_at = trial_started_at + interval '7 days')
+    );
 
 -- Authenticated clients currently have a table-level UPDATE grant on weddings.
 -- A trigger, rather than a column grant, makes the trial clock immutable to them.
@@ -25,7 +20,8 @@ RETURNS trigger LANGUAGE plpgsql SET search_path = public AS $$
 BEGIN
   IF (NEW.trial_started_at, NEW.trial_ends_at)
      IS DISTINCT FROM (OLD.trial_started_at, OLD.trial_ends_at)
-     AND auth.role() IS DISTINCT FROM 'service_role' THEN
+     AND NOT (auth.role() IS NOT DISTINCT FROM 'service_role'
+       OR (current_user = 'postgres' AND auth.uid() IS NULL)) THEN
     RAISE EXCEPTION 'trial clock is managed by the server' USING ERRCODE = '42501';
   END IF;
   RETURN NEW;
@@ -74,6 +70,8 @@ BEGIN
   ELSIF FOUND AND e.paid_at <= now() THEN
     state := CASE WHEN e.plan_version = 'one_payment_36m'
       THEN 'paid_expired_read_only' ELSE 'legacy_paid_expired' END;
+  ELSIF w.trial_ends_at IS NULL THEN
+    state := 'trial_not_started';
   ELSIF w.trial_ends_at > now() THEN
     state := 'trial_active';
   ELSE
@@ -88,7 +86,8 @@ BEGIN
     'plan_version', e.plan_version,
     'export_guaranteed_until', CASE WHEN e.paid_at IS NOT NULL
       THEN e.expires_at + interval '90 days'
-      ELSE w.trial_ends_at + interval '90 days' END
+      WHEN w.trial_ends_at IS NOT NULL THEN w.trial_ends_at + interval '90 days'
+      ELSE NULL END
   );
 END $$;
 REVOKE ALL ON FUNCTION public.wedding_access_state(uuid) FROM PUBLIC, anon;
