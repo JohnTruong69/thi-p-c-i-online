@@ -10,8 +10,11 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as RegisterRouteImport } from './routes/register'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as StartRouteImport } from './routes/start'
 import { Route as AuthenticatedAccountRouteImport } from './routes/_authenticated/account'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
@@ -22,6 +25,7 @@ import { Route as AuthenticatedPlansRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedPublishRouteImport } from './routes/_authenticated/publish'
 import { Route as AuthenticatedRsvpRouteImport } from './routes/_authenticated/rsvp'
 import { Route as ITokenRouteImport } from './routes/i.$token'
+import { Route as InviteTokenRouteImport } from './routes/invite.$token'
 import { Route as AuthenticatedGuestsIdRouteImport } from './routes/_authenticated/guests_.$id'
 import { Route as AuthenticatedGuestsExportRouteImport } from './routes/_authenticated/guests_.export'
 import { Route as AuthenticatedGuestsImportRouteImport } from './routes/_authenticated/guests_.import'
@@ -51,6 +55,15 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
+  id: '/forgot-password',
+  path: '/forgot-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
@@ -61,141 +74,151 @@ const RegisterRoute = RegisterRouteImport.update({
   path: '/register',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const StartRoute = StartRouteImport.update({
   id: '/start',
   path: '/start',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedAccountRoute = AuthenticatedAccountRouteImport.update({
-  id: '/_authenticated/account',
+  id: '/account',
   path: '/account',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
-  id: '/_authenticated/admin',
+  id: '/admin',
   path: '/admin',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedCheckoutRoute = AuthenticatedCheckoutRouteImport.update({
-  id: '/_authenticated/checkout',
+  id: '/checkout',
   path: '/checkout',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedGuestsRoute = AuthenticatedGuestsRouteImport.update({
-  id: '/_authenticated/guests',
+  id: '/guests',
   path: '/guests',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedHomeRoute = AuthenticatedHomeRouteImport.update({
-  id: '/_authenticated/home',
+  id: '/home',
   path: '/home',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedPlansRoute = AuthenticatedPlansRouteImport.update({
-  id: '/_authenticated/plans',
+  id: '/plans',
   path: '/plans',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedPublishRoute = AuthenticatedPublishRouteImport.update({
-  id: '/_authenticated/publish',
+  id: '/publish',
   path: '/publish',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedRsvpRoute = AuthenticatedRsvpRouteImport.update({
-  id: '/_authenticated/rsvp',
+  id: '/rsvp',
   path: '/rsvp',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const ITokenRoute = ITokenRouteImport.update({
   id: '/i/$token',
   path: '/i/$token',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedGuestsIdRoute = AuthenticatedGuestsIdRouteImport.update({
-  id: '/_authenticated/guests_/$id',
-  path: '/guests/$id',
+const InviteTokenRoute = InviteTokenRouteImport.update({
+  id: '/invite/$token',
+  path: '/invite/$token',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedGuestsIdRoute = AuthenticatedGuestsIdRouteImport.update({
+  id: '/guests_/$id',
+  path: '/guests/$id',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedGuestsExportRoute =
   AuthenticatedGuestsExportRouteImport.update({
-    id: '/_authenticated/guests_/export',
+    id: '/guests_/export',
     path: '/guests/export',
-    getParentRoute: () => rootRouteImport,
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedGuestsImportRoute =
   AuthenticatedGuestsImportRouteImport.update({
-    id: '/_authenticated/guests_/import',
+    id: '/guests_/import',
     path: '/guests/import',
-    getParentRoute: () => rootRouteImport,
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedInvitationChangesRoute =
   AuthenticatedInvitationChangesRouteImport.update({
-    id: '/_authenticated/invitation/changes',
+    id: '/invitation/changes',
     path: '/invitation/changes',
-    getParentRoute: () => rootRouteImport,
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedInvitationCheckRoute =
   AuthenticatedInvitationCheckRouteImport.update({
-    id: '/_authenticated/invitation/check',
+    id: '/invitation/check',
     path: '/invitation/check',
-    getParentRoute: () => rootRouteImport,
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedInvitationContentRoute =
   AuthenticatedInvitationContentRouteImport.update({
-    id: '/_authenticated/invitation/content',
+    id: '/invitation/content',
     path: '/invitation/content',
-    getParentRoute: () => rootRouteImport,
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedInvitationHistoryRoute =
   AuthenticatedInvitationHistoryRouteImport.update({
-    id: '/_authenticated/invitation/history',
+    id: '/invitation/history',
     path: '/invitation/history',
-    getParentRoute: () => rootRouteImport,
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedInvitationPreviewRoute =
   AuthenticatedInvitationPreviewRouteImport.update({
-    id: '/_authenticated/invitation/preview',
+    id: '/invitation/preview',
     path: '/invitation/preview',
-    getParentRoute: () => rootRouteImport,
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedInvitationVariantsRoute =
   AuthenticatedInvitationVariantsRouteImport.update({
-    id: '/_authenticated/invitation/variants',
+    id: '/invitation/variants',
     path: '/invitation/variants',
-    getParentRoute: () => rootRouteImport,
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedPlanBudgetRoute = AuthenticatedPlanBudgetRouteImport.update({
-  id: '/_authenticated/plan/budget',
+  id: '/plan/budget',
   path: '/plan/budget',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedPlanTasksRoute = AuthenticatedPlanTasksRouteImport.update({
-  id: '/_authenticated/plan/tasks',
+  id: '/plan/tasks',
   path: '/plan/tasks',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedSettingsDataRoute =
   AuthenticatedSettingsDataRouteImport.update({
-    id: '/_authenticated/settings/data',
+    id: '/settings/data',
     path: '/settings/data',
-    getParentRoute: () => rootRouteImport,
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedSettingsTeamRoute =
   AuthenticatedSettingsTeamRouteImport.update({
-    id: '/_authenticated/settings/team',
+    id: '/settings/team',
     path: '/settings/team',
-    getParentRoute: () => rootRouteImport,
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedWeddingEventsRoute =
   AuthenticatedWeddingEventsRouteImport.update({
-    id: '/_authenticated/wedding/events',
+    id: '/wedding/events',
     path: '/wedding/events',
-    getParentRoute: () => rootRouteImport,
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedWeddingNewRoute = AuthenticatedWeddingNewRouteImport.update({
-  id: '/_authenticated/wedding/new',
+  id: '/wedding/new',
   path: '/wedding/new',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const ITokenExpiredRoute = ITokenExpiredRouteImport.update({
   id: '/i/$token_/expired',
@@ -209,33 +232,33 @@ const ITokenRsvpRoute = ITokenRsvpRouteImport.update({
 } as any)
 const AuthenticatedCheckoutStatusIdRoute =
   AuthenticatedCheckoutStatusIdRouteImport.update({
-    id: '/_authenticated/checkout_/status/$id',
+    id: '/checkout_/status/$id',
     path: '/checkout/status/$id',
-    getParentRoute: () => rootRouteImport,
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedGuestsImportBatchRoute =
   AuthenticatedGuestsImportBatchRouteImport.update({
-    id: '/_authenticated/guests_/import_/$batch',
+    id: '/guests_/import_/$batch',
     path: '/guests/import/$batch',
-    getParentRoute: () => rootRouteImport,
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedPlanBudgetIdRoute =
   AuthenticatedPlanBudgetIdRouteImport.update({
-    id: '/_authenticated/plan/budget_/$id',
+    id: '/plan/budget_/$id',
     path: '/plan/budget/$id',
-    getParentRoute: () => rootRouteImport,
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedPlanTasksSuggestionsRoute =
   AuthenticatedPlanTasksSuggestionsRouteImport.update({
-    id: '/_authenticated/plan/tasks_/suggestions',
+    id: '/plan/tasks_/suggestions',
     path: '/plan/tasks/suggestions',
-    getParentRoute: () => rootRouteImport,
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedWeddingEventsIdRoute =
   AuthenticatedWeddingEventsIdRouteImport.update({
-    id: '/_authenticated/wedding/events_/$id',
+    id: '/wedding/events_/$id',
     path: '/wedding/events/$id',
-    getParentRoute: () => rootRouteImport,
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const ITokenRsvpReceiptRoute = ITokenRsvpReceiptRouteImport.update({
   id: '/i/$token_/rsvp_/receipt',
@@ -245,8 +268,10 @@ const ITokenRsvpReceiptRoute = ITokenRsvpReceiptRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/start': typeof StartRoute
   '/account': typeof AuthenticatedAccountRoute
   '/admin': typeof AuthenticatedAdminRoute
@@ -257,6 +282,7 @@ export interface FileRoutesByFullPath {
   '/publish': typeof AuthenticatedPublishRoute
   '/rsvp': typeof AuthenticatedRsvpRoute
   '/i/$token': typeof ITokenRoute
+  '/invite/$token': typeof InviteTokenRoute
   '/guests/$id': typeof AuthenticatedGuestsIdRoute
   '/guests/export': typeof AuthenticatedGuestsExportRoute
   '/guests/import': typeof AuthenticatedGuestsImportRoute
@@ -283,8 +309,10 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/start': typeof StartRoute
   '/account': typeof AuthenticatedAccountRoute
   '/admin': typeof AuthenticatedAdminRoute
@@ -295,6 +323,7 @@ export interface FileRoutesByTo {
   '/publish': typeof AuthenticatedPublishRoute
   '/rsvp': typeof AuthenticatedRsvpRoute
   '/i/$token': typeof ITokenRoute
+  '/invite/$token': typeof InviteTokenRoute
   '/guests/$id': typeof AuthenticatedGuestsIdRoute
   '/guests/export': typeof AuthenticatedGuestsExportRoute
   '/guests/import': typeof AuthenticatedGuestsImportRoute
@@ -322,8 +351,11 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/start': typeof StartRoute
   '/_authenticated/account': typeof AuthenticatedAccountRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
@@ -334,6 +366,7 @@ export interface FileRoutesById {
   '/_authenticated/publish': typeof AuthenticatedPublishRoute
   '/_authenticated/rsvp': typeof AuthenticatedRsvpRoute
   '/i/$token': typeof ITokenRoute
+  '/invite/$token': typeof InviteTokenRoute
   '/_authenticated/guests_/$id': typeof AuthenticatedGuestsIdRoute
   '/_authenticated/guests_/export': typeof AuthenticatedGuestsExportRoute
   '/_authenticated/guests_/import': typeof AuthenticatedGuestsImportRoute
@@ -362,8 +395,10 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/forgot-password'
     | '/login'
     | '/register'
+    | '/reset-password'
     | '/start'
     | '/account'
     | '/admin'
@@ -374,6 +409,7 @@ export interface FileRouteTypes {
     | '/publish'
     | '/rsvp'
     | '/i/$token'
+    | '/invite/$token'
     | '/guests/$id'
     | '/guests/export'
     | '/guests/import'
@@ -400,8 +436,10 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/forgot-password'
     | '/login'
     | '/register'
+    | '/reset-password'
     | '/start'
     | '/account'
     | '/admin'
@@ -412,6 +450,7 @@ export interface FileRouteTypes {
     | '/publish'
     | '/rsvp'
     | '/i/$token'
+    | '/invite/$token'
     | '/guests/$id'
     | '/guests/export'
     | '/guests/import'
@@ -438,8 +477,11 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/_authenticated'
+    | '/forgot-password'
     | '/login'
     | '/register'
+    | '/reset-password'
     | '/start'
     | '/_authenticated/account'
     | '/_authenticated/admin'
@@ -450,6 +492,7 @@ export interface FileRouteTypes {
     | '/_authenticated/publish'
     | '/_authenticated/rsvp'
     | '/i/$token'
+    | '/invite/$token'
     | '/_authenticated/guests_/$id'
     | '/_authenticated/guests_/export'
     | '/_authenticated/guests_/import'
@@ -477,40 +520,16 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  ForgotPasswordRoute: typeof ForgotPasswordRoute
   LoginRoute: typeof LoginRoute
   RegisterRoute: typeof RegisterRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
   StartRoute: typeof StartRoute
-  AuthenticatedAccountRoute: typeof AuthenticatedAccountRoute
-  AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
-  AuthenticatedCheckoutRoute: typeof AuthenticatedCheckoutRoute
-  AuthenticatedGuestsRoute: typeof AuthenticatedGuestsRoute
-  AuthenticatedHomeRoute: typeof AuthenticatedHomeRoute
-  AuthenticatedPlansRoute: typeof AuthenticatedPlansRoute
-  AuthenticatedPublishRoute: typeof AuthenticatedPublishRoute
-  AuthenticatedRsvpRoute: typeof AuthenticatedRsvpRoute
   ITokenRoute: typeof ITokenRoute
-  AuthenticatedGuestsIdRoute: typeof AuthenticatedGuestsIdRoute
-  AuthenticatedGuestsExportRoute: typeof AuthenticatedGuestsExportRoute
-  AuthenticatedGuestsImportRoute: typeof AuthenticatedGuestsImportRoute
-  AuthenticatedInvitationChangesRoute: typeof AuthenticatedInvitationChangesRoute
-  AuthenticatedInvitationCheckRoute: typeof AuthenticatedInvitationCheckRoute
-  AuthenticatedInvitationContentRoute: typeof AuthenticatedInvitationContentRoute
-  AuthenticatedInvitationHistoryRoute: typeof AuthenticatedInvitationHistoryRoute
-  AuthenticatedInvitationPreviewRoute: typeof AuthenticatedInvitationPreviewRoute
-  AuthenticatedInvitationVariantsRoute: typeof AuthenticatedInvitationVariantsRoute
-  AuthenticatedPlanBudgetRoute: typeof AuthenticatedPlanBudgetRoute
-  AuthenticatedPlanTasksRoute: typeof AuthenticatedPlanTasksRoute
-  AuthenticatedSettingsDataRoute: typeof AuthenticatedSettingsDataRoute
-  AuthenticatedSettingsTeamRoute: typeof AuthenticatedSettingsTeamRoute
-  AuthenticatedWeddingEventsRoute: typeof AuthenticatedWeddingEventsRoute
-  AuthenticatedWeddingNewRoute: typeof AuthenticatedWeddingNewRoute
+  InviteTokenRoute: typeof InviteTokenRoute
   ITokenExpiredRoute: typeof ITokenExpiredRoute
   ITokenRsvpRoute: typeof ITokenRsvpRoute
-  AuthenticatedCheckoutStatusIdRoute: typeof AuthenticatedCheckoutStatusIdRoute
-  AuthenticatedGuestsImportBatchRoute: typeof AuthenticatedGuestsImportBatchRoute
-  AuthenticatedPlanBudgetIdRoute: typeof AuthenticatedPlanBudgetIdRoute
-  AuthenticatedPlanTasksSuggestionsRoute: typeof AuthenticatedPlanTasksSuggestionsRoute
-  AuthenticatedWeddingEventsIdRoute: typeof AuthenticatedWeddingEventsIdRoute
   ITokenRsvpReceiptRoute: typeof ITokenRsvpReceiptRoute
 }
 
@@ -521,6 +540,20 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/forgot-password': {
+      id: '/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/forgot-password'
+      preLoaderRoute: typeof ForgotPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -537,6 +570,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RegisterRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/start': {
       id: '/start'
       path: '/start'
@@ -549,56 +589,56 @@ declare module '@tanstack/react-router' {
       path: '/account'
       fullPath: '/account'
       preLoaderRoute: typeof AuthenticatedAccountRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/admin': {
       id: '/_authenticated/admin'
       path: '/admin'
       fullPath: '/admin'
       preLoaderRoute: typeof AuthenticatedAdminRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/checkout': {
       id: '/_authenticated/checkout'
       path: '/checkout'
       fullPath: '/checkout'
       preLoaderRoute: typeof AuthenticatedCheckoutRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/guests': {
       id: '/_authenticated/guests'
       path: '/guests'
       fullPath: '/guests'
       preLoaderRoute: typeof AuthenticatedGuestsRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/home': {
       id: '/_authenticated/home'
       path: '/home'
       fullPath: '/home'
       preLoaderRoute: typeof AuthenticatedHomeRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/plans': {
       id: '/_authenticated/plans'
       path: '/plans'
       fullPath: '/plans'
       preLoaderRoute: typeof AuthenticatedPlansRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/publish': {
       id: '/_authenticated/publish'
       path: '/publish'
       fullPath: '/publish'
       preLoaderRoute: typeof AuthenticatedPublishRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/rsvp': {
       id: '/_authenticated/rsvp'
       path: '/rsvp'
       fullPath: '/rsvp'
       preLoaderRoute: typeof AuthenticatedRsvpRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/i/$token': {
       id: '/i/$token'
@@ -607,110 +647,117 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ITokenRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/invite/$token': {
+      id: '/invite/$token'
+      path: '/invite/$token'
+      fullPath: '/invite/$token'
+      preLoaderRoute: typeof InviteTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/guests_/$id': {
       id: '/_authenticated/guests_/$id'
       path: '/guests/$id'
       fullPath: '/guests/$id'
       preLoaderRoute: typeof AuthenticatedGuestsIdRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/guests_/export': {
       id: '/_authenticated/guests_/export'
       path: '/guests/export'
       fullPath: '/guests/export'
       preLoaderRoute: typeof AuthenticatedGuestsExportRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/guests_/import': {
       id: '/_authenticated/guests_/import'
       path: '/guests/import'
       fullPath: '/guests/import'
       preLoaderRoute: typeof AuthenticatedGuestsImportRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/invitation/changes': {
       id: '/_authenticated/invitation/changes'
       path: '/invitation/changes'
       fullPath: '/invitation/changes'
       preLoaderRoute: typeof AuthenticatedInvitationChangesRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/invitation/check': {
       id: '/_authenticated/invitation/check'
       path: '/invitation/check'
       fullPath: '/invitation/check'
       preLoaderRoute: typeof AuthenticatedInvitationCheckRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/invitation/content': {
       id: '/_authenticated/invitation/content'
       path: '/invitation/content'
       fullPath: '/invitation/content'
       preLoaderRoute: typeof AuthenticatedInvitationContentRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/invitation/history': {
       id: '/_authenticated/invitation/history'
       path: '/invitation/history'
       fullPath: '/invitation/history'
       preLoaderRoute: typeof AuthenticatedInvitationHistoryRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/invitation/preview': {
       id: '/_authenticated/invitation/preview'
       path: '/invitation/preview'
       fullPath: '/invitation/preview'
       preLoaderRoute: typeof AuthenticatedInvitationPreviewRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/invitation/variants': {
       id: '/_authenticated/invitation/variants'
       path: '/invitation/variants'
       fullPath: '/invitation/variants'
       preLoaderRoute: typeof AuthenticatedInvitationVariantsRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/plan/budget': {
       id: '/_authenticated/plan/budget'
       path: '/plan/budget'
       fullPath: '/plan/budget'
       preLoaderRoute: typeof AuthenticatedPlanBudgetRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/plan/tasks': {
       id: '/_authenticated/plan/tasks'
       path: '/plan/tasks'
       fullPath: '/plan/tasks'
       preLoaderRoute: typeof AuthenticatedPlanTasksRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/settings/data': {
       id: '/_authenticated/settings/data'
       path: '/settings/data'
       fullPath: '/settings/data'
       preLoaderRoute: typeof AuthenticatedSettingsDataRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/settings/team': {
       id: '/_authenticated/settings/team'
       path: '/settings/team'
       fullPath: '/settings/team'
       preLoaderRoute: typeof AuthenticatedSettingsTeamRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/wedding/events': {
       id: '/_authenticated/wedding/events'
       path: '/wedding/events'
       fullPath: '/wedding/events'
       preLoaderRoute: typeof AuthenticatedWeddingEventsRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/wedding/new': {
       id: '/_authenticated/wedding/new'
       path: '/wedding/new'
       fullPath: '/wedding/new'
       preLoaderRoute: typeof AuthenticatedWeddingNewRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/i/$token_/expired': {
       id: '/i/$token_/expired'
@@ -731,35 +778,35 @@ declare module '@tanstack/react-router' {
       path: '/checkout/status/$id'
       fullPath: '/checkout/status/$id'
       preLoaderRoute: typeof AuthenticatedCheckoutStatusIdRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/guests_/import_/$batch': {
       id: '/_authenticated/guests_/import_/$batch'
       path: '/guests/import/$batch'
       fullPath: '/guests/import/$batch'
       preLoaderRoute: typeof AuthenticatedGuestsImportBatchRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/plan/budget_/$id': {
       id: '/_authenticated/plan/budget_/$id'
       path: '/plan/budget/$id'
       fullPath: '/plan/budget/$id'
       preLoaderRoute: typeof AuthenticatedPlanBudgetIdRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/plan/tasks_/suggestions': {
       id: '/_authenticated/plan/tasks_/suggestions'
       path: '/plan/tasks/suggestions'
       fullPath: '/plan/tasks/suggestions'
       preLoaderRoute: typeof AuthenticatedPlanTasksSuggestionsRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/wedding/events_/$id': {
       id: '/_authenticated/wedding/events_/$id'
       path: '/wedding/events/$id'
       fullPath: '/wedding/events/$id'
       preLoaderRoute: typeof AuthenticatedWeddingEventsIdRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/i/$token_/rsvp_/receipt': {
       id: '/i/$token_/rsvp_/receipt'
@@ -771,11 +818,38 @@ declare module '@tanstack/react-router' {
   }
 }
 
-const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
-  LoginRoute: LoginRoute,
-  RegisterRoute: RegisterRoute,
-  StartRoute: StartRoute,
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAccountRoute: typeof AuthenticatedAccountRoute
+  AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
+  AuthenticatedCheckoutRoute: typeof AuthenticatedCheckoutRoute
+  AuthenticatedGuestsRoute: typeof AuthenticatedGuestsRoute
+  AuthenticatedHomeRoute: typeof AuthenticatedHomeRoute
+  AuthenticatedPlansRoute: typeof AuthenticatedPlansRoute
+  AuthenticatedPublishRoute: typeof AuthenticatedPublishRoute
+  AuthenticatedRsvpRoute: typeof AuthenticatedRsvpRoute
+  AuthenticatedGuestsIdRoute: typeof AuthenticatedGuestsIdRoute
+  AuthenticatedGuestsExportRoute: typeof AuthenticatedGuestsExportRoute
+  AuthenticatedGuestsImportRoute: typeof AuthenticatedGuestsImportRoute
+  AuthenticatedInvitationChangesRoute: typeof AuthenticatedInvitationChangesRoute
+  AuthenticatedInvitationCheckRoute: typeof AuthenticatedInvitationCheckRoute
+  AuthenticatedInvitationContentRoute: typeof AuthenticatedInvitationContentRoute
+  AuthenticatedInvitationHistoryRoute: typeof AuthenticatedInvitationHistoryRoute
+  AuthenticatedInvitationPreviewRoute: typeof AuthenticatedInvitationPreviewRoute
+  AuthenticatedInvitationVariantsRoute: typeof AuthenticatedInvitationVariantsRoute
+  AuthenticatedPlanBudgetRoute: typeof AuthenticatedPlanBudgetRoute
+  AuthenticatedPlanTasksRoute: typeof AuthenticatedPlanTasksRoute
+  AuthenticatedSettingsDataRoute: typeof AuthenticatedSettingsDataRoute
+  AuthenticatedSettingsTeamRoute: typeof AuthenticatedSettingsTeamRoute
+  AuthenticatedWeddingEventsRoute: typeof AuthenticatedWeddingEventsRoute
+  AuthenticatedWeddingNewRoute: typeof AuthenticatedWeddingNewRoute
+  AuthenticatedCheckoutStatusIdRoute: typeof AuthenticatedCheckoutStatusIdRoute
+  AuthenticatedGuestsImportBatchRoute: typeof AuthenticatedGuestsImportBatchRoute
+  AuthenticatedPlanBudgetIdRoute: typeof AuthenticatedPlanBudgetIdRoute
+  AuthenticatedPlanTasksSuggestionsRoute: typeof AuthenticatedPlanTasksSuggestionsRoute
+  AuthenticatedWeddingEventsIdRoute: typeof AuthenticatedWeddingEventsIdRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAccountRoute: AuthenticatedAccountRoute,
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
   AuthenticatedCheckoutRoute: AuthenticatedCheckoutRoute,
@@ -784,7 +858,6 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedPlansRoute: AuthenticatedPlansRoute,
   AuthenticatedPublishRoute: AuthenticatedPublishRoute,
   AuthenticatedRsvpRoute: AuthenticatedRsvpRoute,
-  ITokenRoute: ITokenRoute,
   AuthenticatedGuestsIdRoute: AuthenticatedGuestsIdRoute,
   AuthenticatedGuestsExportRoute: AuthenticatedGuestsExportRoute,
   AuthenticatedGuestsImportRoute: AuthenticatedGuestsImportRoute,
@@ -800,14 +873,29 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedSettingsTeamRoute: AuthenticatedSettingsTeamRoute,
   AuthenticatedWeddingEventsRoute: AuthenticatedWeddingEventsRoute,
   AuthenticatedWeddingNewRoute: AuthenticatedWeddingNewRoute,
-  ITokenExpiredRoute: ITokenExpiredRoute,
-  ITokenRsvpRoute: ITokenRsvpRoute,
   AuthenticatedCheckoutStatusIdRoute: AuthenticatedCheckoutStatusIdRoute,
   AuthenticatedGuestsImportBatchRoute: AuthenticatedGuestsImportBatchRoute,
   AuthenticatedPlanBudgetIdRoute: AuthenticatedPlanBudgetIdRoute,
   AuthenticatedPlanTasksSuggestionsRoute:
     AuthenticatedPlanTasksSuggestionsRoute,
   AuthenticatedWeddingEventsIdRoute: AuthenticatedWeddingEventsIdRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
+const rootRouteChildren: RootRouteChildren = {
+  IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  ForgotPasswordRoute: ForgotPasswordRoute,
+  LoginRoute: LoginRoute,
+  RegisterRoute: RegisterRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
+  StartRoute: StartRoute,
+  ITokenRoute: ITokenRoute,
+  InviteTokenRoute: InviteTokenRoute,
+  ITokenExpiredRoute: ITokenExpiredRoute,
+  ITokenRsvpRoute: ITokenRsvpRoute,
   ITokenRsvpReceiptRoute: ITokenRsvpReceiptRoute,
 }
 export const routeTree = rootRouteImport
