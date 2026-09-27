@@ -68,7 +68,7 @@ export function CsvImportScreen() {
         </label>
       </Panel>
       <div className="mt-4 grid gap-2 sm:grid-cols-2">
-        <DemoAction variant="outline" onClick={() => { const url = URL.createObjectURL(new Blob([SAMPLE_CSV], { type: 'text/csv;charset=utf-8' })); const a = document.createElement('a'); a.href = url; a.download = 'mau-khach-moi.csv'; a.click(); URL.revokeObjectURL(url); }}><Download /> Tải file mẫu</DemoAction>
+        <DemoAction variant="outline" onClick={() => { const url = URL.createObjectURL(new Blob([SAMPLE_CSV], { type: 'text/csv;charset=utf-8' })); const a = document.createElement('a'); a.href = url; a.download = 'mau-khach-moi.csv'; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 1000); }}><Download /> Tải file mẫu</DemoAction>
         <DemoAction variant="outline" onClick={() => load('mau-khach-moi.csv', SAMPLE_CSV)}>Thử với file mẫu <ArrowRight /></DemoAction>
       </div>
     </>}
