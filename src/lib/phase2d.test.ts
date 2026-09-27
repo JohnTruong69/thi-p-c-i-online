@@ -62,15 +62,15 @@ describe('CSV undo keeps edited guests', () => {
 describe('RSVP per Event', () => {
   it('mixed answers stay per Event and never collapse', () => {
     const { map } = applyResponse({}, 'g1', { e1: { choice: 'yes', count: 2 }, e2: { choice: 'no', count: 1 } }, 't', 'Link chung');
-    expect(map.g1!.e1).toMatchObject({ choice: 'yes', count: 2, source: 'rsvp' });
-    expect(map.g1!.e2).toMatchObject({ choice: 'no', source: 'rsvp' });
-    expect(summaryState(map.g1, ['e1', 'e2'], 'Chưa trả lời')).toBe('Trả lời từng buổi');
+    expect(map['g1']!['e1']).toMatchObject({ choice: 'yes', count: 2, source: 'rsvp' });
+    expect(map['g1']!['e2']).toMatchObject({ choice: 'no', source: 'rsvp' });
+    expect(summaryState(map['g1'], ['e1', 'e2'], 'Chưa trả lời')).toBe('Trả lời từng buổi');
   });
   it('does not overwrite a manual update', () => {
     const m = setManual({}, 'g1', 'e2', 'yes', 't0');
     const r = applyResponse(m, 'g1', { e1: { choice: 'yes', count: 1 }, e2: { choice: 'no', count: 1 } }, 't1', 'Link chung');
     expect(r.skipped).toEqual(['e2']);
-    expect(r.map.g1!.e2!.source).toBe('manual');
-    expect(r.map.g1!.e2!.choice).toBe('yes');
+    expect(r.map['g1']!['e2']!.source).toBe('manual');
+    expect(r.map['g1']!['e2']!.choice).toBe('yes');
   });
 });
