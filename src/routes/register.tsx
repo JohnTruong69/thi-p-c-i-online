@@ -1,14 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { PhaseOne } from "@/components/PhaseOne";
+import { RegisterPage } from "@/components/AuthScreens";
 export const Route = createFileRoute("/register")({
+  validateSearch: (s: Record<string, unknown>): { redirect?: string } => (typeof s['redirect'] === "string" ? { redirect: s['redirect'] } : {}),
   head: () => ({ meta: [
-    { title: "register | Thiệp Cưới Online Việt" },
-    { name: "description", content: "register — trải nghiệm minh họa Thiệp Cưới Online Việt, Phase 1." },
-    { property: "og:title", content: "register | Thiệp Cưới Online Việt" },
-    { property: "og:description", content: "register — trải nghiệm minh họa Thiệp Cưới Online Việt, Phase 1." },
+    { title: "Tạo tài khoản | Thiệp Cưới Online Việt" },
+    { name: "description", content: "Tạo tài khoản để lưu đám cưới và các buổi lễ của hai bạn." },
+    { property: "og:title", content: "Tạo tài khoản | Thiệp Cưới Online Việt" },
+    { property: "og:description", content: "Tạo tài khoản để lưu đám cưới và các buổi lễ của hai bạn." },
     { property: "og:type", content: "website" },
     { name: "twitter:card", content: "summary" },
   ] }),
   component: Screen,
 });
-function Screen() { return <PhaseOne screen="register" />; }
+function Screen() { const s = Route.useSearch() as { redirect?: string; reason?: string }; return <RegisterPage redirect={s.redirect} />; }

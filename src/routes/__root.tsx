@@ -11,6 +11,8 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { supabase } from "@/integrations/supabase/client";
+import { consumeManualSignOut } from "@/lib/auth-events";
 
 function NotFoundComponent() {
   return (
@@ -105,7 +107,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="vi">
       <head>
         <HeadContent />
       </head>
@@ -119,6 +121,23 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const router = useRouter();
+  useEffect(() => {
+    const { data } = supabase.auth.onAuthStateChange((event) => {
+      if (event !== "SIGNED_IN" && event !== "SIGNED_OUT" && event !== "USER_UPDATED") return;
+      if (event === "SIGNED_OUT") {
+        const manual = consumeManualSignOut();
+        queryClient.clear();
+        const path = router.state.location.pathname;
+        const isPublic = path === "/" || ["/login", "/register", "/forgot-password", "/reset-password", "/invite/", "/i/", "/start"].some((p) => path.startsWith(p));
+        if (!isPublic) router.navigate({ to: "/login", search: manual ? {} : { reason: "expired" }, replace: true });
+        return;
+      }
+      router.invalidate();
+      queryClient.invalidateQueries();
+    });
+    return () => data.subscription.unsubscribe();
+  }, [queryClient, router]);
 
   return (
     <QueryClientProvider client={queryClient}>
