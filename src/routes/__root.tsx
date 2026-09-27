@@ -12,7 +12,7 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { supabase } from "@/integrations/supabase/client";
-import { consumeManualSignOut } from "@/lib/auth-events";
+import { consumeManualSignOut, isProtectedPath } from "@/lib/auth-events";
 
 function NotFoundComponent() {
   return (
@@ -129,8 +129,7 @@ function RootComponent() {
         const manual = consumeManualSignOut();
         queryClient.clear();
         const path = router.state.location.pathname;
-        const isPublic = path === "/" || ["/login", "/register", "/forgot-password", "/reset-password", "/invite/", "/i/", "/start"].some((p) => path.startsWith(p));
-        if (!isPublic) router.navigate({ to: "/login", search: manual ? {} : { reason: "expired" }, replace: true });
+        if (isProtectedPath(path)) router.navigate({ to: "/login", search: manual ? {} : { reason: "expired" }, replace: true });
         return;
       }
       router.invalidate();
