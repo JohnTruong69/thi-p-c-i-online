@@ -1063,6 +1063,106 @@ export type Database = {
           },
         ]
       }
+      wedding_viewer_invites: {
+        Row: {
+          accepted_by: string | null
+          created_at: string
+          email: string
+          expires_at: string
+          id: string
+          invited_by: string | null
+          modules: string[]
+          sides: string[]
+          status: string
+          token_hash: string
+          updated_at: string
+          wedding_id: string
+        }
+        Insert: {
+          accepted_by?: string | null
+          created_at?: string
+          email: string
+          expires_at: string
+          id?: string
+          invited_by?: string | null
+          modules: string[]
+          sides: string[]
+          status?: string
+          token_hash: string
+          updated_at?: string
+          wedding_id: string
+        }
+        Update: {
+          accepted_by?: string | null
+          created_at?: string
+          email?: string
+          expires_at?: string
+          id?: string
+          invited_by?: string | null
+          modules?: string[]
+          sides?: string[]
+          status?: string
+          token_hash?: string
+          updated_at?: string
+          wedding_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wedding_viewer_invites_wedding_id_fkey"
+            columns: ["wedding_id"]
+            isOneToOne: false
+            referencedRelation: "weddings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      wedding_viewers: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          email: string
+          id: string
+          modules: string[]
+          revoked_at: string | null
+          sides: string[]
+          updated_at: string
+          user_id: string
+          wedding_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          email: string
+          id?: string
+          modules: string[]
+          revoked_at?: string | null
+          sides: string[]
+          updated_at?: string
+          user_id: string
+          wedding_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          email?: string
+          id?: string
+          modules?: string[]
+          revoked_at?: string | null
+          sides?: string[]
+          updated_at?: string
+          user_id?: string
+          wedding_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wedding_viewers_wedding_id_fkey"
+            columns: ["wedding_id"]
+            isOneToOne: false
+            referencedRelation: "weddings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       weddings: {
         Row: {
           budget_cap_vnd: number | null
@@ -1111,9 +1211,23 @@ export type Database = {
     }
     Functions: {
       accept_partner_invite: { Args: { p_token: string }; Returns: string }
+      accept_viewer_invite: { Args: { p_token: string }; Returns: string }
       can_manage_photo_path: { Args: { p_name: string }; Returns: boolean }
       create_partner_invite: {
         Args: { p_email: string; p_wedding_id: string }
+        Returns: {
+          expires_at: string
+          invite_id: string
+          token: string
+        }[]
+      }
+      create_viewer_invite: {
+        Args: {
+          p_email: string
+          p_modules: string[]
+          p_sides: string[]
+          p_wedding_id: string
+        }
         Returns: {
           expires_at: string
           invite_id: string
@@ -1162,6 +1276,14 @@ export type Database = {
           status: string
         }[]
       }
+      inspect_viewer_invite: {
+        Args: { p_token: string }
+        Returns: {
+          email_matches: boolean
+          expires_at: string
+          status: string
+        }[]
+      }
       invitation_snapshot: { Args: { p_invitation_id: string }; Returns: Json }
       is_wedding_manager: { Args: { _wedding_id: string }; Returns: boolean }
       photo_slot_available: { Args: { p_wedding: string }; Returns: boolean }
@@ -1187,6 +1309,11 @@ export type Database = {
         Returns: string
       }
       revoke_partner_invite: {
+        Args: { p_invite_id: string }
+        Returns: undefined
+      }
+      revoke_viewer: { Args: { p_viewer_id: string }; Returns: undefined }
+      revoke_viewer_invite: {
         Args: { p_invite_id: string }
         Returns: undefined
       }
@@ -1237,6 +1364,20 @@ export type Database = {
         Args: { p_event_id: string; p_fields: Json; p_shift_task_ids: string[] }
         Returns: number
       }
+      update_viewer_grants: {
+        Args: { p_modules: string[]; p_sides: string[]; p_viewer_id: string }
+        Returns: undefined
+      }
+      viewer_norm: {
+        Args: { p: string[]; p_allowed: string[] }
+        Returns: string[]
+      }
+      viewer_projection: { Args: { p_wedding_id: string }; Returns: Json }
+      viewer_slots_used: {
+        Args: { p_except_email: string; p_wedding_id: string }
+        Returns: number
+      }
+      viewer_weddings: { Args: never; Returns: Json }
       wedding_access_state: { Args: { p_wedding_id: string }; Returns: Json }
       withdraw_wedding_data_deletion: {
         Args: { p_request_id: string }
