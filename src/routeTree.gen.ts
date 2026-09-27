@@ -10,40 +10,40 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AccountRouteImport } from './routes/account'
-import { Route as AdminRouteImport } from './routes/admin'
-import { Route as CheckoutRouteImport } from './routes/checkout'
-import { Route as GuestsRouteImport } from './routes/guests'
-import { Route as HomeRouteImport } from './routes/home'
 import { Route as LoginRouteImport } from './routes/login'
-import { Route as PlansRouteImport } from './routes/plans'
-import { Route as PublishRouteImport } from './routes/publish'
 import { Route as RegisterRouteImport } from './routes/register'
-import { Route as RsvpRouteImport } from './routes/rsvp'
 import { Route as StartRouteImport } from './routes/start'
-import { Route as GuestsIdRouteImport } from './routes/guests_.$id'
-import { Route as GuestsExportRouteImport } from './routes/guests_.export'
-import { Route as GuestsImportRouteImport } from './routes/guests_.import'
+import { Route as AuthenticatedAccountRouteImport } from './routes/_authenticated/account'
+import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
+import { Route as AuthenticatedCheckoutRouteImport } from './routes/_authenticated/checkout'
+import { Route as AuthenticatedGuestsRouteImport } from './routes/_authenticated/guests'
+import { Route as AuthenticatedHomeRouteImport } from './routes/_authenticated/home'
+import { Route as AuthenticatedPlansRouteImport } from './routes/_authenticated/plans'
+import { Route as AuthenticatedPublishRouteImport } from './routes/_authenticated/publish'
+import { Route as AuthenticatedRsvpRouteImport } from './routes/_authenticated/rsvp'
 import { Route as ITokenRouteImport } from './routes/i.$token'
-import { Route as InvitationChangesRouteImport } from './routes/invitation.changes'
-import { Route as InvitationCheckRouteImport } from './routes/invitation.check'
-import { Route as InvitationContentRouteImport } from './routes/invitation.content'
-import { Route as InvitationHistoryRouteImport } from './routes/invitation.history'
-import { Route as InvitationPreviewRouteImport } from './routes/invitation.preview'
-import { Route as InvitationVariantsRouteImport } from './routes/invitation.variants'
-import { Route as PlanBudgetRouteImport } from './routes/plan.budget'
-import { Route as PlanTasksRouteImport } from './routes/plan.tasks'
-import { Route as SettingsDataRouteImport } from './routes/settings.data'
-import { Route as SettingsTeamRouteImport } from './routes/settings.team'
-import { Route as WeddingEventsRouteImport } from './routes/wedding.events'
-import { Route as WeddingNewRouteImport } from './routes/wedding.new'
-import { Route as CheckoutStatusIdRouteImport } from './routes/checkout_.status.$id'
-import { Route as GuestsImportBatchRouteImport } from './routes/guests_.import_.$batch'
+import { Route as AuthenticatedGuestsIdRouteImport } from './routes/_authenticated/guests_.$id'
+import { Route as AuthenticatedGuestsExportRouteImport } from './routes/_authenticated/guests_.export'
+import { Route as AuthenticatedGuestsImportRouteImport } from './routes/_authenticated/guests_.import'
+import { Route as AuthenticatedInvitationChangesRouteImport } from './routes/_authenticated/invitation.changes'
+import { Route as AuthenticatedInvitationCheckRouteImport } from './routes/_authenticated/invitation.check'
+import { Route as AuthenticatedInvitationContentRouteImport } from './routes/_authenticated/invitation.content'
+import { Route as AuthenticatedInvitationHistoryRouteImport } from './routes/_authenticated/invitation.history'
+import { Route as AuthenticatedInvitationPreviewRouteImport } from './routes/_authenticated/invitation.preview'
+import { Route as AuthenticatedInvitationVariantsRouteImport } from './routes/_authenticated/invitation.variants'
+import { Route as AuthenticatedPlanBudgetRouteImport } from './routes/_authenticated/plan.budget'
+import { Route as AuthenticatedPlanTasksRouteImport } from './routes/_authenticated/plan.tasks'
+import { Route as AuthenticatedSettingsDataRouteImport } from './routes/_authenticated/settings.data'
+import { Route as AuthenticatedSettingsTeamRouteImport } from './routes/_authenticated/settings.team'
+import { Route as AuthenticatedWeddingEventsRouteImport } from './routes/_authenticated/wedding.events'
+import { Route as AuthenticatedWeddingNewRouteImport } from './routes/_authenticated/wedding.new'
 import { Route as ITokenExpiredRouteImport } from './routes/i.$token_.expired'
 import { Route as ITokenRsvpRouteImport } from './routes/i.$token_.rsvp'
-import { Route as PlanBudgetIdRouteImport } from './routes/plan.budget_.$id'
-import { Route as PlanTasksSuggestionsRouteImport } from './routes/plan.tasks_.suggestions'
-import { Route as WeddingEventsIdRouteImport } from './routes/wedding.events_.$id'
+import { Route as AuthenticatedCheckoutStatusIdRouteImport } from './routes/_authenticated/checkout_.status.$id'
+import { Route as AuthenticatedGuestsImportBatchRouteImport } from './routes/_authenticated/guests_.import_.$batch'
+import { Route as AuthenticatedPlanBudgetIdRouteImport } from './routes/_authenticated/plan.budget_.$id'
+import { Route as AuthenticatedPlanTasksSuggestionsRouteImport } from './routes/_authenticated/plan.tasks_.suggestions'
+import { Route as AuthenticatedWeddingEventsIdRouteImport } from './routes/_authenticated/wedding.events_.$id'
 import { Route as ITokenRsvpReceiptRouteImport } from './routes/i.$token_.rsvp_.receipt'
 
 const IndexRoute = IndexRouteImport.update({
@@ -51,44 +51,9 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AccountRoute = AccountRouteImport.update({
-  id: '/account',
-  path: '/account',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminRoute = AdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CheckoutRoute = CheckoutRouteImport.update({
-  id: '/checkout',
-  path: '/checkout',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const GuestsRoute = GuestsRouteImport.update({
-  id: '/guests',
-  path: '/guests',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const HomeRoute = HomeRouteImport.update({
-  id: '/home',
-  path: '/home',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PlansRoute = PlansRouteImport.update({
-  id: '/plans',
-  path: '/plans',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PublishRoute = PublishRouteImport.update({
-  id: '/publish',
-  path: '/publish',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RegisterRoute = RegisterRouteImport.update({
@@ -96,29 +61,49 @@ const RegisterRoute = RegisterRouteImport.update({
   path: '/register',
   getParentRoute: () => rootRouteImport,
 } as any)
-const RsvpRoute = RsvpRouteImport.update({
-  id: '/rsvp',
-  path: '/rsvp',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const StartRoute = StartRouteImport.update({
   id: '/start',
   path: '/start',
   getParentRoute: () => rootRouteImport,
 } as any)
-const GuestsIdRoute = GuestsIdRouteImport.update({
-  id: '/guests_/$id',
-  path: '/guests/$id',
+const AuthenticatedAccountRoute = AuthenticatedAccountRouteImport.update({
+  id: '/_authenticated/account',
+  path: '/account',
   getParentRoute: () => rootRouteImport,
 } as any)
-const GuestsExportRoute = GuestsExportRouteImport.update({
-  id: '/guests_/export',
-  path: '/guests/export',
+const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
+  id: '/_authenticated/admin',
+  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
-const GuestsImportRoute = GuestsImportRouteImport.update({
-  id: '/guests_/import',
-  path: '/guests/import',
+const AuthenticatedCheckoutRoute = AuthenticatedCheckoutRouteImport.update({
+  id: '/_authenticated/checkout',
+  path: '/checkout',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedGuestsRoute = AuthenticatedGuestsRouteImport.update({
+  id: '/_authenticated/guests',
+  path: '/guests',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedHomeRoute = AuthenticatedHomeRouteImport.update({
+  id: '/_authenticated/home',
+  path: '/home',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedPlansRoute = AuthenticatedPlansRouteImport.update({
+  id: '/_authenticated/plans',
+  path: '/plans',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedPublishRoute = AuthenticatedPublishRouteImport.update({
+  id: '/_authenticated/publish',
+  path: '/publish',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRsvpRoute = AuthenticatedRsvpRouteImport.update({
+  id: '/_authenticated/rsvp',
+  path: '/rsvp',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ITokenRoute = ITokenRouteImport.update({
@@ -126,74 +111,90 @@ const ITokenRoute = ITokenRouteImport.update({
   path: '/i/$token',
   getParentRoute: () => rootRouteImport,
 } as any)
-const InvitationChangesRoute = InvitationChangesRouteImport.update({
-  id: '/invitation/changes',
-  path: '/invitation/changes',
+const AuthenticatedGuestsIdRoute = AuthenticatedGuestsIdRouteImport.update({
+  id: '/_authenticated/guests_/$id',
+  path: '/guests/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
-const InvitationCheckRoute = InvitationCheckRouteImport.update({
-  id: '/invitation/check',
-  path: '/invitation/check',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const InvitationContentRoute = InvitationContentRouteImport.update({
-  id: '/invitation/content',
-  path: '/invitation/content',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const InvitationHistoryRoute = InvitationHistoryRouteImport.update({
-  id: '/invitation/history',
-  path: '/invitation/history',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const InvitationPreviewRoute = InvitationPreviewRouteImport.update({
-  id: '/invitation/preview',
-  path: '/invitation/preview',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const InvitationVariantsRoute = InvitationVariantsRouteImport.update({
-  id: '/invitation/variants',
-  path: '/invitation/variants',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PlanBudgetRoute = PlanBudgetRouteImport.update({
-  id: '/plan/budget',
+const AuthenticatedGuestsExportRoute =
+  AuthenticatedGuestsExportRouteImport.update({
+    id: '/_authenticated/guests_/export',
+    path: '/guests/export',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AuthenticatedGuestsImportRoute =
+  AuthenticatedGuestsImportRouteImport.update({
+    id: '/_authenticated/guests_/import',
+    path: '/guests/import',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AuthenticatedInvitationChangesRoute =
+  AuthenticatedInvitationChangesRouteImport.update({
+    id: '/_authenticated/invitation/changes',
+    path: '/invitation/changes',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AuthenticatedInvitationCheckRoute =
+  AuthenticatedInvitationCheckRouteImport.update({
+    id: '/_authenticated/invitation/check',
+    path: '/invitation/check',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AuthenticatedInvitationContentRoute =
+  AuthenticatedInvitationContentRouteImport.update({
+    id: '/_authenticated/invitation/content',
+    path: '/invitation/content',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AuthenticatedInvitationHistoryRoute =
+  AuthenticatedInvitationHistoryRouteImport.update({
+    id: '/_authenticated/invitation/history',
+    path: '/invitation/history',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AuthenticatedInvitationPreviewRoute =
+  AuthenticatedInvitationPreviewRouteImport.update({
+    id: '/_authenticated/invitation/preview',
+    path: '/invitation/preview',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AuthenticatedInvitationVariantsRoute =
+  AuthenticatedInvitationVariantsRouteImport.update({
+    id: '/_authenticated/invitation/variants',
+    path: '/invitation/variants',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AuthenticatedPlanBudgetRoute = AuthenticatedPlanBudgetRouteImport.update({
+  id: '/_authenticated/plan/budget',
   path: '/plan/budget',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PlanTasksRoute = PlanTasksRouteImport.update({
-  id: '/plan/tasks',
+const AuthenticatedPlanTasksRoute = AuthenticatedPlanTasksRouteImport.update({
+  id: '/_authenticated/plan/tasks',
   path: '/plan/tasks',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SettingsDataRoute = SettingsDataRouteImport.update({
-  id: '/settings/data',
-  path: '/settings/data',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SettingsTeamRoute = SettingsTeamRouteImport.update({
-  id: '/settings/team',
-  path: '/settings/team',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const WeddingEventsRoute = WeddingEventsRouteImport.update({
-  id: '/wedding/events',
-  path: '/wedding/events',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const WeddingNewRoute = WeddingNewRouteImport.update({
-  id: '/wedding/new',
+const AuthenticatedSettingsDataRoute =
+  AuthenticatedSettingsDataRouteImport.update({
+    id: '/_authenticated/settings/data',
+    path: '/settings/data',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AuthenticatedSettingsTeamRoute =
+  AuthenticatedSettingsTeamRouteImport.update({
+    id: '/_authenticated/settings/team',
+    path: '/settings/team',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AuthenticatedWeddingEventsRoute =
+  AuthenticatedWeddingEventsRouteImport.update({
+    id: '/_authenticated/wedding/events',
+    path: '/wedding/events',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AuthenticatedWeddingNewRoute = AuthenticatedWeddingNewRouteImport.update({
+  id: '/_authenticated/wedding/new',
   path: '/wedding/new',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CheckoutStatusIdRoute = CheckoutStatusIdRouteImport.update({
-  id: '/checkout_/status/$id',
-  path: '/checkout/status/$id',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const GuestsImportBatchRoute = GuestsImportBatchRouteImport.update({
-  id: '/guests_/import_/$batch',
-  path: '/guests/import/$batch',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ITokenExpiredRoute = ITokenExpiredRouteImport.update({
@@ -206,21 +207,36 @@ const ITokenRsvpRoute = ITokenRsvpRouteImport.update({
   path: '/i/$token/rsvp',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PlanBudgetIdRoute = PlanBudgetIdRouteImport.update({
-  id: '/plan/budget_/$id',
-  path: '/plan/budget/$id',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PlanTasksSuggestionsRoute = PlanTasksSuggestionsRouteImport.update({
-  id: '/plan/tasks_/suggestions',
-  path: '/plan/tasks/suggestions',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const WeddingEventsIdRoute = WeddingEventsIdRouteImport.update({
-  id: '/wedding/events_/$id',
-  path: '/wedding/events/$id',
-  getParentRoute: () => rootRouteImport,
-} as any)
+const AuthenticatedCheckoutStatusIdRoute =
+  AuthenticatedCheckoutStatusIdRouteImport.update({
+    id: '/_authenticated/checkout_/status/$id',
+    path: '/checkout/status/$id',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AuthenticatedGuestsImportBatchRoute =
+  AuthenticatedGuestsImportBatchRouteImport.update({
+    id: '/_authenticated/guests_/import_/$batch',
+    path: '/guests/import/$batch',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AuthenticatedPlanBudgetIdRoute =
+  AuthenticatedPlanBudgetIdRouteImport.update({
+    id: '/_authenticated/plan/budget_/$id',
+    path: '/plan/budget/$id',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AuthenticatedPlanTasksSuggestionsRoute =
+  AuthenticatedPlanTasksSuggestionsRouteImport.update({
+    id: '/_authenticated/plan/tasks_/suggestions',
+    path: '/plan/tasks/suggestions',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AuthenticatedWeddingEventsIdRoute =
+  AuthenticatedWeddingEventsIdRouteImport.update({
+    id: '/_authenticated/wedding/events_/$id',
+    path: '/wedding/events/$id',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ITokenRsvpReceiptRoute = ITokenRsvpReceiptRouteImport.update({
   id: '/i/$token_/rsvp_/receipt',
   path: '/i/$token/rsvp/receipt',
@@ -229,138 +245,138 @@ const ITokenRsvpReceiptRoute = ITokenRsvpReceiptRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/account': typeof AccountRoute
-  '/admin': typeof AdminRoute
-  '/checkout': typeof CheckoutRoute
-  '/guests': typeof GuestsRoute
-  '/home': typeof HomeRoute
   '/login': typeof LoginRoute
-  '/plans': typeof PlansRoute
-  '/publish': typeof PublishRoute
   '/register': typeof RegisterRoute
-  '/rsvp': typeof RsvpRoute
   '/start': typeof StartRoute
-  '/guests/$id': typeof GuestsIdRoute
-  '/guests/export': typeof GuestsExportRoute
-  '/guests/import': typeof GuestsImportRoute
+  '/account': typeof AuthenticatedAccountRoute
+  '/admin': typeof AuthenticatedAdminRoute
+  '/checkout': typeof AuthenticatedCheckoutRoute
+  '/guests': typeof AuthenticatedGuestsRoute
+  '/home': typeof AuthenticatedHomeRoute
+  '/plans': typeof AuthenticatedPlansRoute
+  '/publish': typeof AuthenticatedPublishRoute
+  '/rsvp': typeof AuthenticatedRsvpRoute
   '/i/$token': typeof ITokenRoute
-  '/invitation/changes': typeof InvitationChangesRoute
-  '/invitation/check': typeof InvitationCheckRoute
-  '/invitation/content': typeof InvitationContentRoute
-  '/invitation/history': typeof InvitationHistoryRoute
-  '/invitation/preview': typeof InvitationPreviewRoute
-  '/invitation/variants': typeof InvitationVariantsRoute
-  '/plan/budget': typeof PlanBudgetRoute
-  '/plan/tasks': typeof PlanTasksRoute
-  '/settings/data': typeof SettingsDataRoute
-  '/settings/team': typeof SettingsTeamRoute
-  '/wedding/events': typeof WeddingEventsRoute
-  '/wedding/new': typeof WeddingNewRoute
-  '/checkout/status/$id': typeof CheckoutStatusIdRoute
-  '/guests/import/$batch': typeof GuestsImportBatchRoute
+  '/guests/$id': typeof AuthenticatedGuestsIdRoute
+  '/guests/export': typeof AuthenticatedGuestsExportRoute
+  '/guests/import': typeof AuthenticatedGuestsImportRoute
+  '/invitation/changes': typeof AuthenticatedInvitationChangesRoute
+  '/invitation/check': typeof AuthenticatedInvitationCheckRoute
+  '/invitation/content': typeof AuthenticatedInvitationContentRoute
+  '/invitation/history': typeof AuthenticatedInvitationHistoryRoute
+  '/invitation/preview': typeof AuthenticatedInvitationPreviewRoute
+  '/invitation/variants': typeof AuthenticatedInvitationVariantsRoute
+  '/plan/budget': typeof AuthenticatedPlanBudgetRoute
+  '/plan/tasks': typeof AuthenticatedPlanTasksRoute
+  '/settings/data': typeof AuthenticatedSettingsDataRoute
+  '/settings/team': typeof AuthenticatedSettingsTeamRoute
+  '/wedding/events': typeof AuthenticatedWeddingEventsRoute
+  '/wedding/new': typeof AuthenticatedWeddingNewRoute
   '/i/$token/expired': typeof ITokenExpiredRoute
   '/i/$token/rsvp': typeof ITokenRsvpRoute
-  '/plan/budget/$id': typeof PlanBudgetIdRoute
-  '/plan/tasks/suggestions': typeof PlanTasksSuggestionsRoute
-  '/wedding/events/$id': typeof WeddingEventsIdRoute
+  '/checkout/status/$id': typeof AuthenticatedCheckoutStatusIdRoute
+  '/guests/import/$batch': typeof AuthenticatedGuestsImportBatchRoute
+  '/plan/budget/$id': typeof AuthenticatedPlanBudgetIdRoute
+  '/plan/tasks/suggestions': typeof AuthenticatedPlanTasksSuggestionsRoute
+  '/wedding/events/$id': typeof AuthenticatedWeddingEventsIdRoute
   '/i/$token/rsvp/receipt': typeof ITokenRsvpReceiptRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/account': typeof AccountRoute
-  '/admin': typeof AdminRoute
-  '/checkout': typeof CheckoutRoute
-  '/guests': typeof GuestsRoute
-  '/home': typeof HomeRoute
   '/login': typeof LoginRoute
-  '/plans': typeof PlansRoute
-  '/publish': typeof PublishRoute
   '/register': typeof RegisterRoute
-  '/rsvp': typeof RsvpRoute
   '/start': typeof StartRoute
-  '/guests/$id': typeof GuestsIdRoute
-  '/guests/export': typeof GuestsExportRoute
-  '/guests/import': typeof GuestsImportRoute
+  '/account': typeof AuthenticatedAccountRoute
+  '/admin': typeof AuthenticatedAdminRoute
+  '/checkout': typeof AuthenticatedCheckoutRoute
+  '/guests': typeof AuthenticatedGuestsRoute
+  '/home': typeof AuthenticatedHomeRoute
+  '/plans': typeof AuthenticatedPlansRoute
+  '/publish': typeof AuthenticatedPublishRoute
+  '/rsvp': typeof AuthenticatedRsvpRoute
   '/i/$token': typeof ITokenRoute
-  '/invitation/changes': typeof InvitationChangesRoute
-  '/invitation/check': typeof InvitationCheckRoute
-  '/invitation/content': typeof InvitationContentRoute
-  '/invitation/history': typeof InvitationHistoryRoute
-  '/invitation/preview': typeof InvitationPreviewRoute
-  '/invitation/variants': typeof InvitationVariantsRoute
-  '/plan/budget': typeof PlanBudgetRoute
-  '/plan/tasks': typeof PlanTasksRoute
-  '/settings/data': typeof SettingsDataRoute
-  '/settings/team': typeof SettingsTeamRoute
-  '/wedding/events': typeof WeddingEventsRoute
-  '/wedding/new': typeof WeddingNewRoute
-  '/checkout/status/$id': typeof CheckoutStatusIdRoute
-  '/guests/import/$batch': typeof GuestsImportBatchRoute
+  '/guests/$id': typeof AuthenticatedGuestsIdRoute
+  '/guests/export': typeof AuthenticatedGuestsExportRoute
+  '/guests/import': typeof AuthenticatedGuestsImportRoute
+  '/invitation/changes': typeof AuthenticatedInvitationChangesRoute
+  '/invitation/check': typeof AuthenticatedInvitationCheckRoute
+  '/invitation/content': typeof AuthenticatedInvitationContentRoute
+  '/invitation/history': typeof AuthenticatedInvitationHistoryRoute
+  '/invitation/preview': typeof AuthenticatedInvitationPreviewRoute
+  '/invitation/variants': typeof AuthenticatedInvitationVariantsRoute
+  '/plan/budget': typeof AuthenticatedPlanBudgetRoute
+  '/plan/tasks': typeof AuthenticatedPlanTasksRoute
+  '/settings/data': typeof AuthenticatedSettingsDataRoute
+  '/settings/team': typeof AuthenticatedSettingsTeamRoute
+  '/wedding/events': typeof AuthenticatedWeddingEventsRoute
+  '/wedding/new': typeof AuthenticatedWeddingNewRoute
   '/i/$token/expired': typeof ITokenExpiredRoute
   '/i/$token/rsvp': typeof ITokenRsvpRoute
-  '/plan/budget/$id': typeof PlanBudgetIdRoute
-  '/plan/tasks/suggestions': typeof PlanTasksSuggestionsRoute
-  '/wedding/events/$id': typeof WeddingEventsIdRoute
+  '/checkout/status/$id': typeof AuthenticatedCheckoutStatusIdRoute
+  '/guests/import/$batch': typeof AuthenticatedGuestsImportBatchRoute
+  '/plan/budget/$id': typeof AuthenticatedPlanBudgetIdRoute
+  '/plan/tasks/suggestions': typeof AuthenticatedPlanTasksSuggestionsRoute
+  '/wedding/events/$id': typeof AuthenticatedWeddingEventsIdRoute
   '/i/$token/rsvp/receipt': typeof ITokenRsvpReceiptRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/account': typeof AccountRoute
-  '/admin': typeof AdminRoute
-  '/checkout': typeof CheckoutRoute
-  '/guests': typeof GuestsRoute
-  '/home': typeof HomeRoute
   '/login': typeof LoginRoute
-  '/plans': typeof PlansRoute
-  '/publish': typeof PublishRoute
   '/register': typeof RegisterRoute
-  '/rsvp': typeof RsvpRoute
   '/start': typeof StartRoute
-  '/guests_/$id': typeof GuestsIdRoute
-  '/guests_/export': typeof GuestsExportRoute
-  '/guests_/import': typeof GuestsImportRoute
+  '/_authenticated/account': typeof AuthenticatedAccountRoute
+  '/_authenticated/admin': typeof AuthenticatedAdminRoute
+  '/_authenticated/checkout': typeof AuthenticatedCheckoutRoute
+  '/_authenticated/guests': typeof AuthenticatedGuestsRoute
+  '/_authenticated/home': typeof AuthenticatedHomeRoute
+  '/_authenticated/plans': typeof AuthenticatedPlansRoute
+  '/_authenticated/publish': typeof AuthenticatedPublishRoute
+  '/_authenticated/rsvp': typeof AuthenticatedRsvpRoute
   '/i/$token': typeof ITokenRoute
-  '/invitation/changes': typeof InvitationChangesRoute
-  '/invitation/check': typeof InvitationCheckRoute
-  '/invitation/content': typeof InvitationContentRoute
-  '/invitation/history': typeof InvitationHistoryRoute
-  '/invitation/preview': typeof InvitationPreviewRoute
-  '/invitation/variants': typeof InvitationVariantsRoute
-  '/plan/budget': typeof PlanBudgetRoute
-  '/plan/tasks': typeof PlanTasksRoute
-  '/settings/data': typeof SettingsDataRoute
-  '/settings/team': typeof SettingsTeamRoute
-  '/wedding/events': typeof WeddingEventsRoute
-  '/wedding/new': typeof WeddingNewRoute
-  '/checkout_/status/$id': typeof CheckoutStatusIdRoute
-  '/guests_/import_/$batch': typeof GuestsImportBatchRoute
+  '/_authenticated/guests_/$id': typeof AuthenticatedGuestsIdRoute
+  '/_authenticated/guests_/export': typeof AuthenticatedGuestsExportRoute
+  '/_authenticated/guests_/import': typeof AuthenticatedGuestsImportRoute
+  '/_authenticated/invitation/changes': typeof AuthenticatedInvitationChangesRoute
+  '/_authenticated/invitation/check': typeof AuthenticatedInvitationCheckRoute
+  '/_authenticated/invitation/content': typeof AuthenticatedInvitationContentRoute
+  '/_authenticated/invitation/history': typeof AuthenticatedInvitationHistoryRoute
+  '/_authenticated/invitation/preview': typeof AuthenticatedInvitationPreviewRoute
+  '/_authenticated/invitation/variants': typeof AuthenticatedInvitationVariantsRoute
+  '/_authenticated/plan/budget': typeof AuthenticatedPlanBudgetRoute
+  '/_authenticated/plan/tasks': typeof AuthenticatedPlanTasksRoute
+  '/_authenticated/settings/data': typeof AuthenticatedSettingsDataRoute
+  '/_authenticated/settings/team': typeof AuthenticatedSettingsTeamRoute
+  '/_authenticated/wedding/events': typeof AuthenticatedWeddingEventsRoute
+  '/_authenticated/wedding/new': typeof AuthenticatedWeddingNewRoute
   '/i/$token_/expired': typeof ITokenExpiredRoute
   '/i/$token_/rsvp': typeof ITokenRsvpRoute
-  '/plan/budget_/$id': typeof PlanBudgetIdRoute
-  '/plan/tasks_/suggestions': typeof PlanTasksSuggestionsRoute
-  '/wedding/events_/$id': typeof WeddingEventsIdRoute
+  '/_authenticated/checkout_/status/$id': typeof AuthenticatedCheckoutStatusIdRoute
+  '/_authenticated/guests_/import_/$batch': typeof AuthenticatedGuestsImportBatchRoute
+  '/_authenticated/plan/budget_/$id': typeof AuthenticatedPlanBudgetIdRoute
+  '/_authenticated/plan/tasks_/suggestions': typeof AuthenticatedPlanTasksSuggestionsRoute
+  '/_authenticated/wedding/events_/$id': typeof AuthenticatedWeddingEventsIdRoute
   '/i/$token_/rsvp_/receipt': typeof ITokenRsvpReceiptRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/login'
+    | '/register'
+    | '/start'
     | '/account'
     | '/admin'
     | '/checkout'
     | '/guests'
     | '/home'
-    | '/login'
     | '/plans'
     | '/publish'
-    | '/register'
     | '/rsvp'
-    | '/start'
+    | '/i/$token'
     | '/guests/$id'
     | '/guests/export'
     | '/guests/import'
-    | '/i/$token'
     | '/invitation/changes'
     | '/invitation/check'
     | '/invitation/content'
@@ -373,10 +389,10 @@ export interface FileRouteTypes {
     | '/settings/team'
     | '/wedding/events'
     | '/wedding/new'
-    | '/checkout/status/$id'
-    | '/guests/import/$batch'
     | '/i/$token/expired'
     | '/i/$token/rsvp'
+    | '/checkout/status/$id'
+    | '/guests/import/$batch'
     | '/plan/budget/$id'
     | '/plan/tasks/suggestions'
     | '/wedding/events/$id'
@@ -384,21 +400,21 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/login'
+    | '/register'
+    | '/start'
     | '/account'
     | '/admin'
     | '/checkout'
     | '/guests'
     | '/home'
-    | '/login'
     | '/plans'
     | '/publish'
-    | '/register'
     | '/rsvp'
-    | '/start'
+    | '/i/$token'
     | '/guests/$id'
     | '/guests/export'
     | '/guests/import'
-    | '/i/$token'
     | '/invitation/changes'
     | '/invitation/check'
     | '/invitation/content'
@@ -411,10 +427,10 @@ export interface FileRouteTypes {
     | '/settings/team'
     | '/wedding/events'
     | '/wedding/new'
-    | '/checkout/status/$id'
-    | '/guests/import/$batch'
     | '/i/$token/expired'
     | '/i/$token/rsvp'
+    | '/checkout/status/$id'
+    | '/guests/import/$batch'
     | '/plan/budget/$id'
     | '/plan/tasks/suggestions'
     | '/wedding/events/$id'
@@ -422,79 +438,79 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
-    | '/account'
-    | '/admin'
-    | '/checkout'
-    | '/guests'
-    | '/home'
     | '/login'
-    | '/plans'
-    | '/publish'
     | '/register'
-    | '/rsvp'
     | '/start'
-    | '/guests_/$id'
-    | '/guests_/export'
-    | '/guests_/import'
+    | '/_authenticated/account'
+    | '/_authenticated/admin'
+    | '/_authenticated/checkout'
+    | '/_authenticated/guests'
+    | '/_authenticated/home'
+    | '/_authenticated/plans'
+    | '/_authenticated/publish'
+    | '/_authenticated/rsvp'
     | '/i/$token'
-    | '/invitation/changes'
-    | '/invitation/check'
-    | '/invitation/content'
-    | '/invitation/history'
-    | '/invitation/preview'
-    | '/invitation/variants'
-    | '/plan/budget'
-    | '/plan/tasks'
-    | '/settings/data'
-    | '/settings/team'
-    | '/wedding/events'
-    | '/wedding/new'
-    | '/checkout_/status/$id'
-    | '/guests_/import_/$batch'
+    | '/_authenticated/guests_/$id'
+    | '/_authenticated/guests_/export'
+    | '/_authenticated/guests_/import'
+    | '/_authenticated/invitation/changes'
+    | '/_authenticated/invitation/check'
+    | '/_authenticated/invitation/content'
+    | '/_authenticated/invitation/history'
+    | '/_authenticated/invitation/preview'
+    | '/_authenticated/invitation/variants'
+    | '/_authenticated/plan/budget'
+    | '/_authenticated/plan/tasks'
+    | '/_authenticated/settings/data'
+    | '/_authenticated/settings/team'
+    | '/_authenticated/wedding/events'
+    | '/_authenticated/wedding/new'
     | '/i/$token_/expired'
     | '/i/$token_/rsvp'
-    | '/plan/budget_/$id'
-    | '/plan/tasks_/suggestions'
-    | '/wedding/events_/$id'
+    | '/_authenticated/checkout_/status/$id'
+    | '/_authenticated/guests_/import_/$batch'
+    | '/_authenticated/plan/budget_/$id'
+    | '/_authenticated/plan/tasks_/suggestions'
+    | '/_authenticated/wedding/events_/$id'
     | '/i/$token_/rsvp_/receipt'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AccountRoute: typeof AccountRoute
-  AdminRoute: typeof AdminRoute
-  CheckoutRoute: typeof CheckoutRoute
-  GuestsRoute: typeof GuestsRoute
-  HomeRoute: typeof HomeRoute
   LoginRoute: typeof LoginRoute
-  PlansRoute: typeof PlansRoute
-  PublishRoute: typeof PublishRoute
   RegisterRoute: typeof RegisterRoute
-  RsvpRoute: typeof RsvpRoute
   StartRoute: typeof StartRoute
-  GuestsIdRoute: typeof GuestsIdRoute
-  GuestsExportRoute: typeof GuestsExportRoute
-  GuestsImportRoute: typeof GuestsImportRoute
+  AuthenticatedAccountRoute: typeof AuthenticatedAccountRoute
+  AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
+  AuthenticatedCheckoutRoute: typeof AuthenticatedCheckoutRoute
+  AuthenticatedGuestsRoute: typeof AuthenticatedGuestsRoute
+  AuthenticatedHomeRoute: typeof AuthenticatedHomeRoute
+  AuthenticatedPlansRoute: typeof AuthenticatedPlansRoute
+  AuthenticatedPublishRoute: typeof AuthenticatedPublishRoute
+  AuthenticatedRsvpRoute: typeof AuthenticatedRsvpRoute
   ITokenRoute: typeof ITokenRoute
-  InvitationChangesRoute: typeof InvitationChangesRoute
-  InvitationCheckRoute: typeof InvitationCheckRoute
-  InvitationContentRoute: typeof InvitationContentRoute
-  InvitationHistoryRoute: typeof InvitationHistoryRoute
-  InvitationPreviewRoute: typeof InvitationPreviewRoute
-  InvitationVariantsRoute: typeof InvitationVariantsRoute
-  PlanBudgetRoute: typeof PlanBudgetRoute
-  PlanTasksRoute: typeof PlanTasksRoute
-  SettingsDataRoute: typeof SettingsDataRoute
-  SettingsTeamRoute: typeof SettingsTeamRoute
-  WeddingEventsRoute: typeof WeddingEventsRoute
-  WeddingNewRoute: typeof WeddingNewRoute
-  CheckoutStatusIdRoute: typeof CheckoutStatusIdRoute
-  GuestsImportBatchRoute: typeof GuestsImportBatchRoute
+  AuthenticatedGuestsIdRoute: typeof AuthenticatedGuestsIdRoute
+  AuthenticatedGuestsExportRoute: typeof AuthenticatedGuestsExportRoute
+  AuthenticatedGuestsImportRoute: typeof AuthenticatedGuestsImportRoute
+  AuthenticatedInvitationChangesRoute: typeof AuthenticatedInvitationChangesRoute
+  AuthenticatedInvitationCheckRoute: typeof AuthenticatedInvitationCheckRoute
+  AuthenticatedInvitationContentRoute: typeof AuthenticatedInvitationContentRoute
+  AuthenticatedInvitationHistoryRoute: typeof AuthenticatedInvitationHistoryRoute
+  AuthenticatedInvitationPreviewRoute: typeof AuthenticatedInvitationPreviewRoute
+  AuthenticatedInvitationVariantsRoute: typeof AuthenticatedInvitationVariantsRoute
+  AuthenticatedPlanBudgetRoute: typeof AuthenticatedPlanBudgetRoute
+  AuthenticatedPlanTasksRoute: typeof AuthenticatedPlanTasksRoute
+  AuthenticatedSettingsDataRoute: typeof AuthenticatedSettingsDataRoute
+  AuthenticatedSettingsTeamRoute: typeof AuthenticatedSettingsTeamRoute
+  AuthenticatedWeddingEventsRoute: typeof AuthenticatedWeddingEventsRoute
+  AuthenticatedWeddingNewRoute: typeof AuthenticatedWeddingNewRoute
   ITokenExpiredRoute: typeof ITokenExpiredRoute
   ITokenRsvpRoute: typeof ITokenRsvpRoute
-  PlanBudgetIdRoute: typeof PlanBudgetIdRoute
-  PlanTasksSuggestionsRoute: typeof PlanTasksSuggestionsRoute
-  WeddingEventsIdRoute: typeof WeddingEventsIdRoute
+  AuthenticatedCheckoutStatusIdRoute: typeof AuthenticatedCheckoutStatusIdRoute
+  AuthenticatedGuestsImportBatchRoute: typeof AuthenticatedGuestsImportBatchRoute
+  AuthenticatedPlanBudgetIdRoute: typeof AuthenticatedPlanBudgetIdRoute
+  AuthenticatedPlanTasksSuggestionsRoute: typeof AuthenticatedPlanTasksSuggestionsRoute
+  AuthenticatedWeddingEventsIdRoute: typeof AuthenticatedWeddingEventsIdRoute
   ITokenRsvpReceiptRoute: typeof ITokenRsvpReceiptRoute
 }
 
@@ -507,60 +523,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/account': {
-      id: '/account'
-      path: '/account'
-      fullPath: '/account'
-      preLoaderRoute: typeof AccountRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin': {
-      id: '/admin'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AdminRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/checkout': {
-      id: '/checkout'
-      path: '/checkout'
-      fullPath: '/checkout'
-      preLoaderRoute: typeof CheckoutRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/guests': {
-      id: '/guests'
-      path: '/guests'
-      fullPath: '/guests'
-      preLoaderRoute: typeof GuestsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/home': {
-      id: '/home'
-      path: '/home'
-      fullPath: '/home'
-      preLoaderRoute: typeof HomeRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/login': {
       id: '/login'
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/plans': {
-      id: '/plans'
-      path: '/plans'
-      fullPath: '/plans'
-      preLoaderRoute: typeof PlansRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/publish': {
-      id: '/publish'
-      path: '/publish'
-      fullPath: '/publish'
-      preLoaderRoute: typeof PublishRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/register': {
@@ -570,13 +537,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RegisterRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/rsvp': {
-      id: '/rsvp'
-      path: '/rsvp'
-      fullPath: '/rsvp'
-      preLoaderRoute: typeof RsvpRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/start': {
       id: '/start'
       path: '/start'
@@ -584,25 +544,60 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StartRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/guests_/$id': {
-      id: '/guests_/$id'
-      path: '/guests/$id'
-      fullPath: '/guests/$id'
-      preLoaderRoute: typeof GuestsIdRouteImport
+    '/_authenticated/account': {
+      id: '/_authenticated/account'
+      path: '/account'
+      fullPath: '/account'
+      preLoaderRoute: typeof AuthenticatedAccountRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/guests_/export': {
-      id: '/guests_/export'
-      path: '/guests/export'
-      fullPath: '/guests/export'
-      preLoaderRoute: typeof GuestsExportRouteImport
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/guests_/import': {
-      id: '/guests_/import'
-      path: '/guests/import'
-      fullPath: '/guests/import'
-      preLoaderRoute: typeof GuestsImportRouteImport
+    '/_authenticated/checkout': {
+      id: '/_authenticated/checkout'
+      path: '/checkout'
+      fullPath: '/checkout'
+      preLoaderRoute: typeof AuthenticatedCheckoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/guests': {
+      id: '/_authenticated/guests'
+      path: '/guests'
+      fullPath: '/guests'
+      preLoaderRoute: typeof AuthenticatedGuestsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/home': {
+      id: '/_authenticated/home'
+      path: '/home'
+      fullPath: '/home'
+      preLoaderRoute: typeof AuthenticatedHomeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/plans': {
+      id: '/_authenticated/plans'
+      path: '/plans'
+      fullPath: '/plans'
+      preLoaderRoute: typeof AuthenticatedPlansRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/publish': {
+      id: '/_authenticated/publish'
+      path: '/publish'
+      fullPath: '/publish'
+      preLoaderRoute: typeof AuthenticatedPublishRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/rsvp': {
+      id: '/_authenticated/rsvp'
+      path: '/rsvp'
+      fullPath: '/rsvp'
+      preLoaderRoute: typeof AuthenticatedRsvpRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/i/$token': {
@@ -612,102 +607,109 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ITokenRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/invitation/changes': {
-      id: '/invitation/changes'
+    '/_authenticated/guests_/$id': {
+      id: '/_authenticated/guests_/$id'
+      path: '/guests/$id'
+      fullPath: '/guests/$id'
+      preLoaderRoute: typeof AuthenticatedGuestsIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/guests_/export': {
+      id: '/_authenticated/guests_/export'
+      path: '/guests/export'
+      fullPath: '/guests/export'
+      preLoaderRoute: typeof AuthenticatedGuestsExportRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/guests_/import': {
+      id: '/_authenticated/guests_/import'
+      path: '/guests/import'
+      fullPath: '/guests/import'
+      preLoaderRoute: typeof AuthenticatedGuestsImportRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/invitation/changes': {
+      id: '/_authenticated/invitation/changes'
       path: '/invitation/changes'
       fullPath: '/invitation/changes'
-      preLoaderRoute: typeof InvitationChangesRouteImport
+      preLoaderRoute: typeof AuthenticatedInvitationChangesRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/invitation/check': {
-      id: '/invitation/check'
+    '/_authenticated/invitation/check': {
+      id: '/_authenticated/invitation/check'
       path: '/invitation/check'
       fullPath: '/invitation/check'
-      preLoaderRoute: typeof InvitationCheckRouteImport
+      preLoaderRoute: typeof AuthenticatedInvitationCheckRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/invitation/content': {
-      id: '/invitation/content'
+    '/_authenticated/invitation/content': {
+      id: '/_authenticated/invitation/content'
       path: '/invitation/content'
       fullPath: '/invitation/content'
-      preLoaderRoute: typeof InvitationContentRouteImport
+      preLoaderRoute: typeof AuthenticatedInvitationContentRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/invitation/history': {
-      id: '/invitation/history'
+    '/_authenticated/invitation/history': {
+      id: '/_authenticated/invitation/history'
       path: '/invitation/history'
       fullPath: '/invitation/history'
-      preLoaderRoute: typeof InvitationHistoryRouteImport
+      preLoaderRoute: typeof AuthenticatedInvitationHistoryRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/invitation/preview': {
-      id: '/invitation/preview'
+    '/_authenticated/invitation/preview': {
+      id: '/_authenticated/invitation/preview'
       path: '/invitation/preview'
       fullPath: '/invitation/preview'
-      preLoaderRoute: typeof InvitationPreviewRouteImport
+      preLoaderRoute: typeof AuthenticatedInvitationPreviewRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/invitation/variants': {
-      id: '/invitation/variants'
+    '/_authenticated/invitation/variants': {
+      id: '/_authenticated/invitation/variants'
       path: '/invitation/variants'
       fullPath: '/invitation/variants'
-      preLoaderRoute: typeof InvitationVariantsRouteImport
+      preLoaderRoute: typeof AuthenticatedInvitationVariantsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/plan/budget': {
-      id: '/plan/budget'
+    '/_authenticated/plan/budget': {
+      id: '/_authenticated/plan/budget'
       path: '/plan/budget'
       fullPath: '/plan/budget'
-      preLoaderRoute: typeof PlanBudgetRouteImport
+      preLoaderRoute: typeof AuthenticatedPlanBudgetRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/plan/tasks': {
-      id: '/plan/tasks'
+    '/_authenticated/plan/tasks': {
+      id: '/_authenticated/plan/tasks'
       path: '/plan/tasks'
       fullPath: '/plan/tasks'
-      preLoaderRoute: typeof PlanTasksRouteImport
+      preLoaderRoute: typeof AuthenticatedPlanTasksRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/settings/data': {
-      id: '/settings/data'
+    '/_authenticated/settings/data': {
+      id: '/_authenticated/settings/data'
       path: '/settings/data'
       fullPath: '/settings/data'
-      preLoaderRoute: typeof SettingsDataRouteImport
+      preLoaderRoute: typeof AuthenticatedSettingsDataRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/settings/team': {
-      id: '/settings/team'
+    '/_authenticated/settings/team': {
+      id: '/_authenticated/settings/team'
       path: '/settings/team'
       fullPath: '/settings/team'
-      preLoaderRoute: typeof SettingsTeamRouteImport
+      preLoaderRoute: typeof AuthenticatedSettingsTeamRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/wedding/events': {
-      id: '/wedding/events'
+    '/_authenticated/wedding/events': {
+      id: '/_authenticated/wedding/events'
       path: '/wedding/events'
       fullPath: '/wedding/events'
-      preLoaderRoute: typeof WeddingEventsRouteImport
+      preLoaderRoute: typeof AuthenticatedWeddingEventsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/wedding/new': {
-      id: '/wedding/new'
+    '/_authenticated/wedding/new': {
+      id: '/_authenticated/wedding/new'
       path: '/wedding/new'
       fullPath: '/wedding/new'
-      preLoaderRoute: typeof WeddingNewRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/checkout_/status/$id': {
-      id: '/checkout_/status/$id'
-      path: '/checkout/status/$id'
-      fullPath: '/checkout/status/$id'
-      preLoaderRoute: typeof CheckoutStatusIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/guests_/import_/$batch': {
-      id: '/guests_/import_/$batch'
-      path: '/guests/import/$batch'
-      fullPath: '/guests/import/$batch'
-      preLoaderRoute: typeof GuestsImportBatchRouteImport
+      preLoaderRoute: typeof AuthenticatedWeddingNewRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/i/$token_/expired': {
@@ -724,25 +726,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ITokenRsvpRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/plan/budget_/$id': {
-      id: '/plan/budget_/$id'
+    '/_authenticated/checkout_/status/$id': {
+      id: '/_authenticated/checkout_/status/$id'
+      path: '/checkout/status/$id'
+      fullPath: '/checkout/status/$id'
+      preLoaderRoute: typeof AuthenticatedCheckoutStatusIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/guests_/import_/$batch': {
+      id: '/_authenticated/guests_/import_/$batch'
+      path: '/guests/import/$batch'
+      fullPath: '/guests/import/$batch'
+      preLoaderRoute: typeof AuthenticatedGuestsImportBatchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/plan/budget_/$id': {
+      id: '/_authenticated/plan/budget_/$id'
       path: '/plan/budget/$id'
       fullPath: '/plan/budget/$id'
-      preLoaderRoute: typeof PlanBudgetIdRouteImport
+      preLoaderRoute: typeof AuthenticatedPlanBudgetIdRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/plan/tasks_/suggestions': {
-      id: '/plan/tasks_/suggestions'
+    '/_authenticated/plan/tasks_/suggestions': {
+      id: '/_authenticated/plan/tasks_/suggestions'
       path: '/plan/tasks/suggestions'
       fullPath: '/plan/tasks/suggestions'
-      preLoaderRoute: typeof PlanTasksSuggestionsRouteImport
+      preLoaderRoute: typeof AuthenticatedPlanTasksSuggestionsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/wedding/events_/$id': {
-      id: '/wedding/events_/$id'
+    '/_authenticated/wedding/events_/$id': {
+      id: '/_authenticated/wedding/events_/$id'
       path: '/wedding/events/$id'
       fullPath: '/wedding/events/$id'
-      preLoaderRoute: typeof WeddingEventsIdRouteImport
+      preLoaderRoute: typeof AuthenticatedWeddingEventsIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/i/$token_/rsvp_/receipt': {
@@ -757,40 +773,41 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AccountRoute: AccountRoute,
-  AdminRoute: AdminRoute,
-  CheckoutRoute: CheckoutRoute,
-  GuestsRoute: GuestsRoute,
-  HomeRoute: HomeRoute,
   LoginRoute: LoginRoute,
-  PlansRoute: PlansRoute,
-  PublishRoute: PublishRoute,
   RegisterRoute: RegisterRoute,
-  RsvpRoute: RsvpRoute,
   StartRoute: StartRoute,
-  GuestsIdRoute: GuestsIdRoute,
-  GuestsExportRoute: GuestsExportRoute,
-  GuestsImportRoute: GuestsImportRoute,
+  AuthenticatedAccountRoute: AuthenticatedAccountRoute,
+  AuthenticatedAdminRoute: AuthenticatedAdminRoute,
+  AuthenticatedCheckoutRoute: AuthenticatedCheckoutRoute,
+  AuthenticatedGuestsRoute: AuthenticatedGuestsRoute,
+  AuthenticatedHomeRoute: AuthenticatedHomeRoute,
+  AuthenticatedPlansRoute: AuthenticatedPlansRoute,
+  AuthenticatedPublishRoute: AuthenticatedPublishRoute,
+  AuthenticatedRsvpRoute: AuthenticatedRsvpRoute,
   ITokenRoute: ITokenRoute,
-  InvitationChangesRoute: InvitationChangesRoute,
-  InvitationCheckRoute: InvitationCheckRoute,
-  InvitationContentRoute: InvitationContentRoute,
-  InvitationHistoryRoute: InvitationHistoryRoute,
-  InvitationPreviewRoute: InvitationPreviewRoute,
-  InvitationVariantsRoute: InvitationVariantsRoute,
-  PlanBudgetRoute: PlanBudgetRoute,
-  PlanTasksRoute: PlanTasksRoute,
-  SettingsDataRoute: SettingsDataRoute,
-  SettingsTeamRoute: SettingsTeamRoute,
-  WeddingEventsRoute: WeddingEventsRoute,
-  WeddingNewRoute: WeddingNewRoute,
-  CheckoutStatusIdRoute: CheckoutStatusIdRoute,
-  GuestsImportBatchRoute: GuestsImportBatchRoute,
+  AuthenticatedGuestsIdRoute: AuthenticatedGuestsIdRoute,
+  AuthenticatedGuestsExportRoute: AuthenticatedGuestsExportRoute,
+  AuthenticatedGuestsImportRoute: AuthenticatedGuestsImportRoute,
+  AuthenticatedInvitationChangesRoute: AuthenticatedInvitationChangesRoute,
+  AuthenticatedInvitationCheckRoute: AuthenticatedInvitationCheckRoute,
+  AuthenticatedInvitationContentRoute: AuthenticatedInvitationContentRoute,
+  AuthenticatedInvitationHistoryRoute: AuthenticatedInvitationHistoryRoute,
+  AuthenticatedInvitationPreviewRoute: AuthenticatedInvitationPreviewRoute,
+  AuthenticatedInvitationVariantsRoute: AuthenticatedInvitationVariantsRoute,
+  AuthenticatedPlanBudgetRoute: AuthenticatedPlanBudgetRoute,
+  AuthenticatedPlanTasksRoute: AuthenticatedPlanTasksRoute,
+  AuthenticatedSettingsDataRoute: AuthenticatedSettingsDataRoute,
+  AuthenticatedSettingsTeamRoute: AuthenticatedSettingsTeamRoute,
+  AuthenticatedWeddingEventsRoute: AuthenticatedWeddingEventsRoute,
+  AuthenticatedWeddingNewRoute: AuthenticatedWeddingNewRoute,
   ITokenExpiredRoute: ITokenExpiredRoute,
   ITokenRsvpRoute: ITokenRsvpRoute,
-  PlanBudgetIdRoute: PlanBudgetIdRoute,
-  PlanTasksSuggestionsRoute: PlanTasksSuggestionsRoute,
-  WeddingEventsIdRoute: WeddingEventsIdRoute,
+  AuthenticatedCheckoutStatusIdRoute: AuthenticatedCheckoutStatusIdRoute,
+  AuthenticatedGuestsImportBatchRoute: AuthenticatedGuestsImportBatchRoute,
+  AuthenticatedPlanBudgetIdRoute: AuthenticatedPlanBudgetIdRoute,
+  AuthenticatedPlanTasksSuggestionsRoute:
+    AuthenticatedPlanTasksSuggestionsRoute,
+  AuthenticatedWeddingEventsIdRoute: AuthenticatedWeddingEventsIdRoute,
   ITokenRsvpReceiptRoute: ITokenRsvpReceiptRoute,
 }
 export const routeTree = rootRouteImport
