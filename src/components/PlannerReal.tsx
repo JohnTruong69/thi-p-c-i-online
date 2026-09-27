@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { eventsQuery, friendlyError, useMyWedding, type EventForm, type EventRow, type WeddingRow } from '@/lib/wedding-api';
 import { addSuggestedTasks, budgetQuery, deleteBudgetItem, eventImpactData, saveBudgetItem, setBudgetCap, tasksQuery, insertTask, updateTask, type BudgetItemWithSchedule, type TaskRow } from '@/lib/planner-api';
-import { CATEGORIES, INSTALLMENT_LABELS, PAYERS, STATUS_FROM_UI, agreedCost, budgetTotals, categoryLabel, fmtVnd, missingTemplates, payerLabel, plannedCost, toStatusUi, unpaidCost, validateCap, validateCost, type CostDraft, type CostMoney } from '@/lib/planner';
+import { CATEGORIES, INSTALLMENT_LABELS, PAYERS, STATUS_FROM_UI, agreedCost, budgetTotals, fmtVnd, missingTemplates, payerLabel, plannedCost, toStatusUi, unpaidCost, validateCap, validateCost, type CostDraft, type CostMoney } from '@/lib/planner';
 import { inTaskFilter, taskDue, validateTableCount, vietnamToday, type DemoTask } from '@/lib/task-demo';
 import { SUGGESTED_TASKS, dayDiff, shiftDate } from '@/lib/phase2';
 import { DemoDialog, FormField, Header, Note, Panel, PlannerTabs, SmallLabel, Status, fmtDate, inputCls, useFocusId } from './PhaseOne';
