@@ -10,6 +10,7 @@ import { LINK_LABEL, LINK_SIDES, MAX_MESSAGE, MAX_TITLE, diffInvitation, linkSta
 import { checkPhotos, MAX_PHOTOS } from '@/lib/phase2';
 import { mapUrl } from '@/lib/phase2d';
 import { getPublicInvitation } from '@/lib/invitation.functions';
+import { GuestReceipt, GuestRsvpForm } from './RsvpReal';
 import { Action, FormField, Header, InvitationTabs, Note, Panel, Row, SmallLabel, Status, fmtDate, inputCls } from './PhaseOne';
 import { LoadError, Loading } from './PhaseThree';
 
@@ -110,7 +111,7 @@ function PhotoPanel({ weddingId, b, urls }: { weddingId: string; b: InvitationBu
   const cover = async (id: string | null) => { setBusy('Đang đặt ảnh bìa…'); try { await setCover(b.invitation.id, id); setMsg({ ok: id ? 'Đã đặt ảnh bìa.' : 'Đã bỏ ảnh bìa.', bad: [] }); } catch (e) { setMsg({ ok: '', bad: [invitationError(e)] }); } setBusy(''); refresh(); };
   const full = b.photos.length >= MAX_PHOTOS;
   return <div><div className="flex items-center justify-between"><h2 className="text-xl">Ảnh bìa và album</h2><span className="text-xs font-semibold">{b.photos.length}/{MAX_PHOTOS}</span></div>
-    <label className={`mt-3 flex min-h-20 cursor-pointer items-center justify-center gap-2 rounded-md border border-dashed border-border bg-background p-4 text-center text-sm focus-within:ring-2 focus-within:ring-ring ${full || busy ? 'pointer-events-none opacity-50' : ''}`}><ImagePlus className="size-5 shrink-0 text-primary" />{full ? 'Đã đủ 50 ảnh' : 'Chọn ảnh (JPG, PNG, WEBP · tối đa 8 MB/ảnh)'}<input type="file" multiple accept="image/jpeg,image/png,image/webp" className="sr-only" disabled={full || !!busy} onChange={e => { add(e.target.files); e.target.value = ''; }} /></label>
+    <label className={`mt-3 flex min-h-20 cursor-pointer items-center justify-center gap-2 rounded-md border border-dashed border-border bg-background p-4 text-center text-sm focus-within:ring-2 focus-within:ring-ring ${full || busy ? 'pointer-events-none opacity-50' : ''}`}><ImagePlus className="size-5 shrink-0 text-primary" />{full ? 'Đã đủ 50 ảnh' : 'Chọn ảnh (JPG, PNG, WEBP · tối đa 10 MB/ảnh)'}<input type="file" multiple accept="image/jpeg,image/png,image/webp" className="sr-only" disabled={full || !!busy} onChange={e => { add(e.target.files); e.target.value = ''; }} /></label>
     <p className="mt-1 text-[11px] text-muted-foreground">Ảnh được lưu riêng tư trong tài khoản, chỉ hai người quản lý xem được. Tối đa 50 ảnh khác nhau cho một đám cưới, gồm cả ảnh bìa; ảnh giống hệt chỉ tính một lần.</p>
     <div role="status" aria-live="polite" className="mt-2 text-xs">{busy && <p className="flex items-center gap-1 font-semibold"><Loader2 className="size-3 animate-spin" />{busy}</p>}{msg.ok && <p className="font-semibold text-sage-strong">{msg.ok}</p>}{msg.bad.map(x => <p key={x} className="font-semibold text-destructive">{x}</p>)}</div>
     {b.photos.length > 0 && <ul className="mt-2 grid grid-cols-3 gap-2 sm:grid-cols-4">{b.photos.map((p, i) => { const isCover = p.id === b.invitation.cover_photo_id; return <li key={p.id} className="relative">
@@ -262,6 +263,8 @@ export function PublicInvitationPage({ token, mode }: { token: string; mode: 'vi
   if (q.isPending) return <div className="pt-16"><Loading label="Đang mở thiệp…" /></div>;
   const v = q.data;
   if (q.isError || !v || !v.open) return <div className="mx-auto max-w-lg pt-16 text-center" data-testid="guest-closed"><h1 className="text-4xl">Thiệp chưa mở</h1><p className="mt-4 text-muted-foreground">Lời mời này hiện không hiển thị. Nếu cần biết thêm thông tin, xin liên hệ trực tiếp với gia đình.</p></div>;
-  if (mode !== 'view') return <div className="mx-auto max-w-lg pt-16 text-center"><h1 className="text-4xl">Phản hồi tham dự chưa mở</h1><p className="mt-4 text-muted-foreground">Xin liên hệ trực tiếp với gia đình để báo tham dự.</p><Button asChild variant="outline" size="lg" className="mt-5 min-h-11"><Link to="/i/$token" params={{ token }}>Quay lại thiệp</Link></Button></div>;
-  return <div className="pt-8"><InvitationRenderer title={v.title} message={v.message} side={v.side as LinkSide} events={v.events} coverUrl={v.coverUrl} photoUrls={v.photoUrls} /></div>;
+  if (mode === 'rsvp') return <GuestRsvpForm token={token} events={v.events} />;
+  if (mode === 'receipt') return <GuestReceipt token={token} />;
+  return <div className="pt-8"><InvitationRenderer title={v.title} message={v.message} side={v.side as LinkSide} events={v.events} coverUrl={v.coverUrl} photoUrls={v.photoUrls} />
+    <div className="mx-auto mt-6 max-w-lg"><Button asChild size="lg" className="min-h-11 w-full"><Link to="/i/$token/rsvp" params={{ token }}>Xác nhận tham dự</Link></Button></div></div>;
 }

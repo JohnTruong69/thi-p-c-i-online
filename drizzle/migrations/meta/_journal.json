@@ -43,6 +43,20 @@
       "when": 1790493473280,
       "tag": "0005_invitation_hardening",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1790493971136,
+      "tag": "0006_rsvp_real_and_photo_10mb",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1790494305759,
+      "tag": "0007_rsvp_receipt_contact",
+      "breakpoints": true
     }
   ]
 }

@@ -654,6 +654,141 @@ export type Database = {
         }
         Relationships: []
       }
+      rsvp_answers: {
+        Row: {
+          attending: boolean
+          event_id: string
+          event_name: string
+          party_size: number | null
+          response_id: string
+          wedding_id: string
+        }
+        Insert: {
+          attending: boolean
+          event_id: string
+          event_name: string
+          party_size?: number | null
+          response_id: string
+          wedding_id: string
+        }
+        Update: {
+          attending?: boolean
+          event_id?: string
+          event_name?: string
+          party_size?: number | null
+          response_id?: string
+          wedding_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rsvp_answers_response_id_fkey"
+            columns: ["response_id"]
+            isOneToOne: false
+            referencedRelation: "rsvp_responses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "rsvp_answers_wedding_id_fkey"
+            columns: ["wedding_id"]
+            isOneToOne: false
+            referencedRelation: "weddings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      rsvp_responses: {
+        Row: {
+          created_at: string
+          edit_code_hash: string
+          guest_id: string | null
+          guest_name: string
+          id: string
+          link_id: string
+          link_side: string
+          matched_at: string | null
+          matched_by: string | null
+          note: string | null
+          phone: string | null
+          replaces_id: string | null
+          request_key: string
+          revision_id: string
+          superseded_at: string | null
+          wedding_id: string
+        }
+        Insert: {
+          created_at?: string
+          edit_code_hash: string
+          guest_id?: string | null
+          guest_name: string
+          id?: string
+          link_id: string
+          link_side: string
+          matched_at?: string | null
+          matched_by?: string | null
+          note?: string | null
+          phone?: string | null
+          replaces_id?: string | null
+          request_key: string
+          revision_id: string
+          superseded_at?: string | null
+          wedding_id: string
+        }
+        Update: {
+          created_at?: string
+          edit_code_hash?: string
+          guest_id?: string | null
+          guest_name?: string
+          id?: string
+          link_id?: string
+          link_side?: string
+          matched_at?: string | null
+          matched_by?: string | null
+          note?: string | null
+          phone?: string | null
+          replaces_id?: string | null
+          request_key?: string
+          revision_id?: string
+          superseded_at?: string | null
+          wedding_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rsvp_responses_guest_id_fkey"
+            columns: ["guest_id"]
+            isOneToOne: false
+            referencedRelation: "guests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "rsvp_responses_link_id_fkey"
+            columns: ["link_id"]
+            isOneToOne: false
+            referencedRelation: "invitation_links"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "rsvp_responses_replaces_id_fkey"
+            columns: ["replaces_id"]
+            isOneToOne: false
+            referencedRelation: "rsvp_responses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "rsvp_responses_revision_id_fkey"
+            columns: ["revision_id"]
+            isOneToOne: false
+            referencedRelation: "invitation_revisions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "rsvp_responses_wedding_id_fkey"
+            columns: ["wedding_id"]
+            isOneToOne: false
+            referencedRelation: "weddings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tasks: {
         Row: {
           assignee: string
@@ -900,6 +1035,10 @@ export type Database = {
         Returns: string
       }
       ensure_invitation: { Args: { p_wedding_id: string }; Returns: string }
+      get_rsvp_receipt: {
+        Args: { p_edit_code: string; p_token: string }
+        Returns: Json
+      }
       guest_fingerprint: { Args: { p_guest_id: string }; Returns: string }
       has_valid_entitlement: {
         Args: { p_wedding_id: string }
@@ -934,6 +1073,10 @@ export type Database = {
         Returns: Json
       }
       publish_invitation: { Args: { p_wedding_id: string }; Returns: Json }
+      reconcile_rsvp: {
+        Args: { p_apply?: boolean; p_guest_id: string; p_response_id: string }
+        Returns: number
+      }
       register_invitation_photo: {
         Args: { p_path: string; p_wedding_id: string }
         Returns: string
@@ -945,6 +1088,8 @@ export type Database = {
         Args: { p_invite_id: string }
         Returns: undefined
       }
+      rsvp_link_context: { Args: { p_token: string }; Returns: Json }
+      rsvp_receipt_json: { Args: { p_id: string }; Returns: Json }
       save_budget_item: {
         Args: {
           p_installments: Json
@@ -972,7 +1117,20 @@ export type Database = {
         Args: { p_side: string; p_snap: Json }
         Returns: boolean
       }
+      submit_rsvp: {
+        Args: {
+          p_answers: Json
+          p_edit_code?: string
+          p_name: string
+          p_note: string
+          p_phone: string
+          p_request_key: string
+          p_token: string
+        }
+        Returns: Json
+      }
       undo_guest_batch: { Args: { p_batch_id: string }; Returns: Json }
+      unmatch_rsvp: { Args: { p_response_id: string }; Returns: undefined }
       update_event_with_impact: {
         Args: { p_event_id: string; p_fields: Json; p_shift_task_ids: string[] }
         Returns: number

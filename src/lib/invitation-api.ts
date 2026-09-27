@@ -82,7 +82,7 @@ export function invitationError(e: unknown): string {
   if (m.includes('no ready link')) return 'Chưa có link nào đủ thông tin để công bố.';
   if (m.includes('photo limit') || m.includes('row-level security') && m.includes('storage')) return 'Đã đủ 50 ảnh cho đám cưới này.';
   if (m.includes('invalid photo content') || m.includes('invalid photo type')) return 'Tệp không phải ảnh JPG, PNG hoặc WEBP hợp lệ.';
-  if (m.includes('invalid photo size') || m.includes('exceeded') || m.includes('too large')) return 'Ảnh lớn hơn 8 MB.';
+  if (m.includes('invalid photo size') || m.includes('exceeded') || m.includes('too large')) return 'Ảnh lớn hơn 10 MB.';
   if (m.includes('event not in wedding')) return 'Có buổi không thuộc đám cưới này. Hãy tải lại trang.';
   return friendlyError(e);
 }

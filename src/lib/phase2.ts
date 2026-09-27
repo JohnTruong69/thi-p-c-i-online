@@ -188,12 +188,12 @@ export function computeDateImpact(eventId: string, oldDate: string, newDate: str
 
 // ---------- Photos ----------
 export const PHOTO_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
-export const MAX_PHOTO_BYTES = 8 * 1024 * 1024;
+export const MAX_PHOTO_BYTES = 10 * 1024 * 1024;
 export function checkPhotos(files: { name: string; type: string; size: number }[], current: number) {
   const accepted: number[] = []; const rejected: { name: string; reason: string }[] = [];
   files.forEach((f, i) => {
     if (!PHOTO_TYPES.includes(f.type)) rejected.push({ name: f.name, reason: 'Chỉ nhận JPG, PNG hoặc WEBP' });
-    else if (f.size > MAX_PHOTO_BYTES) rejected.push({ name: f.name, reason: 'Ảnh lớn hơn 8 MB' });
+    else if (f.size > MAX_PHOTO_BYTES) rejected.push({ name: f.name, reason: 'Ảnh lớn hơn 10 MB' });
     else if (current + accepted.length >= MAX_PHOTOS) rejected.push({ name: f.name, reason: `Đã đủ ${MAX_PHOTOS} ảnh` });
     else accepted.push(i);
   });

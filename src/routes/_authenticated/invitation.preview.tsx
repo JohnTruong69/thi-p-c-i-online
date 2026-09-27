@@ -3,9 +3,9 @@ import { PhaseOne } from "@/components/PhaseOne";
 export const Route = createFileRoute("/_authenticated/invitation/preview")({
   head: () => ({ meta: [
     { title: "preview | Thiệp Cưới Online Việt" },
-    { name: "description", content: "preview — trải nghiệm minh họa Thiệp Cưới Online Việt, Phase 1." },
+    { name: "description", content: "preview — Thiệp Cưới Online Việt: thiệp cưới online và kế hoạch cưới cho hai bạn." },
     { property: "og:title", content: "preview | Thiệp Cưới Online Việt" },
-    { property: "og:description", content: "preview — trải nghiệm minh họa Thiệp Cưới Online Việt, Phase 1." },
+    { property: "og:description", content: "preview — Thiệp Cưới Online Việt: thiệp cưới online và kế hoạch cưới cho hai bạn." },
     { property: "og:type", content: "website" },
     { name: "twitter:card", content: "summary" },
   ] }),

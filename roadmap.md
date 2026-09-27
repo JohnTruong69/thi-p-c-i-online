@@ -38,3 +38,5 @@
 
 ## Phase 3 slice 3
 - [x] Đường Hẹn invitation persisted: content, private photos ≤50, 3 links, readiness/orphans, revisions + diff, publish denied without entitlement, neutral public page; DB + browser checks
+- [x] Real RSVP per Event (public gated submit/receipt, idempotent, edit rule, owner reconcile, audit, CSV undo keeps matched guests) + 10 MB photo limit + public meta cleanup
+- [ ] Phase 3 remaining: account data export/delete, email delivery checks (confirm/reset/invite)
