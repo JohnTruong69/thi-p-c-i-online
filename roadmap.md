@@ -22,3 +22,4 @@
 
 - [x] Phase 2 QA blockers: CSV paging, safe undo, shared link selector, per-Event RSVP, photos in preview, readiness=address
 - [x] Phase 2 planner: honest due/status and Home data, table-count outcome and guarded legacy task migration.
+- [x] Phase 2 task follow-up: single due phrase, selectable table-count kind, 14-day upcoming filter, scoped legacy migration and QA.

@@ -2,19 +2,20 @@
 export type DemoTask = {
   id: string; title: string; event: string; due: string; owner: string;
   status: 'Cần làm' | 'Đang làm' | 'Chờ chốt' | 'Xong';
-  kind?: 'table-count'; plannedTables?: number | undefined; reserveTables?: number | undefined;
+  kind?: 'table-count' | 'standard'; plannedTables?: number | undefined; reserveTables?: number | undefined;
   outcome?: string; note?: string; added?: boolean;
 };
 
 export function normalizeTask(task: DemoTask): DemoTask {
+  const kind = task.kind === 'standard' ? 'standard' : task.kind === 'table-count' || (task.id === 't1' && !task.kind) ? 'table-count' : undefined;
   return {
     id: task.id,
-    title: task.title === 'Sổ bàn tiệc nhà trai' ? 'Dự tính số bàn tiệc nhà trai' : task.title,
+    title: task.id === 't1' && task.title === 'Sổ bàn tiệc nhà trai' ? 'Dự tính số bàn tiệc nhà trai' : task.title,
     event: task.event, due: typeof task.due === 'string' ? task.due : '',
     owner: task.owner, status: task.status,
-    ...(task.kind === 'table-count' || task.id === 't1' ? { kind: 'table-count' as const } : {}),
-    ...(Number.isInteger(task.plannedTables) && (task.plannedTables ?? -1) >= 0 ? { plannedTables: task.plannedTables } : {}),
-    ...(Number.isInteger(task.reserveTables) && (task.reserveTables ?? -1) >= 0 ? { reserveTables: task.reserveTables } : {}),
+    ...(kind ? { kind } : {}),
+    ...(kind === 'table-count' && Number.isInteger(task.plannedTables) && (task.plannedTables ?? -1) >= 0 ? { plannedTables: task.plannedTables } : {}),
+    ...(kind === 'table-count' && Number.isInteger(task.reserveTables) && (task.reserveTables ?? -1) >= 0 ? { reserveTables: task.reserveTables } : {}),
     ...(typeof task.outcome === 'string' ? { outcome: task.outcome } : {}),
     ...(typeof task.note === 'string' ? { note: task.note } : {}),
     ...(task.added ? { added: true } : {}),
@@ -48,7 +49,11 @@ export function inTaskFilter(task: DemoTask, filter: string, today: string): boo
   if (filter === 'Tất cả') return true;
   if (filter === 'Chờ chốt') return task.status === 'Chờ chốt';
   const group = taskDue(task, today).group;
-  return filter === 'Hôm nay' ? group === 'today' : filter === 'Sắp hạn' && (group === 'soon' || group === 'overdue');
+  if (filter === 'Hôm nay') return group === 'today';
+  if (filter !== 'Sắp hạn') return false;
+  const due = dayNumber(task.due);
+  const current = dayNumber(today);
+  return group === 'overdue' || (group === 'soon' && due !== null && current !== null && due - current <= 14);
 }
 
 export function validateTableCount(kind: DemoTask['kind'], planned: string, reserve: string, status: DemoTask['status']): string {

@@ -6,6 +6,9 @@ describe('planner demo', () => {
     const old = { ...task, tag: '08/10', bucket: 'Hôm nay', outcome: 'Đã hỏi nhà hàng' };
     expect(normalizeTask(old)).toMatchObject({ kind: 'table-count', title: 'Dự tính số bàn tiệc nhà trai', outcome: 'Đã hỏi nhà hàng', due: '' });
     expect(taskDue(normalizeTask(old), '2027-10-08').label).toBe('Chưa đặt hạn');
+    expect(normalizeTask({ ...old, id: 'custom' }).title).toBe('Sổ bàn tiệc nhà trai');
+    expect(normalizeTask({ ...old, kind: 'standard', plannedTables: 12 }).plannedTables).toBeUndefined();
+    expect(normalizeTask({ ...old, kind: 'standard' }).kind).toBe('standard');
   });
   it('uses Vietnam day, separates overdue/today/future and never treats finished as urgent', () => {
     expect(vietnamToday(new Date('2027-10-07T18:00:00Z'))).toBe('2027-10-08');
@@ -15,6 +18,13 @@ describe('planner demo', () => {
     expect(inTaskFilter({ ...task, due: '2027-10-08', status: 'Xong' }, 'Hôm nay', '2027-10-08')).toBe(false);
     expect(inTaskFilter({ ...task, due: '2027-10-06' }, 'Sắp hạn', '2027-10-08')).toBe(true);
     expect(inTaskFilter(task, 'Sắp hạn', '2027-10-08')).toBe(false);
+    expect(inTaskFilter({ ...task, due: '2027-10-09' }, 'Sắp hạn', '2027-10-08')).toBe(true);
+    expect(inTaskFilter({ ...task, due: '2027-10-22' }, 'Sắp hạn', '2027-10-08')).toBe(true);
+    expect(inTaskFilter({ ...task, due: '2027-10-23' }, 'Sắp hạn', '2027-10-08')).toBe(false);
+    expect(inTaskFilter({ ...task, due: '2027-10-08' }, 'Sắp hạn', '2027-10-08')).toBe(false);
+    expect(inTaskFilter({ ...task, due: '2027-10-22', status: 'Xong' }, 'Sắp hạn', '2027-10-08')).toBe(false);
+    expect(inTaskFilter({ ...task, due: '2027-01-01' }, 'Sắp hạn', '2027-10-08')).toBe(true);
+    expect(inTaskFilter({ ...task, due: '2028-01-01' }, 'Tất cả', '2027-10-08')).toBe(true);
   });
   it('validates nonnegative whole table counts and positive planned before Done', () => {
     expect(validateTableCount('table-count', '12', '0', 'Xong')).toBe('');
