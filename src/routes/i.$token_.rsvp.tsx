@@ -3,9 +3,9 @@ import { PhaseOne } from "@/components/PhaseOne";
 export const Route = createFileRoute("/i/$token_/rsvp")({
   head: () => ({ meta: [
     { title: "Xác nhận tham dự | Thiệp Cưới Online Việt" },
-    { name: "description", content: "Xác nhận tham dự — Thiệp Cưới Online Việt: thiệp cưới online và kế hoạch cưới cho hai bạn." },
+    { name: "description", content: "Trả lời tham dự cho từng buổi lễ của thiệp cưới." },
     { property: "og:title", content: "Xác nhận tham dự | Thiệp Cưới Online Việt" },
-    { property: "og:description", content: "Xác nhận tham dự — Thiệp Cưới Online Việt: thiệp cưới online và kế hoạch cưới cho hai bạn." },
+    { property: "og:description", content: "Trả lời tham dự cho từng buổi lễ của thiệp cưới." },
     { property: "og:type", content: "website" },
     { name: "twitter:card", content: "summary" },
   ] }),
