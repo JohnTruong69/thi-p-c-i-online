@@ -27,3 +27,8 @@
 ## Phase 3 slice 1
 - [x] Backend foundation: auth, schema/RLS, onboarding, real Events, couple invite
 - [x] Fix broken SettingsScreen JSX; clean TeamPanel screen; tsgo/build/vitest; browser route check
+
+## Phase 3 slice 2a
+- [x] Persist Planner: tasks (template id, assignee, table count), budget (payer/Khác/paid/deposit/extra/schedule/cap), server money checks
+- [x] Event date impact review (per-task consent) + transactional Event removal with links
+- [x] Pure + DB tests; browser create/edit/reload 375px + desktop

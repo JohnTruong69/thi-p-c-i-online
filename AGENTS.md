@@ -20,3 +20,5 @@
 - Phase 3: schema lives in drizzle/migrations (applied via migration tool); owner routes sit under src/routes/_authenticated (ssr:false gate → /login?redirect); real data goes through src/lib/wedding-api.ts; screens still on demo session state keep their demo label.
 - One Wedding per account in V1: create_wedding_draft is idempotent under a per-user advisory lock so retries/tabs never duplicate.
 - RLS verification is supabase/tests/rls-check.ts, run against the live API as confirmed rlstest-* accounts and self-cleaning.
+- Phase 3 slice 2a: /plan/tasks, /plan/budget and /home read real rows via src/lib/planner-api.ts (pure rules in src/lib/planner.ts); money rules live in DB CHECKs + a deferred schedule trigger, cost+schedule saves go through save_budget_item; Event date edits use update_event_with_impact (per-task consent) and removal uses remove_event — so no partial writes.
+- Suggested tasks dedupe by (wedding_id, template_id) unique constraint, never by title; DB checks run via supabase/tests/planner-check.ts.
