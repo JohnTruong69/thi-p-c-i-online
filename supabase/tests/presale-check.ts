@@ -61,7 +61,15 @@ async function main() {
   ok(/unavailable/.test(msg(await order(email('payer'), tok('p')))), 'order refused while checkout not live');
 
   const now = new Date().toISOString();
-  const ins = await admin.from('billing_settings').insert({ offer_version: 'qa-presale', price_vnd: 199000, terms_version: 'qa-terms', terms_approved_at: now, terms_approved_by: 'qa', bank_gateway: 'QA', bank_account_number: ACC, bank_account_name: 'QA', account_enabled: true, sandbox_verified_at: now, live_enabled: true } as never);
+  // Misconfigured live settings must refuse orders: wrong price, then missing terms URL.
+  const bad = { offer_version: 'qa-presale', terms_version: 'qa-terms', terms_approved_at: now, terms_approved_by: 'qa', bank_gateway: 'QA', bank_account_number: ACC, bank_account_name: 'QA', account_enabled: true, sandbox_verified_at: now, live_enabled: true };
+  await admin.from('billing_settings').insert({ ...bad, price_vnd: 149000, terms_url: 'https://example.test/terms' } as never);
+  ok(/misconfigured/.test(msg(await order(email('payer'), tok('m1')))), 'live settings with price != 199000 refuse order');
+  await admin.from('billing_settings').update({ price_vnd: 199000, terms_url: null } as never).eq('id', true);
+  ok(/misconfigured/.test(msg(await order(email('payer'), tok('m2')))), 'live settings without terms URL refuse order');
+  ok(!!(await admin.from('presale_orders').insert({ code: 'TCPZZZZZZZZ', token_hash: 'a'.repeat(64), email: email('x'), ip_hash: 'x', offer_version: 'x', terms_version: 'x', amount_vnd: 149000, bank_gateway: 'x', bank_account_number: 'x', bank_account_name: 'x', expires_at: now } as never)).error, 'DB refuses any presale order not at 199000');
+  await admin.from('billing_settings').delete().eq('id', true);
+  const ins = await admin.from('billing_settings').insert({ offer_version: 'qa-presale', price_vnd: 199000, terms_url: 'https://example.test/terms', terms_version: 'qa-terms', terms_approved_at: now, terms_approved_by: 'qa', bank_gateway: 'QA', bank_account_number: ACC, bank_account_name: 'QA', account_enabled: true, sandbox_verified_at: now, live_enabled: true } as never);
   ok(!ins.error, 'QA live settings installed');
   try {
     ok(/terms changed/.test(msg(await admin.rpc('create_presale_order', { p_email: email('payer'), p_terms_version: 'old', p_ip_hash: 'x', p_token: tok('q') }))), 'order refused for stale terms version');

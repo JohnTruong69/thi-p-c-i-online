@@ -22,3 +22,10 @@ export function claimErrorText(msg: string) {
   if (msg.includes('invalid claim')) return 'Liên kết không hợp lệ.';
   return 'Chưa tạo được đám cưới. Hãy thử lại.';
 }
+
+export type PresaleSettingsRow = { live_enabled: boolean; price_vnd: number | string; plan_version: string; terms_url: string | null; terms_approved_at: string | null } | null | undefined;
+/** Public package is locked: sales/QR only when settings exactly match it AND server gates are on. */
+export function presaleLive(s: PresaleSettingsRow, env: { goLive: boolean; webhookSecret: boolean }) {
+  return !!s && s.live_enabled && Number(s.price_vnd) === PRESALE_PRICE_VND && s.plan_version === 'one_payment_36m'
+    && !!s.terms_approved_at && typeof s.terms_url === 'string' && /^https:\/\/\S+$/.test(s.terms_url) && env.goLive && env.webhookSecret;
+}
