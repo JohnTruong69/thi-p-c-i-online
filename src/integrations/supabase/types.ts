@@ -224,21 +224,33 @@ export type Database = {
       }
       guest_event_assignments: {
         Row: {
+          attending_count: number | null
           created_at: string
           event_id: string
           guest_id: string
+          invite_status: string
+          rsvp_status: string
+          updated_at: string
           wedding_id: string
         }
         Insert: {
+          attending_count?: number | null
           created_at?: string
           event_id: string
           guest_id: string
+          invite_status?: string
+          rsvp_status?: string
+          updated_at?: string
           wedding_id: string
         }
         Update: {
+          attending_count?: number | null
           created_at?: string
           event_id?: string
           guest_id?: string
+          invite_status?: string
+          rsvp_status?: string
+          updated_at?: string
           wedding_id?: string
         }
         Relationships: [
@@ -261,6 +273,101 @@ export type Database = {
             columns: ["wedding_id"]
             isOneToOne: false
             referencedRelation: "weddings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      guest_import_batches: {
+        Row: {
+          added_count: number
+          created_at: string
+          created_by: string | null
+          event_ids: string[]
+          filename: string
+          id: string
+          invalid_count: number
+          skipped_count: number
+          undo_kept: number | null
+          undo_missing: number | null
+          undo_removed: number | null
+          undone_at: string | null
+          wedding_id: string
+        }
+        Insert: {
+          added_count?: number
+          created_at?: string
+          created_by?: string | null
+          event_ids?: string[]
+          filename?: string
+          id: string
+          invalid_count?: number
+          skipped_count?: number
+          undo_kept?: number | null
+          undo_missing?: number | null
+          undo_removed?: number | null
+          undone_at?: string | null
+          wedding_id: string
+        }
+        Update: {
+          added_count?: number
+          created_at?: string
+          created_by?: string | null
+          event_ids?: string[]
+          filename?: string
+          id?: string
+          invalid_count?: number
+          skipped_count?: number
+          undo_kept?: number | null
+          undo_missing?: number | null
+          undo_removed?: number | null
+          undone_at?: string | null
+          wedding_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "guest_import_batches_wedding_id_fkey"
+            columns: ["wedding_id"]
+            isOneToOne: false
+            referencedRelation: "weddings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      guest_import_rows: {
+        Row: {
+          batch_id: string
+          fingerprint: string
+          guest_id: string | null
+          source_row: number
+          wedding_id: string
+        }
+        Insert: {
+          batch_id: string
+          fingerprint: string
+          guest_id?: string | null
+          source_row: number
+          wedding_id: string
+        }
+        Update: {
+          batch_id?: string
+          fingerprint?: string
+          guest_id?: string | null
+          source_row?: number
+          wedding_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "guest_import_rows_batch_id_wedding_id_fkey"
+            columns: ["batch_id", "wedding_id"]
+            isOneToOne: false
+            referencedRelation: "guest_import_batches"
+            referencedColumns: ["id", "wedding_id"]
+          },
+          {
+            foreignKeyName: "guest_import_rows_guest_id_fkey"
+            columns: ["guest_id"]
+            isOneToOne: false
+            referencedRelation: "guests"
             referencedColumns: ["id"]
           },
         ]
@@ -545,6 +652,19 @@ export type Database = {
         }
         Returns: string
       }
+      guest_fingerprint: { Args: { p_guest_id: string }; Returns: string }
+      import_guest_batch: {
+        Args: {
+          p_batch_id: string
+          p_event_ids: string[]
+          p_filename: string
+          p_invalid: number
+          p_rows: Json
+          p_skipped: number
+          p_wedding_id: string
+        }
+        Returns: Json
+      }
       inspect_invite: {
         Args: { p_token: string }
         Returns: {
@@ -569,7 +689,17 @@ export type Database = {
         }
         Returns: string
       }
+      save_guest: {
+        Args: {
+          p_assignments: Json
+          p_guest: Json
+          p_guest_id: string
+          p_wedding_id: string
+        }
+        Returns: string
+      }
       shares_wedding_with: { Args: { _user_id: string }; Returns: boolean }
+      undo_guest_batch: { Args: { p_batch_id: string }; Returns: Json }
       update_event_with_impact: {
         Args: { p_event_id: string; p_fields: Json; p_shift_task_ids: string[] }
         Returns: number
