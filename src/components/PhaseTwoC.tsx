@@ -40,7 +40,7 @@ export function GuestsExportScreen() {
   const [guests] = useDemoSession<DemoGuest[]>('guests', initialGuests, validGuests);
   const [done, setDone] = useState('');
   const download = () => {
-    const csv = guestsToCsv(guests, v => events.find(e => e.id === v || e.name === v)?.name ?? '');
+    const csv = guestsToCsv(guests, v => events.find(e => e.id === v || e.name === v)?.name ?? v);
     const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
     const a = document.createElement('a'); a.href = url; a.download = 'so-khach-ban-dung-thu.csv'; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 1000);
     setDone(`Đã tạo file CSV với ${guests.length} hồ sơ khách từ phiên xem này.`);
