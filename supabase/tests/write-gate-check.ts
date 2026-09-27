@@ -20,7 +20,7 @@ const hash = (b: Buffer) => createHash('sha256').update(b).digest('hex');
 const item = { label: 'Tiệc', category: 'tiec', category_detail: null, event_id: null, payer: 'couple', estimate_vnd: 1000, agreed_vnd: null, paid_vnd: 0, deposit_vnd: 0, extra_vnd: 0, vendor: null };
 
 async function user(k: string) {
-  const { data, error } = await admin.auth.admin.createUser({ email: email(k), password: PW, email_confirm: true });
+  const { data, error } = await admin.auth.admin.createUser({ email: email(k), password: PW, email_confirm: true, app_metadata: { presale_exempt: true } });
   if (error) throw error; userIds.push(data.user.id);
   const c = mk(); const r = await c.auth.signInWithPassword({ email: email(k), password: PW }); if (r.error) throw r.error;
   return c;

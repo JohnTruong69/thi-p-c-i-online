@@ -21,6 +21,7 @@ export function friendlyError(e: unknown): string {
   if (m.includes('user already registered')) return 'Email này đã có tài khoản. Hãy đăng nhập hoặc lấy lại mật khẩu.';
   if (m.includes('pwned') || m.includes('weak')) return 'Mật khẩu này quá dễ đoán hoặc đã bị lộ ở nơi khác. Hãy chọn mật khẩu khác.';
   if (m.includes('rate limit') || m.includes('too many')) return 'Bạn thao tác hơi nhanh. Hãy đợi một chút rồi thử lại.';
+  if (m.includes('payment required')) return 'Tài khoản mới cần thanh toán gói trước khi tạo đám cưới.';
   if (m.includes('no free slot') || m.includes('at most two')) return 'Đám cưới đã đủ hai người quản lý hoặc đang có lời mời chờ.';
   if (m.includes('already a manager')) return 'Email này đã là người quản lý của đám cưới.';
   if (m.includes('last manager')) return 'Không thể để đám cưới không còn người quản lý nào.';

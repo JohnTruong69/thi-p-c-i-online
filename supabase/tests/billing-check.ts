@@ -18,7 +18,7 @@ const ACC = '9990001112'; const base = 9_000_000_000 + (TS % 1_000_000) * 100;
 const denied = (r: { error: unknown; data: unknown }) => !!r.error || (Array.isArray(r.data) && r.data.length === 0);
 
 async function user(k: string) {
-  const { data, error } = await admin.auth.admin.createUser({ email: email(k), password: PW, email_confirm: true });
+  const { data, error } = await admin.auth.admin.createUser({ email: email(k), password: PW, email_confirm: true, app_metadata: { presale_exempt: true } });
   if (error) throw error; userIds.push(data.user.id);
   const c = mk(); const r = await c.auth.signInWithPassword({ email: email(k), password: PW }); if (r.error) throw r.error;
   return { c, id: data.user.id };

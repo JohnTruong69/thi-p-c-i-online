@@ -15,7 +15,7 @@ const email = (k: string) => `qa-viewer-${TS}-${k}@example.test`;
 const userIds: string[] = [];
 
 async function user(k: string, confirmed = true) {
-  const { data, error } = await admin.auth.admin.createUser({ email: email(k), password: PW, email_confirm: confirmed });
+  const { data, error } = await admin.auth.admin.createUser({ email: email(k), password: PW, email_confirm: confirmed, app_metadata: { presale_exempt: true } });
   if (error) throw error; userIds.push(data.user.id);
   const c = mk(); if (confirmed) { const r = await c.auth.signInWithPassword({ email: email(k), password: PW }); if (r.error) throw r.error; }
   return c;
