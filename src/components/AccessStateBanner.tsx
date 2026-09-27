@@ -61,34 +61,29 @@ export function useAccessState(weddingId: string | undefined) {
 /** Access status banner. Read-only only happens when the server-side write gate is ON for this wedding. */
 export function AccessStateBanner({ weddingId }: { weddingId: string }) {
   const q = useAccessState(weddingId);
-  const _unused = useQuery({ enabled: false,
-    queryKey: ['wedding-access', weddingId],
-    queryFn: async () => {
-      const { data, error } = await supabase.rpc('wedding_access_state', { p_wedding_id: weddingId });
-      if (error) throw error;
-      return parseAccessState(data);
-    },
-    staleTime: 30_000,
-    refetchInterval: 60_000,
-  });
   if (q.isPending) return null;
   if (q.isError) return <div role="alert" className="mb-5 rounded-lg bg-copper-soft px-4 py-3 text-sm">
     Chưa tải được thời hạn sử dụng. <button type="button" className="font-semibold underline" onClick={() => q.refetch()}>Thử lại</button>
   </div>;
 
   const access = q.data;
-  if (access.state === 'trial_not_started') return null;
-  const expired = access.state === 'trial_expired_read_only' || access.state === 'paid_expired_read_only' || access.state === 'legacy_paid_expired';
+  const locked = !access.writable;
+  if (access.state === 'trial_not_started' && !locked) return null;
+  const expired = locked || access.state === 'trial_expired_read_only' || access.state === 'paid_expired_read_only' || access.state === 'legacy_paid_expired';
   let message: string;
   if (access.state === 'trial_active') message = `Hai bạn có thể dùng thử Planner đến ${vnDate(access.trial_ends_at)} (giờ Việt Nam).`;
   else if (access.state === 'paid_active') message = `Đã thanh toán · Planner và thiệp dùng đến ${vnDate(access.paid_expires_at)} (giờ Việt Nam).`;
   else if (access.state === 'trial_expired_read_only') message = 'Thời gian dùng thử đã kết thúc. Hai bạn vẫn xem và tải dữ liệu đã nhập.';
   else if (access.state === 'paid_expired_read_only') message = 'Thời hạn gói đã kết thúc. Link thiệp ngừng mở; hai bạn vẫn xem và tải dữ liệu.';
   else if (access.state === 'legacy_paid_active') message = `Gói thiệp cũ còn hạn đến ${vnDate(access.paid_expires_at)} (giờ Việt Nam).`;
-  else message = 'Gói thiệp cũ đã hết hạn. Hai bạn vẫn có thể xem và tải dữ liệu.';
+  else if (access.state === 'legacy_paid_expired') message = 'Gói thiệp cũ đã hết hạn. Hai bạn vẫn có thể xem và tải dữ liệu.';
+  else message = 'Đám cưới đang ở chế độ chỉ xem.';
 
   return <div role="status" className={`mb-5 flex flex-wrap items-center justify-between gap-2 rounded-lg px-4 py-3 text-sm ${expired ? 'bg-warm' : 'bg-sage'}`}>
-    <span>{message}</span>
-    {expired && <Link to="/settings/data" className="min-h-11 content-center font-semibold text-primary underline">Tải dữ liệu</Link>}
+    <span>{message}{locked && <> <strong>Chế độ chỉ xem:</strong> các nút thêm, sửa, xóa tạm khóa. Hai bạn vẫn xem, tải dữ liệu, gửi yêu cầu xóa dữ liệu, và người thân vẫn xem được phần đã chia sẻ. Thanh toán trực tuyến chưa mở, nên chưa thể mở khóa ngay.</>}</span>
+    <span className="flex flex-wrap gap-x-4">
+      {(expired || locked) && <Link to="/settings/data" className="min-h-11 content-center font-semibold text-primary underline">Tải dữ liệu</Link>}
+      {locked && <Link to="/checkout" className="min-h-11 content-center font-semibold text-primary underline">Xem gói Wedding</Link>}
+    </span>
   </div>;
 }
