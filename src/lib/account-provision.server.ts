@@ -5,11 +5,12 @@
  * Email ownership is proven when the recipient opens the invite/recovery link sent to that address.
  */
 import type { SupabaseClient } from '@supabase/supabase-js';
+import { accountRedirectUrl } from './app-origin';
 
 export type ProvisionKind = 'presale' | 'partner';
 export type ProvisionResult =
   | { ok: true; sent: 'invite' | 'recovery'; link?: { hashed_token: string; type: 'invite' | 'recovery'; userId?: string } }
-  | { ok: false; reason: 'not_found' | 'not_paid' | 'already_claimed' | 'claim_expired' | 'invite_inactive' | 'existing_account' | 'too_many' | 'wait' | 'send_failed' };
+  | { ok: false; reason: 'not_found' | 'not_paid' | 'already_claimed' | 'claim_expired' | 'invite_inactive' | 'existing_account' | 'too_many' | 'wait' | 'send_failed' | 'not_configured' };
 
 export function nextPathFor(kind: ProvisionKind, token: string) {
   return kind === 'presale' ? `/claim/${token}` : `/invite/${token}`;
@@ -22,7 +23,7 @@ export async function provisionAccount(admin: SupabaseClient, opts: { kind: Prov
   const r = data as { ok: boolean; reason?: string; email?: string; user_exists?: boolean };
   if (!r.ok) return { ok: false, reason: (r.reason ?? 'send_failed') as never };
   const email = r.email!;
-  const redirectTo = `${opts.origin}/reset-password?next=${encodeURIComponent(nextPathFor(opts.kind, opts.token))}`;
+  const redirectTo = accountRedirectUrl(opts.origin, nextPathFor(opts.kind, opts.token));
   // Unconfirmed existing account (e.g. self-signup before invite-only mode): invite would conflict, use a recovery link instead.
   const type: 'invite' | 'recovery' = r.user_exists ? 'recovery' : 'invite';
   if (opts.mode === 'link') {

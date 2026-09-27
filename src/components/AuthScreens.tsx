@@ -119,7 +119,8 @@ export function ForgotPasswordPage() {
 }
 
 export function ResetPasswordPage({ next }: { next?: string | undefined } = {}) {
-  const navigate = useNavigate(); const after = safeRedirect(next) ?? '/home';
+  const navigate = useNavigate(); const [after] = useState(() => safeRedirect(next) ?? '/home');
+  useEffect(() => { if (next && typeof window !== 'undefined') window.history.replaceState(window.history.state, '', window.location.pathname + window.location.hash); }, [next]);
   const [ready, setReady] = useState<'wait' | 'ok' | 'bad'>('wait'); const [pw, setPw] = useState(''); const [err, setErr] = useState(''); const [msg, setMsg] = useState(''); const [busy, setBusy] = useState(false);
   useEffect(() => {
     const { data: sub } = supabase.auth.onAuthStateChange(ev => { if (ev === 'PASSWORD_RECOVERY' || ev === 'SIGNED_IN') setReady('ok'); });
