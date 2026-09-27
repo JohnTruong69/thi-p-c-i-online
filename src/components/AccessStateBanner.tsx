@@ -1,7 +1,7 @@
 import { Link } from '@tanstack/react-router';
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
-import type { Json } from '@/integrations/supabase/types';
+import { supabase } from '../integrations/supabase/client';
+import type { Json } from '../integrations/supabase/types';
 
 type AccessState = {
   state: 'trial_not_started' | 'trial_active' | 'trial_expired_read_only' |
@@ -25,10 +25,12 @@ function parseAccessState(value: Json): AccessState {
 
 function vnDate(value: string | null) {
   if (!value || Number.isNaN(Date.parse(value))) return 'chưa có ngày';
-  return new Date(value).toLocaleString('vi-VN', {
+  const parts = new Intl.DateTimeFormat('vi-VN', {
     timeZone: 'Asia/Ho_Chi_Minh', day: '2-digit', month: '2-digit', year: 'numeric',
     hour: '2-digit', minute: '2-digit', hour12: false,
-  });
+  }).formatToParts(new Date(value));
+  const part = (type: Intl.DateTimeFormatPartTypes) => parts.find(item => item.type === type)?.value ?? '';
+  return `${part('day')}/${part('month')}/${part('year')} ${part('hour')}:${part('minute')}`;
 }
 
 /** Read-only status. The server write gate is activated in a later rollout. */
