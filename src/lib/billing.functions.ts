@@ -65,7 +65,7 @@ export const getBillingAdminOverview = createServerFn({ method: 'GET' })
 
 export const reconcileSepayTransaction = createServerFn({ method: 'POST' })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d: unknown) => z.object({ txId: z.number().int().positive(), orderCode: z.string().regex(/^TCO[A-Z0-9]{8}$/), note: z.string().trim().min(5).max(500) }).parse(d))
+  .inputValidator((d: unknown) => z.object({ txId: z.number().int().positive(), orderCode: z.string().regex(/^TCO[A-Z0-9]{8}$/), note: z.string().trim().min(15).max(500) }).parse(d))
   .handler(async ({ data, context }) => {
     await requireAdmin(context);
     const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
