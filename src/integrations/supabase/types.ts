@@ -1163,6 +1163,32 @@ export type Database = {
           },
         ]
       }
+      wedding_write_gate: {
+        Row: {
+          enabled_at: string
+          note: string | null
+          wedding_id: string
+        }
+        Insert: {
+          enabled_at?: string
+          note?: string | null
+          wedding_id: string
+        }
+        Update: {
+          enabled_at?: string
+          note?: string | null
+          wedding_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wedding_write_gate_wedding_id_fkey"
+            columns: ["wedding_id"]
+            isOneToOne: true
+            referencedRelation: "weddings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       weddings: {
         Row: {
           budget_cap_vnd: number | null
@@ -1213,6 +1239,7 @@ export type Database = {
       accept_partner_invite: { Args: { p_token: string }; Returns: string }
       accept_viewer_invite: { Args: { p_token: string }; Returns: string }
       can_manage_photo_path: { Args: { p_name: string }; Returns: boolean }
+      can_write_photo_path: { Args: { p_name: string }; Returns: boolean }
       create_partner_invite: {
         Args: { p_email: string; p_wedding_id: string }
         Returns: {
@@ -1244,6 +1271,10 @@ export type Database = {
           p_planned_date: string
         }
         Returns: string
+      }
+      enable_wedding_write_gate: {
+        Args: { p_note?: string; p_start_trial?: boolean; p_wedding_id: string }
+        Returns: Json
       }
       ensure_invitation: { Args: { p_wedding_id: string }; Returns: string }
       export_wedding_data: { Args: { p_wedding_id: string }; Returns: Json }
@@ -1379,6 +1410,14 @@ export type Database = {
       }
       viewer_weddings: { Args: never; Returns: Json }
       wedding_access_state: { Args: { p_wedding_id: string }; Returns: Json }
+      wedding_access_state_internal: {
+        Args: { p_wedding_id: string }
+        Returns: Json
+      }
+      wedding_write_allowed: {
+        Args: { p_wedding_id: string }
+        Returns: boolean
+      }
       withdraw_wedding_data_deletion: {
         Args: { p_request_id: string }
         Returns: undefined
