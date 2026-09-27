@@ -20,7 +20,7 @@ describe('photos', () => {
   it('rejects type, size and over-limit', () => {
     const r = checkPhotos([{ name: 'a.gif', type: 'image/gif', size: 1 }, { name: 'b.jpg', type: 'image/jpeg', size: 9e6 }, { name: 'c.jpg', type: 'image/jpeg', size: 1 }, { name: 'd.png', type: 'image/png', size: 1 }], 49);
     expect(r.accepted).toEqual([2]);
-    expect(r.rejected.map(x => x.reason)).toEqual(['Chỉ nhận JPG, PNG hoặc WEBP', 'Ảnh lớn hơn 8 MB', 'Đã đủ 50 ảnh']);
+    expect(r.rejected.map(x => x.reason)).toEqual(['Chỉ nhận JPG, PNG hoặc WEBP', 'Ảnh lớn hơn 10 MB', 'Đã đủ 50 ảnh']);
   });
 });
 

@@ -5,7 +5,7 @@ import { requireSupabaseAuth } from '@/integrations/supabase/auth-middleware';
 import type { Database } from '@/integrations/supabase/types';
 import { isPhotoPath, sniffImage } from './invitation';
 
-const MAX_BYTES = 8 * 1024 * 1024;
+const MAX_BYTES = 10 * 1024 * 1024;
 
 /** Server-side content check of an uploaded photo (magic bytes + size), then DB registration (path/owner/mime/limit re-checked in SQL). */
 export const verifyInvitationPhoto = createServerFn({ method: 'POST' })
