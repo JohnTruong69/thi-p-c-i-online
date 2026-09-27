@@ -8,6 +8,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { supabase } from '@/integrations/supabase/client';
 import { markManualSignOut } from '@/lib/auth-events';
 import { validateEmail } from '@/lib/phase2c';
+import { PayFirstNote } from './Presale';
 import {
   SIDE_TEXT, authUserQuery, createInvite, createWeddingDraft, eventsQuery, friendlyError, insertEvent,
   removeManager, revokeInvite, teamQuery, toEventForm, updateEvent, updateWedding, useMyWedding, validateEventForm,

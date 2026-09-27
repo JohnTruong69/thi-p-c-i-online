@@ -30,6 +30,7 @@ import { Route as ITokenRouteImport } from './routes/i.$token'
 import { Route as InviteTokenRouteImport } from './routes/invite.$token'
 import { Route as PayTokenRouteImport } from './routes/pay.$token'
 import { Route as ViewerInviteTokenRouteImport } from './routes/viewer-invite.$token'
+import { Route as AuthenticatedClaimTokenRouteImport } from './routes/_authenticated/claim.$token'
 import { Route as AuthenticatedGuestsIdRouteImport } from './routes/_authenticated/guests_.$id'
 import { Route as AuthenticatedGuestsExportRouteImport } from './routes/_authenticated/guests_.export'
 import { Route as AuthenticatedGuestsImportRouteImport } from './routes/_authenticated/guests_.import'
@@ -160,6 +161,11 @@ const ViewerInviteTokenRoute = ViewerInviteTokenRouteImport.update({
   id: '/viewer-invite/$token',
   path: '/viewer-invite/$token',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedClaimTokenRoute = AuthenticatedClaimTokenRouteImport.update({
+  id: '/claim/$token',
+  path: '/claim/$token',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedGuestsIdRoute = AuthenticatedGuestsIdRouteImport.update({
   id: '/guests_/$id',
@@ -331,6 +337,7 @@ export interface FileRoutesByFullPath {
   '/invite/$token': typeof InviteTokenRoute
   '/pay/$token': typeof PayTokenRoute
   '/viewer-invite/$token': typeof ViewerInviteTokenRoute
+  '/claim/$token': typeof AuthenticatedClaimTokenRoute
   '/guests/$id': typeof AuthenticatedGuestsIdRoute
   '/guests/export': typeof AuthenticatedGuestsExportRoute
   '/guests/import': typeof AuthenticatedGuestsImportRoute
@@ -379,6 +386,7 @@ export interface FileRoutesByTo {
   '/invite/$token': typeof InviteTokenRoute
   '/pay/$token': typeof PayTokenRoute
   '/viewer-invite/$token': typeof ViewerInviteTokenRoute
+  '/claim/$token': typeof AuthenticatedClaimTokenRoute
   '/guests/$id': typeof AuthenticatedGuestsIdRoute
   '/guests/export': typeof AuthenticatedGuestsExportRoute
   '/guests/import': typeof AuthenticatedGuestsImportRoute
@@ -429,6 +437,7 @@ export interface FileRoutesById {
   '/invite/$token': typeof InviteTokenRoute
   '/pay/$token': typeof PayTokenRoute
   '/viewer-invite/$token': typeof ViewerInviteTokenRoute
+  '/_authenticated/claim/$token': typeof AuthenticatedClaimTokenRoute
   '/_authenticated/guests_/$id': typeof AuthenticatedGuestsIdRoute
   '/_authenticated/guests_/export': typeof AuthenticatedGuestsExportRoute
   '/_authenticated/guests_/import': typeof AuthenticatedGuestsImportRoute
@@ -479,6 +488,7 @@ export interface FileRouteTypes {
     | '/invite/$token'
     | '/pay/$token'
     | '/viewer-invite/$token'
+    | '/claim/$token'
     | '/guests/$id'
     | '/guests/export'
     | '/guests/import'
@@ -527,6 +537,7 @@ export interface FileRouteTypes {
     | '/invite/$token'
     | '/pay/$token'
     | '/viewer-invite/$token'
+    | '/claim/$token'
     | '/guests/$id'
     | '/guests/export'
     | '/guests/import'
@@ -576,6 +587,7 @@ export interface FileRouteTypes {
     | '/invite/$token'
     | '/pay/$token'
     | '/viewer-invite/$token'
+    | '/_authenticated/claim/$token'
     | '/_authenticated/guests_/$id'
     | '/_authenticated/guests_/export'
     | '/_authenticated/guests_/import'
@@ -772,6 +784,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ViewerInviteTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/claim/$token': {
+      id: '/_authenticated/claim/$token'
+      path: '/claim/$token'
+      fullPath: '/claim/$token'
+      preLoaderRoute: typeof AuthenticatedClaimTokenRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/guests_/$id': {
       id: '/_authenticated/guests_/$id'
       path: '/guests/$id'
@@ -967,6 +986,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedPublishRoute: typeof AuthenticatedPublishRoute
   AuthenticatedRsvpRoute: typeof AuthenticatedRsvpRoute
   AuthenticatedViewRoute: typeof AuthenticatedViewRoute
+  AuthenticatedClaimTokenRoute: typeof AuthenticatedClaimTokenRoute
   AuthenticatedGuestsIdRoute: typeof AuthenticatedGuestsIdRoute
   AuthenticatedGuestsExportRoute: typeof AuthenticatedGuestsExportRoute
   AuthenticatedGuestsImportRoute: typeof AuthenticatedGuestsImportRoute
@@ -1001,6 +1021,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedPublishRoute: AuthenticatedPublishRoute,
   AuthenticatedRsvpRoute: AuthenticatedRsvpRoute,
   AuthenticatedViewRoute: AuthenticatedViewRoute,
+  AuthenticatedClaimTokenRoute: AuthenticatedClaimTokenRoute,
   AuthenticatedGuestsIdRoute: AuthenticatedGuestsIdRoute,
   AuthenticatedGuestsExportRoute: AuthenticatedGuestsExportRoute,
   AuthenticatedGuestsImportRoute: AuthenticatedGuestsImportRoute,
