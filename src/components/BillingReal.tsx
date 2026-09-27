@@ -69,7 +69,7 @@ export function RealCheckoutScreen() {
 }
 const STATUS: Record<string, string> = { pending: 'Chờ chuyển khoản', paid: 'Đã xác minh', expired: 'Hết hạn', cancelled: 'Đã hủy' };
 
-export function RealOrderStatusScreen({ id }: { id?: string }) {
+export function RealOrderStatusScreen({ id }: { id?: string | undefined }) {
   const q = useQuery({ enabled: !!id, queryKey: ['billing-order', id], refetchInterval: d => d.state.data?.status === 'pending' ? 10_000 : false, queryFn: async () => {
     const r = await supabase.from('billing_orders').select('*').eq('id', id!).maybeSingle(); if (r.error) throw r.error; return r.data;
   } });

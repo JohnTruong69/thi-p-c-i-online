@@ -57,6 +57,6 @@ export function extractOrderCode(p: Pick<SepayPayload, 'code' | 'content'>): str
 }
 
 /** Server env switches. Both must be present; neither is ever sent to the browser. */
-export function checkoutEnvReady(env: { secret?: string; goLive?: string }) {
+export function checkoutEnvReady(env: { secret?: string | undefined; goLive?: string | undefined }) {
   return { webhookSecret: !!env.secret && env.secret.length >= 16, goLive: env.goLive === 'true' };
 }
