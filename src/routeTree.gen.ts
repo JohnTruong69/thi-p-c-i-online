@@ -20,6 +20,8 @@ import { Route as AuthenticatedAccountRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedGuestsRouteImport } from './routes/_authenticated/guests'
 import { Route as AuthenticatedHomeRouteImport } from './routes/_authenticated/home'
+import { Route as AuthenticatedHoneymoonRouteImport } from './routes/_authenticated/honeymoon'
+import { Route as AuthenticatedVendorsRouteImport } from './routes/_authenticated/vendors'
 import { Route as AuthenticatedViewRouteImport } from './routes/_authenticated/view'
 import { Route as InviteTokenRouteImport } from './routes/invite.$token'
 import { Route as RCodeRouteImport } from './routes/r.$code'
@@ -92,6 +94,16 @@ const AuthenticatedGuestsRoute = AuthenticatedGuestsRouteImport.update({
 const AuthenticatedHomeRoute = AuthenticatedHomeRouteImport.update({
   id: '/home',
   path: '/home',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedHoneymoonRoute = AuthenticatedHoneymoonRouteImport.update({
+  id: '/honeymoon',
+  path: '/honeymoon',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedVendorsRoute = AuthenticatedVendorsRouteImport.update({
+  id: '/vendors',
+  path: '/vendors',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedViewRoute = AuthenticatedViewRouteImport.update({
@@ -212,6 +224,8 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AuthenticatedAdminRoute
   '/guests': typeof AuthenticatedGuestsRoute
   '/home': typeof AuthenticatedHomeRoute
+  '/honeymoon': typeof AuthenticatedHoneymoonRoute
+  '/vendors': typeof AuthenticatedVendorsRoute
   '/view': typeof AuthenticatedViewRoute
   '/invite/$token': typeof InviteTokenRoute
   '/r/$code': typeof RCodeRoute
@@ -243,6 +257,8 @@ export interface FileRoutesByTo {
   '/admin': typeof AuthenticatedAdminRoute
   '/guests': typeof AuthenticatedGuestsRoute
   '/home': typeof AuthenticatedHomeRoute
+  '/honeymoon': typeof AuthenticatedHoneymoonRoute
+  '/vendors': typeof AuthenticatedVendorsRoute
   '/view': typeof AuthenticatedViewRoute
   '/invite/$token': typeof InviteTokenRoute
   '/r/$code': typeof RCodeRoute
@@ -276,6 +292,8 @@ export interface FileRoutesById {
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/guests': typeof AuthenticatedGuestsRoute
   '/_authenticated/home': typeof AuthenticatedHomeRoute
+  '/_authenticated/honeymoon': typeof AuthenticatedHoneymoonRoute
+  '/_authenticated/vendors': typeof AuthenticatedVendorsRoute
   '/_authenticated/view': typeof AuthenticatedViewRoute
   '/invite/$token': typeof InviteTokenRoute
   '/r/$code': typeof RCodeRoute
@@ -309,6 +327,8 @@ export interface FileRouteTypes {
     | '/admin'
     | '/guests'
     | '/home'
+    | '/honeymoon'
+    | '/vendors'
     | '/view'
     | '/invite/$token'
     | '/r/$code'
@@ -340,6 +360,8 @@ export interface FileRouteTypes {
     | '/admin'
     | '/guests'
     | '/home'
+    | '/honeymoon'
+    | '/vendors'
     | '/view'
     | '/invite/$token'
     | '/r/$code'
@@ -372,6 +394,8 @@ export interface FileRouteTypes {
     | '/_authenticated/admin'
     | '/_authenticated/guests'
     | '/_authenticated/home'
+    | '/_authenticated/honeymoon'
+    | '/_authenticated/vendors'
     | '/_authenticated/view'
     | '/invite/$token'
     | '/r/$code'
@@ -483,6 +507,20 @@ declare module '@tanstack/react-router' {
       path: '/home'
       fullPath: '/home'
       preLoaderRoute: typeof AuthenticatedHomeRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/honeymoon': {
+      id: '/_authenticated/honeymoon'
+      path: '/honeymoon'
+      fullPath: '/honeymoon'
+      preLoaderRoute: typeof AuthenticatedHoneymoonRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/vendors': {
+      id: '/_authenticated/vendors'
+      path: '/vendors'
+      fullPath: '/vendors'
+      preLoaderRoute: typeof AuthenticatedVendorsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/view': {
@@ -626,6 +664,8 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
   AuthenticatedGuestsRoute: typeof AuthenticatedGuestsRoute
   AuthenticatedHomeRoute: typeof AuthenticatedHomeRoute
+  AuthenticatedHoneymoonRoute: typeof AuthenticatedHoneymoonRoute
+  AuthenticatedVendorsRoute: typeof AuthenticatedVendorsRoute
   AuthenticatedViewRoute: typeof AuthenticatedViewRoute
   AuthenticatedGuestsIdRoute: typeof AuthenticatedGuestsIdRoute
   AuthenticatedGuestsExportRoute: typeof AuthenticatedGuestsExportRoute
@@ -649,6 +689,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
   AuthenticatedGuestsRoute: AuthenticatedGuestsRoute,
   AuthenticatedHomeRoute: AuthenticatedHomeRoute,
+  AuthenticatedHoneymoonRoute: AuthenticatedHoneymoonRoute,
+  AuthenticatedVendorsRoute: AuthenticatedVendorsRoute,
   AuthenticatedViewRoute: AuthenticatedViewRoute,
   AuthenticatedGuestsIdRoute: AuthenticatedGuestsIdRoute,
   AuthenticatedGuestsExportRoute: AuthenticatedGuestsExportRoute,
