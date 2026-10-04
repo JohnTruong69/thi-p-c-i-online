@@ -17,10 +17,12 @@ import { Route as RegisterRouteImport } from './routes/register'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as StartRouteImport } from './routes/start'
 import { Route as AuthenticatedAccountRouteImport } from './routes/_authenticated/account'
+import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedGuestsRouteImport } from './routes/_authenticated/guests'
 import { Route as AuthenticatedHomeRouteImport } from './routes/_authenticated/home'
 import { Route as AuthenticatedViewRouteImport } from './routes/_authenticated/view'
 import { Route as InviteTokenRouteImport } from './routes/invite.$token'
+import { Route as RCodeRouteImport } from './routes/r.$code'
 import { Route as ViewerInviteTokenRouteImport } from './routes/viewer-invite.$token'
 import { Route as AuthenticatedGuestsIdRouteImport } from './routes/_authenticated/guests_.$id'
 import { Route as AuthenticatedGuestsExportRouteImport } from './routes/_authenticated/guests_.export'
@@ -77,6 +79,11 @@ const AuthenticatedAccountRoute = AuthenticatedAccountRouteImport.update({
   path: '/account',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedGuestsRoute = AuthenticatedGuestsRouteImport.update({
   id: '/guests',
   path: '/guests',
@@ -95,6 +102,11 @@ const AuthenticatedViewRoute = AuthenticatedViewRouteImport.update({
 const InviteTokenRoute = InviteTokenRouteImport.update({
   id: '/invite/$token',
   path: '/invite/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RCodeRoute = RCodeRouteImport.update({
+  id: '/r/$code',
+  path: '/r/$code',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ViewerInviteTokenRoute = ViewerInviteTokenRouteImport.update({
@@ -197,10 +209,12 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/start': typeof StartRoute
   '/account': typeof AuthenticatedAccountRoute
+  '/admin': typeof AuthenticatedAdminRoute
   '/guests': typeof AuthenticatedGuestsRoute
   '/home': typeof AuthenticatedHomeRoute
   '/view': typeof AuthenticatedViewRoute
   '/invite/$token': typeof InviteTokenRoute
+  '/r/$code': typeof RCodeRoute
   '/viewer-invite/$token': typeof ViewerInviteTokenRoute
   '/guests/$id': typeof AuthenticatedGuestsIdRoute
   '/guests/export': typeof AuthenticatedGuestsExportRoute
@@ -226,10 +240,12 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/start': typeof StartRoute
   '/account': typeof AuthenticatedAccountRoute
+  '/admin': typeof AuthenticatedAdminRoute
   '/guests': typeof AuthenticatedGuestsRoute
   '/home': typeof AuthenticatedHomeRoute
   '/view': typeof AuthenticatedViewRoute
   '/invite/$token': typeof InviteTokenRoute
+  '/r/$code': typeof RCodeRoute
   '/viewer-invite/$token': typeof ViewerInviteTokenRoute
   '/guests/$id': typeof AuthenticatedGuestsIdRoute
   '/guests/export': typeof AuthenticatedGuestsExportRoute
@@ -257,10 +273,12 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/start': typeof StartRoute
   '/_authenticated/account': typeof AuthenticatedAccountRoute
+  '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/guests': typeof AuthenticatedGuestsRoute
   '/_authenticated/home': typeof AuthenticatedHomeRoute
   '/_authenticated/view': typeof AuthenticatedViewRoute
   '/invite/$token': typeof InviteTokenRoute
+  '/r/$code': typeof RCodeRoute
   '/viewer-invite/$token': typeof ViewerInviteTokenRoute
   '/_authenticated/guests_/$id': typeof AuthenticatedGuestsIdRoute
   '/_authenticated/guests_/export': typeof AuthenticatedGuestsExportRoute
@@ -288,10 +306,12 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/start'
     | '/account'
+    | '/admin'
     | '/guests'
     | '/home'
     | '/view'
     | '/invite/$token'
+    | '/r/$code'
     | '/viewer-invite/$token'
     | '/guests/$id'
     | '/guests/export'
@@ -317,10 +337,12 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/start'
     | '/account'
+    | '/admin'
     | '/guests'
     | '/home'
     | '/view'
     | '/invite/$token'
+    | '/r/$code'
     | '/viewer-invite/$token'
     | '/guests/$id'
     | '/guests/export'
@@ -347,10 +369,12 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/start'
     | '/_authenticated/account'
+    | '/_authenticated/admin'
     | '/_authenticated/guests'
     | '/_authenticated/home'
     | '/_authenticated/view'
     | '/invite/$token'
+    | '/r/$code'
     | '/viewer-invite/$token'
     | '/_authenticated/guests_/$id'
     | '/_authenticated/guests_/export'
@@ -378,6 +402,7 @@ export interface RootRouteChildren {
   ResetPasswordRoute: typeof ResetPasswordRoute
   StartRoute: typeof StartRoute
   InviteTokenRoute: typeof InviteTokenRoute
+  RCodeRoute: typeof RCodeRoute
   ViewerInviteTokenRoute: typeof ViewerInviteTokenRoute
 }
 
@@ -439,6 +464,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAccountRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/guests': {
       id: '/_authenticated/guests'
       path: '/guests'
@@ -465,6 +497,13 @@ declare module '@tanstack/react-router' {
       path: '/invite/$token'
       fullPath: '/invite/$token'
       preLoaderRoute: typeof InviteTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/r/$code': {
+      id: '/r/$code'
+      path: '/r/$code'
+      fullPath: '/r/$code'
+      preLoaderRoute: typeof RCodeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/viewer-invite/$token': {
@@ -584,6 +623,7 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAccountRoute: typeof AuthenticatedAccountRoute
+  AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
   AuthenticatedGuestsRoute: typeof AuthenticatedGuestsRoute
   AuthenticatedHomeRoute: typeof AuthenticatedHomeRoute
   AuthenticatedViewRoute: typeof AuthenticatedViewRoute
@@ -606,6 +646,7 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAccountRoute: AuthenticatedAccountRoute,
+  AuthenticatedAdminRoute: AuthenticatedAdminRoute,
   AuthenticatedGuestsRoute: AuthenticatedGuestsRoute,
   AuthenticatedHomeRoute: AuthenticatedHomeRoute,
   AuthenticatedViewRoute: AuthenticatedViewRoute,
@@ -639,6 +680,7 @@ const rootRouteChildren: RootRouteChildren = {
   ResetPasswordRoute: ResetPasswordRoute,
   StartRoute: StartRoute,
   InviteTokenRoute: InviteTokenRoute,
+  RCodeRoute: RCodeRoute,
   ViewerInviteTokenRoute: ViewerInviteTokenRoute,
 }
 export const routeTree = rootRouteImport

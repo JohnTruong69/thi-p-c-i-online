@@ -48,6 +48,6 @@
 
 ## Pivot 2026-10: app miễn phí, kiếm tiền bằng affiliate
 - [x] GĐ A — Xóa thiệp online + thu phí: 16 routes (invitation/i.$token/checkout/plans/publish/rsvp/admin), InvitationReal/RsvpReal, lib invitation*/rsvp*, AccessStateBanner → WriteButton thuần, contracts/viewers tinh gọn, migration 0013 (drop 9 bảng + bucket invitation-photos + functions/triggers; sửa undo_guest_batch, export_wedding_data, viewer modules bỏ 'rsvp'); đóng PR #6 (SePay checkout, không merge)
-- [ ] GĐ B — Nền tảng affiliate: bảng affiliate_vendors/products/clicks, admin quản lý link, redirect tracking /r/:code
+- [x] GĐ B — Nền tảng affiliate: migration 0014 (affiliate_vendors/products/clicks/admins, RPC track_affiliate_click/is_affiliate_admin/affiliate_click_stats, RLS; code unique xuyên 2 bảng), lib affiliate.ts, component AffiliateLink + AffiliateBadge (nhãn "Liên kết tiếp thị"), route /r/$code redirect có tracking, route /admin quản lý vendor/sản phẩm/thống kê click; sửa lỗi tsc còn sót từ GĐ A (import phase2d trong PhaseTwo.tsx, xóa Order demo khỏi phase2.ts); types.ts bổ sung thủ công (đồng bộ khi regen sau khi apply 0014)
 - [ ] GĐ C — Tích hợp Planner: "Mua ở đây" trong ngân sách, gợi ý vendor trong 43 việc mẫu, nhãn "Liên kết tiếp thị"
 - [ ] GĐ D — Danh bạ nhà cung cấp, Trăng mật (Booking/Agoda/Mytour/ACCESSTRADE), Blog SEO (tùy chọn sau)

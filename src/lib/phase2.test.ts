@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { parseCsv, guessColumns, buildPreview, summarize, SAMPLE_CSV, SUGGESTED_TASKS, matchResponse, canClientSet, linkReadiness } from './phase2';
+import { parseCsv, guessColumns, buildPreview, summarize, SAMPLE_CSV, SUGGESTED_TASKS, matchResponse, linkReadiness } from './phase2';
 
 describe('CSV', () => {
   it('keeps leading zeros, quotes and BOM', () => {
@@ -40,11 +40,7 @@ describe('RSVP matching', () => {
   it('unique name is still only a suggestion', () => expect(matchResponse({ name: 'Tùng' }, guests).kind).toBe('ambiguous'));
 });
 
-describe('order and links', () => {
-  it('client can never mark paid', () => {
-    expect(canClientSet('verifying', 'paid_verified')).toBe(false);
-    expect(canClientSet('order_pending', 'verifying')).toBe(true);
-  });
+describe('links', () => {
   it('readiness lists missing event fields', () => {
     const ev = [{ id: 'e1', name: 'Lễ', date: '2027-10-18', time: '07:00', venue: 'Nhà', address: '24 Nguyễn Văn Cừ' }, { id: 'e2', name: 'Tiệc tối', date: '2027-10-18', venue: 'NH', address: '1 Lê Lợi' }];
     expect(linkReadiness(false, ['e1'], ev).readiness).toBe('off');

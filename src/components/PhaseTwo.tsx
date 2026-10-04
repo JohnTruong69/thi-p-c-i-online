@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from '@tanstack/react-router';
 import { ArrowRight, Check, Download, Plus, Undo2, Upload } from 'lucide-react';
 import { useDemoSession } from '@/lib/demo-session';
+import { guestFingerprint, pageCount, pageSlice, planUndo } from '@/lib/phase2d';
 import { buildPreview, guessColumns, parseCsv, summarize, PREVIEW_LIMIT, SAMPLE_CSV, SUGGESTED_TASKS, type ColumnMap, type CsvRow, type CsvTable } from '@/lib/phase2';
 import { Action, DemoAction, DemoDialog, Header, Note, Panel, Row, SmallLabel, Status, inputCls, initialGuests, validGuests, initialTasks, validTasks, useEventNames, type DemoGuest, type DemoTask } from './PhaseOne';
 
