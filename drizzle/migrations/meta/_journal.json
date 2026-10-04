@@ -99,6 +99,13 @@
       "when": 1791114175010,
       "tag": "0013_remove_invitation_billing",
       "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1791116714693,
+      "tag": "0014_affiliate_foundation",
+      "breakpoints": true
     }
   ]
 }
