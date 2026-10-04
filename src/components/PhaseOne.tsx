@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, useRouterState } from '@tanstack/react-router';
-import { Home, ListChecks, UsersRound, MoreHorizontal, CalendarDays, ChevronRight, ArrowLeft, ArrowRight, Wallet, Heart, MapPin, Clock3, Check, AlertCircle, Upload, Plus, ExternalLink, FileText, Settings, ShieldCheck, LogIn, Download, Pencil, Eye, CircleHelp, CreditCard, Link2, Send } from 'lucide-react';
+import { Home, ListChecks, UsersRound, MoreHorizontal, CalendarDays, ChevronRight, ArrowLeft, ArrowRight, Wallet, Heart, MapPin, Clock3, Check, AlertCircle, Upload, Plus, ExternalLink, FileText, Settings, ShieldCheck, LogIn, Download, Pencil, Eye, CircleHelp, CreditCard, Link2, Send, Store } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useDemoSession } from '@/lib/demo-session';
 import { DataControls } from './DataControls';
 import { CsvImportScreen, CsvBatchScreen, SuggestionLibrary } from './PhaseTwo';
 import { DateImpactDialog } from './PhaseTwoB';
+import { AffiliateAdminScreen } from './AffiliateAdmin';
 import { LoginScreen, GuestsExportScreen } from './PhaseTwoC';
 import { computeDateImpact, type DateImpact } from '@/lib/phase2';
 import { normalizeTask, taskDue, inTaskFilter, validateTableCount, vietnamToday, type DemoTask } from '@/lib/task-demo';
@@ -13,7 +14,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { ViewerTeamPanel } from './ViewerScreens';
 import { WeddingGate, WeddingNewScreen, RealEventsScreen, TeamPanel, AccountScreen, SignOutButton, coupleName } from './PhaseThree';
 import { PublicShell } from './AuthScreens';
-import { RealTasksScreen, RealBudgetScreen, RealHomeScreen } from './PlannerReal';
+import { RealTasksScreen, RealBudgetScreen, RealHomeScreen, RealVendorsScreen, RealHoneymoonScreen } from './PlannerReal';
 import { useMyWedding } from '@/lib/wedding-api';
 import { RealCsvBatchScreen, RealCsvImportScreen, RealGuestsExportScreen, RealGuestsScreen } from './GuestsReal';
 
@@ -27,7 +28,7 @@ export function useDeepLink<T extends {id:string}>(items:T[],open:(x:T)=>void,la
  const onClosed=()=>{if(!id)return;setTimeout(()=>{const b=[...document.querySelectorAll<HTMLElement>(`[data-item="${CSS.escape(id)}"] button`)].find(e=>/Sửa/.test(e.textContent||''));(b??document.querySelector<HTMLElement>('h1'))?.focus()},50)};
  return {missing,onClosed}}
 function MissingNote({text}:{text:string}){return text?<div role="alert" className="mb-4"><Note tone="copper">{text}</Note></div>:null}
-type ScreenName = 'start'|'new'|'events'|'home'|'tasks'|'budget'|'guests'|'import'|'batch'|'team'|'data'|'login'|'register'|'account'|'export';
+type ScreenName = 'start'|'new'|'events'|'home'|'tasks'|'budget'|'guests'|'import'|'batch'|'team'|'data'|'login'|'register'|'account'|'admin'|'export'|'vendors'|'honeymoon';
 const paths = { start:'/start', new:'/wedding/new', events:'/wedding/events', home:'/home', tasks:'/plan/tasks', budget:'/plan/budget', guests:'/guests', import:'/guests/import', team:'/settings/team', data:'/settings/data', login:'/login', register:'/register', account:'/account' } as const;
 const NAV = [
   {label:'Tổng quan', path:'/home', icon:Home, match:['/home','/wedding','/start']},
@@ -41,14 +42,15 @@ const DESKTOP_NAV = [
     {label:'Việc cần làm',path:'/plan/tasks',icon:ListChecks},
     {label:'Các buổi lễ',path:'/wedding/events',icon:CalendarDays},
     {label:'Ngân sách',path:'/plan/budget',icon:Wallet},
+    {label:'Nhà cung cấp',path:'/vendors',icon:Store},
   ]},
   {label:'Khách',path:'/guests',icon:UsersRound,match:['/guests'],children:[
     {label:'Danh sách khách',path:'/guests',icon:UsersRound},
   ]},
   {label:'Khác',path:'/settings/data',icon:MoreHorizontal,match:['/settings','/account'],children:[]},
 ] as const;
-const titles: Record<ScreenName,string> = {export:'Xuất sổ khách',start:'Ngày vui bắt đầu từ đây',new:'Câu chuyện của hai bạn',events:'Những buổi lễ của mình',home:'Hôm nay, mình làm gì?',tasks:'Việc của hai bạn',budget:'Tiền bạc rõ ràng hơn',guests:'Những người mình thương',import:'Mang danh sách vào đây',team:'Tài khoản và dữ liệu',data:'Tài khoản và dữ liệu',login:'Chào mừng trở lại',register:'Bắt đầu cùng nhau',account:'Tài khoản của bạn',admin:'Vận hành',batch:'Kết quả dữ liệu mẫu'};
-const REAL_PATHS=['/home','/wedding/new','/wedding/events','/plan/tasks','/plan/budget','/settings/data','/settings/team','/account','/guests'];
+const titles: Record<ScreenName,string> = {export:'Xuất sổ khách',start:'Ngày vui bắt đầu từ đây',new:'Câu chuyện của hai bạn',events:'Những buổi lễ của mình',home:'Hôm nay, mình làm gì?',tasks:'Việc của hai bạn',budget:'Tiền bạc rõ ràng hơn',guests:'Những người mình thương',import:'Mang danh sách vào đây',team:'Tài khoản và dữ liệu',data:'Tài khoản và dữ liệu',login:'Chào mừng trở lại',register:'Bắt đầu cùng nhau',account:'Tài khoản của bạn',admin:'Quản trị affiliate',batch:'Kết quả dữ liệu mẫu',vendors:'Nhà cung cấp đề xuất',honeymoon:'Trăng mật của hai bạn'};
+const REAL_PATHS=['/home','/wedding/new','/wedding/events','/plan/tasks','/plan/budget','/settings/data','/settings/team','/account','/guests','/vendors','/honeymoon'];
 function OwnerDataNote(){const pathname=useRouterState({select:s=>s.location.pathname});return REAL_PATHS.some(p=>pathname.startsWith(p))?<div className="text-[11px] font-semibold tracking-wide text-sage-strong">Đã lưu vào tài khoản: hai người quản lý cùng thấy thông tin trên trang này.</div>:<div className="text-[11px] font-semibold tracking-wide text-primary">Màn này còn là bản minh họa; hãy xem nhãn “Đã lưu vào tài khoản” ở các màn đã dùng dữ liệu thật.</div>}
 function DemoNote({guest=false}:{guest?:boolean}) { return <div className={`text-[11px] font-semibold tracking-wide ${guest?'text-center':''} text-primary`}>Bản dùng thử: dữ liệu chỉ nằm trong phiên xem này, chưa được lưu vào tài khoản.</div>; }
 export function Header({name,subtitle}:{name:string;subtitle?:string}) { return <div className="mb-6"><div className="mb-2 text-[10px] font-bold uppercase text-primary">{subtitle || 'Thiệp cưới online'}</div><h1 className="text-[32px] leading-[1.12] font-semibold text-foreground sm:text-[42px]">{name}</h1></div>; }
@@ -92,7 +94,7 @@ export function useEventNames(){const [events]=useDemoSession<DemoEvent[]>('even
 export const eventId=(idOrName:string)=>initialEvents.find(e=>e.name===idOrName)?.id??idOrName;
 export const eventName=(idOrName:string,events:DemoEvent[],fallback='Chung')=>events.find(e=>e.id===eventId(idOrName))?.name??(['Mọi buổi','Chung','Tất cả','Nhà trai','Nhà gái'].includes(idOrName)?idOrName:fallback);
 const isDinner=(idOrName:string)=>eventId(idOrName)==='e2';
-export function PlannerTabs({active}:{active:'tasks'|'events'|'budget'}){return <nav aria-label="Kế hoạch" className="mb-5 grid grid-cols-3 gap-1.5 sm:gap-2"><Action to="/plan/tasks" variant={active==='tasks'?'default':'outline'} className="px-1 text-xs sm:px-4 sm:text-sm">Việc cần làm</Action><Action to="/wedding/events" variant={active==='events'?'default':'outline'} className="px-1 text-xs sm:px-4 sm:text-sm">Các buổi lễ</Action><Action to="/plan/budget" variant={active==='budget'?'default':'outline'} className="px-1 text-xs sm:px-4 sm:text-sm">Ngân sách</Action></nav>}
+export function PlannerTabs({active}:{active:'tasks'|'events'|'budget'|'vendors'}){return <nav aria-label="Kế hoạch" className="mb-5 grid grid-cols-4 gap-1.5 sm:gap-2"><Action to="/plan/tasks" variant={active==='tasks'?'default':'outline'} className="px-1 text-[11px] sm:px-4 sm:text-sm">Việc cần làm</Action><Action to="/wedding/events" variant={active==='events'?'default':'outline'} className="px-1 text-[11px] sm:px-4 sm:text-sm">Các buổi lễ</Action><Action to="/plan/budget" variant={active==='budget'?'default':'outline'} className="px-1 text-[11px] sm:px-4 sm:text-sm">Ngân sách</Action><Action to="/vendors" variant={active==='vendors'?'default':'outline'} className="px-1 text-[11px] sm:px-4 sm:text-sm">Nhà cung cấp</Action></nav>}
 
 export const inputCls = 'mt-2 h-11 w-full rounded-md border border-border bg-background px-3 text-sm font-normal focus:outline-none focus:ring-2 focus:ring-ring';
 export function FormField({label,id,error,children}:{label:string;id:string;error?:string|undefined;children:React.ReactNode}){return <div><label htmlFor={id} className="block text-xs font-semibold text-foreground">{label}</label>{children}{error&&<p id={`${id}-err`} role="alert" className="mt-1 text-xs font-semibold text-destructive">{error}</p>}</div>}
@@ -127,4 +129,4 @@ function SettingsScreen(){
  </div>
 }
 function UtilityScreen({screen}:{screen:ScreenName}){return <div className="mx-auto max-w-xl"><Header name={titles[screen]} subtitle="TIỆN ÍCH"/><Note tone="warm">Trang này đang được hoàn thiện.</Note><Action to="/home" className="mt-5">Về tổng quan</Action></div>}
-export function PhaseOne({screen,focusId}:{screen:ScreenName;focusId?:string}){if(screen==='start')return <PublicShell><Onboarding screen="start"/><div className="mt-4 grid gap-2 sm:grid-cols-2"><Action to="/login" variant="outline">Đăng nhập</Action><Action to="/register" variant="ghost">Tạo tài khoản</Action></div></PublicShell>;let content:React.ReactNode;switch(screen){case 'new':case 'events':content=<Onboarding screen={screen}/>;break;case 'home':content=<RealHomeScreen/>;break;case 'tasks':content=<RealTasksScreen/>;break;case 'budget':content=<RealBudgetScreen/>;break;case 'guests':content=<RealGuestsScreen/>;break;case 'import':content=<RealCsvImportScreen/>;break;case 'batch':content=<RealCsvBatchScreen/>;break;case 'account':content=<AccountScreen/>;break;case 'export':content=<RealGuestsExportScreen/>;break;case 'team':case 'data':content=<SettingsScreen/>;break;default:content=<UtilityScreen screen={screen}/>;}return <OwnerShell active={screen}><FocusCtx.Provider value={focusId}>{content}</FocusCtx.Provider></OwnerShell>}
+export function PhaseOne({screen,focusId}:{screen:ScreenName;focusId?:string}){if(screen==='start')return <PublicShell><Onboarding screen="start"/><div className="mt-4 grid gap-2 sm:grid-cols-2"><Action to="/login" variant="outline">Đăng nhập</Action><Action to="/register" variant="ghost">Tạo tài khoản</Action></div></PublicShell>;let content:React.ReactNode;switch(screen){case 'new':case 'events':content=<Onboarding screen={screen}/>;break;case 'home':content=<RealHomeScreen/>;break;case 'tasks':content=<RealTasksScreen/>;break;case 'budget':content=<RealBudgetScreen/>;break;case 'guests':content=<RealGuestsScreen/>;break;case 'import':content=<RealCsvImportScreen/>;break;case 'batch':content=<RealCsvBatchScreen/>;break;case 'account':content=<AccountScreen/>;break;case 'admin':content=<AffiliateAdminScreen/>;break;case 'vendors':content=<RealVendorsScreen/>;break;case 'honeymoon':content=<RealHoneymoonScreen/>;break;case 'export':content=<RealGuestsExportScreen/>;break;case 'team':case 'data':content=<SettingsScreen/>;break;default:content=<UtilityScreen screen={screen}/>;}return <OwnerShell active={screen}><FocusCtx.Provider value={focusId}>{content}</FocusCtx.Provider></OwnerShell>}
