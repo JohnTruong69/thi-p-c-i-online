@@ -16,7 +16,8 @@ import { guestsQuery } from '@/lib/guests-api';
 import { eventTotals, followupCount, guestTotals, needsFollowup } from '@/lib/guests';
 import { LoadError, Loading, coupleName } from './PhaseThree';
 import { AffiliateSuggestionLine } from './AffiliateSuggestions';
-import { productsByBudgetCategoriesQuery, productsByTaskTemplatesQuery } from '@/lib/affiliate';
+import { AffiliateLink } from './Affiliate';
+import { insertLead, productsByBudgetCategoriesQuery, productsByTaskTemplatesQuery, validateLeadInput, vendorsQuery, type AffiliateVendor, type LeadInput } from '@/lib/affiliate';
 
 const fullDate = (d: string | null) => (d ? `${d.slice(8, 10)}/${d.slice(5, 7)}/${d.slice(0, 4)}` : 'Chưa ghi ngày');
 
@@ -280,6 +281,8 @@ export function RealHomeScreen() {
   const overduePays = pays.filter(({ i }) => dueWindow(i.due_date, today) === 'overdue');
   const weekPays = pays.filter(({ i }) => dueWindow(i.due_date, today) === 'seven_days');
   const monthPays = pays.filter(({ i }) => dueWindow(i.due_date, today) === 'thirty_days');
+  const eventDates = events.map(e => e.event_date).filter((d): d is string => !!d);
+  const weddingPassed = today !== '' && eventDates.length > 0 && eventDates.every(d => d < today);
   const followupGuest = gsq.data?.find(g => g.assignments.some(needsFollowup));
   const card = (t: TaskRow) => { const d = taskDue(asDemo(t), today); const st = toStatusUi(t.status); return <><div className="flex flex-wrap items-start justify-between gap-2"><div className="min-w-0 flex-1"><h2 className="break-words font-display text-xl font-semibold">{t.title}</h2><p className="mt-1 text-xs text-muted-foreground">{evName(t.event_id)} · {assigneeLabel(t.assignee, w)} phụ trách</p></div><Status tone={st === 'Chờ chốt' ? 'warm' : 'copper'}>{st}</Status></div><p className={`mt-2 text-sm ${d.group === 'overdue' ? 'font-semibold text-destructive' : 'text-muted-foreground'}`}>{d.label}</p></>; };
   return <div><Header name="Hôm nay, mình làm gì?" subtitle={today ? new Intl.DateTimeFormat('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh', weekday: 'long', day: 'numeric', month: 'long' }).format(new Date()) : 'TỔNG QUAN'} /><p className="-mt-3 mb-7 text-muted-foreground">Những điều hai bạn đang chuẩn bị cho ngày cưới.</p>
@@ -294,5 +297,95 @@ export function RealHomeScreen() {
       <div className="mt-7"><SmallLabel>TIẾP THEO</SmallLabel><div className="grid gap-3 sm:grid-cols-2"><Panel>{second ? card(second) : <p className="text-sm text-muted-foreground">Chưa có việc có hạn tiếp theo.</p>}<Button asChild variant="ghost" className="mt-2 min-h-11 px-0 text-primary"><Link to="/plan/tasks">Xem việc <ArrowRight /></Link></Button></Panel>
         <Panel><div className="mb-3"><Status>{nextPay ? 'KHOẢN SẮP PHẢI TRẢ' : 'CHƯA GHI HẠN TRẢ'}</Status></div><h2 className="text-xl">{nextPay ? fmtVnd(nextPay.i.amount_vnd) : unpaid > 0 ? fmtVnd(unpaid) : 'Chưa có khoản cần trả'}</h2><p className="mt-1 text-xs text-muted-foreground">{nextPay ? `${nextPay.c.label} · ${nextPay.i.label} · ${fullDate(nextPay.i.due_date)}` : unpaid > 0 ? 'Còn phải trả, chưa ghi hạn' : 'Xem sổ chi tiêu'}</p>{nextPay ? <Button asChild variant="ghost" className="mt-2 min-h-11 px-0 text-primary"><Link to="/plan/budget/$id" params={{ id: nextPay.c.id }}>Xem khoản <ArrowRight /></Link></Button> : <Button asChild variant="ghost" className="mt-2 min-h-11 px-0 text-primary"><Link to="/plan/budget">Xem ngân sách <ArrowRight /></Link></Button>}</Panel></div></div></div>
       <div><SmallLabel>KHÁCH MỜI</SmallLabel><Panel className="bg-sage">{gsq.isPending ? <p className="text-sm">Đang tải sổ khách…</p> : gsq.isError ? <p className="text-sm">Chưa tải được sổ khách. <button className="underline" onClick={() => gsq.refetch()}>Thử lại</button></p> : (() => { const t = guestTotals(gsq.data); const att = events.reduce((s, e) => s + eventTotals(gsq.data, e.id).attendingPeople, 0); return t.records ? <><h2 className="text-xl">{t.records} hồ sơ khách · {t.plannedPeople} người dự kiến</h2><p className="mt-1 text-xs">Mỗi khách đếm một lần dù mời nhiều buổi. Đã ghi {att} lượt người sẽ đến (cộng theo từng buổi).</p></> : <p className="text-sm">Sổ khách còn trống.</p>; })()}<Button asChild variant="ghost" className="mt-3 min-h-11 px-0 text-primary"><Link to="/guests">Xem sổ khách <ArrowRight /></Link></Button></Panel>
-        <div className="mt-7"><SmallLabel>HÀNH TRÌNH CỦA MÌNH</SmallLabel><Panel><p className="text-sm">{events.length} buổi lễ · {(tq.data ?? []).length} việc · {(bq.data ?? []).length} khoản chi đã lưu</p><Button asChild variant="ghost" className="mt-2 min-h-11 px-0 text-primary"><Link to="/wedding/events">Các buổi lễ <ArrowRight /></Link></Button></Panel></div></div></div></div>;
+        <div className="mt-7"><SmallLabel>HÀNH TRÌNH CỦA MÌNH</SmallLabel><Panel><p className="text-sm">{events.length} buổi lễ · {(tq.data ?? []).length} việc · {(bq.data ?? []).length} khoản chi đã lưu</p><Button asChild variant="ghost" className="mt-2 min-h-11 px-0 text-primary"><Link to="/wedding/events">Các buổi lễ <ArrowRight /></Link></Button></Panel></div></div></div>
+      {weddingPassed && <div className="mt-7"><SmallLabel>SAU NGÀY CƯỚI</SmallLabel><Panel className="border-l-[3px] border-l-sage-strong"><h2 className="font-display text-xl font-semibold">Trăng mật của hai bạn</h2><p className="mt-1 text-sm text-muted-foreground">Ngày cưới đã qua — giờ là lúc nghỉ ngơi. Xem điểm đến gợi ý, đặt phòng và tour.</p><Button asChild variant="ghost" className="mt-2 min-h-11 px-0 text-primary"><Link to="/honeymoon">Xem gợi ý trăng mật <ArrowRight /></Link></Button></Panel></div>}</div>;
+}
+
+/* ================= Vendor directory (GĐ D1) ================= */
+export function RealVendorsScreen() {
+  const w = useMyWedding().data!;
+  const vq = useQuery(vendorsQuery);
+  const [cat, setCat] = useState('Tất cả');
+  const [leadFor, setLeadFor] = useState<AffiliateVendor | null>(null);
+  const [msg, setMsg] = useState('');
+  if (vq.isPending) return <Loading label="Đang tải nhà cung cấp…" />;
+  if (vq.isError) return <LoadError error={vq.error} retry={() => vq.refetch()} />;
+  // Honeymoon partners live on the honeymoon page, not in the wedding directory.
+  const vendors = vq.data.filter(v => v.category !== 'Trăng mật');
+  const cats = ['Tất cả', ...Array.from(new Set(vendors.map(v => v.category)))];
+  const shown = vendors.filter(v => cat === 'Tất cả' || v.category === cat);
+  return <div className="max-w-4xl"><Header name="Nhà cung cấp đề xuất" subtitle={`KẾ HOẠCH · ${coupleName(w).toUpperCase()}`} /><PlannerTabs active="vendors" />
+    <p className="mb-5 text-sm text-muted-foreground">Những đối tác được chọn lọc cho ngày cưới của hai bạn. Bấm “Xem ưu đãi” để tới trang đặt hàng, hoặc “Đặt lịch tư vấn” để họ liên hệ lại.</p>
+    <p role="status" className="mb-2 text-xs font-semibold text-sage-strong">{msg}</p>
+    {cats.length > 2 && <div className="mb-5 flex flex-wrap gap-2" role="group" aria-label="Lọc theo hạng mục">{cats.map(c => <Button key={c} aria-pressed={cat === c} variant={cat === c ? 'default' : 'outline'} className="min-h-11 rounded-full px-3 text-xs" onClick={() => setCat(c)}>{c}</Button>)}</div>}
+    {shown.length === 0 ? <Note tone="warm">Chưa có nhà cung cấp nào trong hạng mục này.</Note> :
+      <div className="grid gap-3 sm:grid-cols-2">{shown.map(v => <Panel key={v.id}>
+        <div className="flex items-start gap-3">{v.logo_url && <img src={v.logo_url} alt="" loading="lazy" className="size-12 shrink-0 rounded-md border border-border object-cover" />}<div className="min-w-0"><h2 className="break-words font-display text-xl font-semibold">{v.name}</h2><p className="mt-0.5 text-xs text-muted-foreground">{v.category}</p></div></div>
+        {v.description && <p className="mt-2 text-sm leading-relaxed">{v.description}</p>}
+        {v.coupon_code && <p className="mt-2 text-xs font-semibold text-primary">Mã giảm giá: {v.coupon_code}</p>}
+        <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-border pt-3">
+          <AffiliateLink code={v.code}>Xem ưu đãi</AffiliateLink>
+          <WriteButton variant="outline" size="sm" className="min-h-11" onClick={() => setLeadFor(v)}>Đặt lịch tư vấn</WriteButton>
+        </div>
+      </Panel>)}</div>}
+    {leadFor && <LeadDialog vendor={leadFor} weddingId={w.id} onClose={() => setLeadFor(null)} onSent={name => { setLeadFor(null); setMsg(`Đã gửi yêu cầu tư vấn tới “${name}”. Họ sẽ liên hệ lại với hai bạn.`); }} />}
+  </div>;
+}
+
+function LeadDialog({ vendor, weddingId, onClose, onSent }: { vendor: AffiliateVendor; weddingId: string; onClose: () => void; onSent: (name: string) => void }) {
+  const [f, setF] = useState<LeadInput>({ name: '', phone: '', note: '' });
+  const [errs, setErrs] = useState<Record<string, string>>({});
+  const save = useMutation({
+    mutationFn: async () => { const v = validateLeadInput(f); setErrs(v); if (Object.keys(v).length) return false; await insertLead(weddingId, vendor.id, f); return true; },
+    onSuccess: ok => { if (ok) onSent(vendor.name); },
+    onError: () => setErrs({ form: 'Không gửi được yêu cầu. Hãy thử lại.' }),
+  });
+  return <DemoDialog real busy={save.isPending} open onOpenChange={o => { if (!o && !save.isPending) onClose(); }} title="Đặt lịch tư vấn" description={`“${vendor.name}” sẽ liên hệ lại để tư vấn cho hai bạn.`} submitLabel={save.isPending ? 'Đang gửi…' : 'Gửi yêu cầu'} onSubmit={e => { e.preventDefault(); if (!save.isPending) save.mutate(); }}>
+    <FormField label="Tên của bạn *" id="lead-name" error={errs['name']}><input id="lead-name" autoFocus value={f.name} maxLength={120} aria-invalid={!!errs['name']} onChange={e => setF({ ...f, name: e.target.value })} className={inputCls} /></FormField>
+    <FormField label="Số điện thoại *" id="lead-phone" error={errs['phone']}><input id="lead-phone" type="tel" inputMode="tel" value={f.phone} maxLength={20} aria-invalid={!!errs['phone']} onChange={e => setF({ ...f, phone: e.target.value })} className={inputCls} placeholder="09xx xxx xxx" /></FormField>
+    <FormField label="Ghi chú" id="lead-note" error={errs['note']}><textarea id="lead-note" rows={3} maxLength={500} value={f.note} onChange={e => setF({ ...f, note: e.target.value })} className={inputCls} placeholder="Ví dụ: muốn chụp ngoại cảnh Đà Lạt" /></FormField>
+    {errs['form'] && <div role="alert"><Note tone="copper">{errs['form']}</Note></div>}
+    <p className="text-xs text-muted-foreground">Thông tin liên hệ chỉ được gửi cho nhà cung cấp này để họ tư vấn.</p>
+  </DemoDialog>;
+}
+
+/* ================= Honeymoon (GĐ D2) ================= */
+const HONEYMOON_PLACES = [
+  { name: 'Phú Quốc', detail: 'Biển xanh, resort sát biển, hoàng hôn Dinh Cậu.', season: 'Đẹp nhất tháng 11 – 4' },
+  { name: 'Đà Lạt', detail: 'Se lạnh, đồi thông và những homestay xinh.', season: 'Đẹp quanh năm' },
+  { name: 'Hội An', detail: 'Phố cổ đèn lồng, biển An Bàng yên bình.', season: 'Đẹp nhất tháng 2 – 8' },
+  { name: 'Bali, Indonesia', detail: 'Biển, đền cổ và ruộng bậc thang Tegalalang.', season: 'Đẹp nhất tháng 4 – 10' },
+  { name: 'Maldives', detail: 'Bungalow trên mặt biển, lặn ngắm san hô.', season: 'Đẹp nhất tháng 11 – 4' },
+  { name: 'Santorini, Hy Lạp', detail: 'Nhà trắng mái xanh và hoàng hôn biển Aegean.', season: 'Đẹp nhất tháng 5 – 10' },
+];
+
+export function RealHoneymoonScreen() {
+  const w = useMyWedding().data!;
+  const vq = useQuery(vendorsQuery); const eq = useQuery(eventsQuery(w.id));
+  const [today, setToday] = useState(''); useEffect(() => setToday(vietnamToday()), []);
+  if (vq.isPending || eq.isPending) return <Loading label="Đang tải gợi ý trăng mật…" />;
+  if (vq.isError) return <LoadError error={vq.error} retry={() => vq.refetch()} />;
+  if (eq.isError) return <LoadError error={eq.error} retry={() => eq.refetch()} />;
+  const partners = vq.data.filter(v => v.category === 'Trăng mật');
+  const dates = eq.data.map(e => e.event_date).filter((d): d is string => !!d);
+  const passed = today !== '' && dates.length > 0 && dates.every(d => d < today);
+  return <div className="max-w-4xl"><Header name="Trăng mật của hai bạn" subtitle="SAU NGÀY CƯỚI" />
+    {!passed && <div className="mb-5"><Note tone="warm">Ngày cưới còn ở phía trước — hai bạn cứ xem trước để lên ý tưởng cho chuyến đi.</Note></div>}
+    <p className="mb-6 text-sm text-muted-foreground">Sau những ngày bận rộn chuẩn bị, đây là lúc hai bạn nghỉ ngơi và tận hưởng tuần đầu tiên bên nhau.</p>
+    <section aria-label="Điểm đến gợi ý"><SmallLabel>ĐIỂM ĐẾN GỢI Ý</SmallLabel>
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">{HONEYMOON_PLACES.map(p => <Panel key={p.name} className="p-4">
+        <h2 className="font-display text-lg font-semibold">{p.name}</h2>
+        <p className="mt-1 text-sm text-muted-foreground">{p.detail}</p>
+        <p className="mt-2 text-xs font-semibold text-primary">{p.season}</p>
+      </Panel>)}</div></section>
+    <section aria-label="Đặt phòng và tour" className="mt-8"><SmallLabel>ĐẶT PHÒNG & TOUR</SmallLabel>
+      {partners.length === 0 ? <Note tone="warm">Chưa có đối tác đặt phòng/tour nào.</Note> :
+        <div className="grid gap-3 sm:grid-cols-2">{partners.map(v => <Panel key={v.id} className="p-4">
+          <h2 className="font-display text-lg font-semibold">{v.name}</h2>
+          {v.description && <p className="mt-1 text-sm text-muted-foreground">{v.description}</p>}
+          {v.coupon_code && <p className="mt-1 text-xs font-semibold text-primary">Mã giảm giá: {v.coupon_code}</p>}
+          <div className="mt-2 border-t border-border pt-2"><AffiliateLink code={v.code}>Đặt qua {v.name}</AffiliateLink></div>
+        </Panel>)}</div>}
+      <p className="mt-3 text-xs text-muted-foreground">Các link đặt phòng/tour là link tiếp thị — hai bạn đặt qua đó, ứng dụng có thêm kinh phí để duy trì miễn phí.</p></section>
+  </div>;
 }
