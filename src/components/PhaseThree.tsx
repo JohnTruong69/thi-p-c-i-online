@@ -14,7 +14,6 @@ import {
   type EventForm, type EventRow, type EventSideDb, type WeddingRow,
 } from '@/lib/wedding-api';
 import { EventDateImpactDialog, EventRemovalSummary } from './PlannerReal';
-import { AccessStateBanner, ReadOnlyContext, useAccessState } from './AccessStateBanner';
 import { removeEvent, updateEventWithImpact } from '@/lib/planner-api';
 import { DemoDialog, FormField, Header, Note, Panel, PlannerTabs, Row, Status, fmtDate, inputCls, useDeepLink } from './PhaseOne';
 
@@ -38,12 +37,10 @@ export function SignOutButton({ className = '' }: { className?: string }) {
 /** Wraps owner screens: loading/error/retry, and requires a real Wedding except on the onboarding screen. */
 export function WeddingGate({ children, allowWithout }: { children: React.ReactNode; allowWithout: boolean }) {
   const q = useMyWedding();
-  const access = useAccessState(q.data?.id);
   if (q.isPending) return <Loading label="Đang mở đám cưới của hai bạn…" />;
   if (q.isError) return <LoadError error={q.error} retry={() => q.refetch()} />;
   if (isEmptyWedding(q.data) && !allowWithout) return <div className="mx-auto max-w-xl"><Header name="Bắt đầu đám cưới của hai bạn" subtitle="CHƯA CÓ ĐÁM CƯỚI" /><Note>Tài khoản này chưa có đám cưới nào. Hãy ghi tên hai bạn và buổi lễ đầu tiên; mọi thứ sẽ được lưu vào tài khoản. Nếu người còn lại đã mời bạn, hãy mở đường dẫn lời mời họ gửi.</Note><Button asChild size="lg" className="mt-5 min-h-11 w-full"><Link to="/wedding/new">Tạo đám cưới <ArrowRight /></Link></Button><Button asChild size="lg" variant="outline" className="mt-2 min-h-11 w-full"><Link to="/view">Xem kế hoạch người thân chia sẻ</Link></Button></div>;
-  const readOnly = access.data?.writable === false;
-  return <ReadOnlyContext.Provider value={readOnly}>{q.data && <AccessStateBanner weddingId={q.data.id} />}{children}</ReadOnlyContext.Provider>;
+  return <>{children}</>;
 }
 
 /* ---------- Onboarding: create (or edit) the single Wedding draft ---------- */
@@ -206,7 +203,6 @@ export function AccountScreen() {
   return <div className="mx-auto max-w-xl"><Header name="Tài khoản của bạn" subtitle="TÀI KHOẢN" />
     <Panel>{me.isPending ? <Loading /> : <Row title="Đăng nhập bằng" detail={me.data?.email ?? '—'} />}
       <Row title="Đám cưới" detail={w ? `${coupleName(w)} · bản nháp đã lưu` : 'Chưa có đám cưới'} to="/wedding/new" />
-      <Row title="Quyền sử dụng gói Wedding" detail="Chưa có quyền Wedding được xác minh (thanh toán chưa hoạt động)" to="/plans" />
       <Row title="Người cùng quản lý" detail="Tối đa hai người, quyền như nhau" to="/settings/data" />
     </Panel>
     <div className="mt-5 flex flex-wrap gap-2"><Button asChild variant="outline" size="lg" className="min-h-11"><Link to="/forgot-password">Đổi mật khẩu qua email</Link></Button><Button variant="ghost" size="lg" className="min-h-11" onClick={() => signOut()}><LogOut className="size-4" /> Đăng xuất</Button></div>
