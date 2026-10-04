@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { validateProductInput, validateVendorInput, type ProductInput, type VendorInput } from './affiliate';
+import { groupProducts, validateProductInput, validateVendorInput, type AffiliateProduct, type ProductInput, type VendorInput } from './affiliate';
 
 const goodVendor: VendorInput = {
   name: 'Studio Ánh Sáng', category: 'Studio ảnh cưới', description: '',
@@ -26,6 +26,19 @@ describe('validateVendorInput', () => {
   });
 });
 
+describe('groupProducts', () => {
+  const row = (id: string, task_template_id: string | null): AffiliateProduct => ({
+    id, vendor_id: null, name: id, target_url: 'https://x', code: id, price_hint: null,
+    budget_category: null, task_template_id, is_active: true, sort_order: 0,
+    created_at: '', updated_at: '',
+  });
+  it('groups by key and skips null keys', () => {
+    const g = groupProducts([row('a', 's1'), row('b', 's2'), row('c', 's1'), row('d', null)], 'task_template_id');
+    expect(Object.keys(g).sort()).toEqual(['s1', 's2']);
+    expect(g['s1']!.map(r => r.id)).toEqual(['a', 'c']);
+  });
+  it('returns empty for no rows', () => expect(groupProducts([], 'task_template_id')).toEqual({}));
+});
 describe('validateProductInput', () => {
   it('accepts a complete product', () => expect(validateProductInput(goodProduct)).toEqual({}));
   it('requires name, https target url and a slug code', () => {

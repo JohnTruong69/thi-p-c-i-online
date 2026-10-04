@@ -52,6 +52,44 @@ export const productsQuery = (f: { budgetCategory?: string; taskTemplateId?: str
 });
 export const useProducts = (f?: { budgetCategory?: string; taskTemplateId?: string; vendorId?: string }) => useQuery(productsQuery(f));
 
+/* ---------- batched lookups for Planner integration (GĐ C) ---------- */
+type ProductRow = AffiliateProduct & { affiliate_vendors: { name: string } | null };
+const withVendor = (r: ProductRow): AffiliateProduct => ({ ...r, vendor_name: r.affiliate_vendors?.name });
+
+/** Pure grouping helper (tested): products → key → list, preserving sort_order. */
+export function groupProducts<K extends string>(rows: (AffiliateProduct & Record<K, string | null>)[], key: K): Record<string, AffiliateProduct[]> {
+  const out: Record<string, AffiliateProduct[]> = {};
+  for (const r of rows) { const k = r[key]; if (!k) continue; (out[k] ??= []).push(r); }
+  return out;
+}
+
+async function fetchActiveProducts(filter: { in: string; values: string[] }): Promise<ProductRow[]> {
+  const q = supabase.from('affiliate_products').select('*, affiliate_vendors(name)').eq('is_active', true).in(filter.in, filter.values).order('sort_order').order('name');
+  return must(await q) as ProductRow[];
+}
+
+/** Products linked to suggested-task template ids (s1..s43), grouped by template id. */
+export const productsByTaskTemplatesQuery = (ids: string[]) => queryOptions({
+  queryKey: ['affiliate-products', 'by-tasks', [...new Set(ids)].sort()],
+  queryFn: async (): Promise<Record<string, AffiliateProduct[]>> => {
+    const uniq = [...new Set(ids)];
+    if (!uniq.length) return {};
+    return groupProducts((await fetchActiveProducts({ in: 'task_template_id', values: uniq })).map(withVendor), 'task_template_id');
+  },
+  enabled: ids.length > 0,
+});
+
+/** Products linked to budget categories, grouped by category. */
+export const productsByBudgetCategoriesQuery = (categories: string[]) => queryOptions({
+  queryKey: ['affiliate-products', 'by-categories', [...new Set(categories)].sort()],
+  queryFn: async (): Promise<Record<string, AffiliateProduct[]>> => {
+    const uniq = [...new Set(categories)];
+    if (!uniq.length) return {};
+    return groupProducts((await fetchActiveProducts({ in: 'budget_category', values: uniq })).map(withVendor), 'budget_category');
+  },
+  enabled: categories.length > 0,
+});
+
 /* ---------- click tracking: resolve + log via RPC, returns target URL ---------- */
 export async function trackAffiliateClick(code: string): Promise<string | null> {
   const { data, error } = await supabase.rpc('track_affiliate_click', { p_code: code.trim().toLowerCase() });

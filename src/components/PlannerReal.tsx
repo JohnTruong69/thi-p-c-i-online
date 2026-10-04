@@ -15,6 +15,8 @@ import { DemoDialog, FormField, Header, Note, Panel, PlannerTabs, SmallLabel, St
 import { guestsQuery } from '@/lib/guests-api';
 import { eventTotals, followupCount, guestTotals, needsFollowup } from '@/lib/guests';
 import { LoadError, Loading, coupleName } from './PhaseThree';
+import { AffiliateSuggestionLine } from './AffiliateSuggestions';
+import { productsByBudgetCategoriesQuery, productsByTaskTemplatesQuery } from '@/lib/affiliate';
 
 const fullDate = (d: string | null) => (d ? `${d.slice(8, 10)}/${d.slice(5, 7)}/${d.slice(0, 4)}` : 'Chưa ghi ngày');
 
@@ -52,6 +54,7 @@ export function RealTasksScreen() {
     setOpen(true);
   };
   const missing = useRealDeepLink(tq.data, edit, 'việc');
+  const affByTask = useQuery(productsByTaskTemplatesQuery((tq.data ?? []).map(t => t.template_id).filter((x): x is string => !!x)));
   const save = useMutation({
     mutationFn: async () => {
       const table = f.kind === 'table-count';
@@ -90,6 +93,7 @@ export function RealTasksScreen() {
         <p className={`mt-2 text-sm ${due.group === 'overdue' ? 'font-semibold text-destructive' : 'text-muted-foreground'}`}>{due.label}</p>
         {t.kind === 'table-count' && <><p className="mt-2 text-sm"><span className="font-semibold">Số bàn dự kiến:</span> {t.planned_tables === null ? 'Chưa nhập' : `${t.planned_tables} bàn`} · <span className="font-semibold">Số bàn dự phòng:</span> {t.reserve_tables === null ? 'Chưa nhập' : `${t.reserve_tables} bàn`}</p><p className="mt-1 text-xs text-muted-foreground">Hai bạn tự dự tính số bàn; không tự tính từ phản hồi tham dự, không thay đổi sổ khách hay ngân sách.</p></>}
         {t.outcome && <p className="mt-2 break-words text-sm"><span className="font-semibold">Kết quả cần chốt:</span> {t.outcome}</p>}{t.note && <p className="mt-1 break-words text-sm"><span className="font-semibold">Ghi chú:</span> {t.note}</p>}
+        {t.template_id && <AffiliateSuggestionLine label="Gợi ý cho việc này" products={affByTask.data?.[t.template_id]} />}
         <div className="mt-1 flex flex-wrap gap-x-3"><Button variant="ghost" className="min-h-11 px-0 text-primary" onClick={() => edit(t)}><Pencil className="size-4" /> Sửa việc</Button>
           {st !== 'Xong' && <WriteButton variant="ghost" className="min-h-11 px-0 text-primary" disabled={quickDone.isPending} title={t.kind === 'table-count' && !t.planned_tables ? 'Cần nhập số bàn dự kiến lớn hơn 0 trước' : undefined} onClick={() => { if (t.kind === 'table-count' && !t.planned_tables) { edit(t); setF(p => ({ ...p, status: 'Xong' })); setCountErr('Cần nhập số bàn dự kiến lớn hơn 0 trước khi đánh dấu đã xong.'); return; } quickDone.mutate(t); }}>Đánh dấu xong</WriteButton>}</div>
       </Panel>; })}
@@ -115,6 +119,7 @@ function RealSuggestionLibrary({ weddingId, tasks, onAdded }: { weddingId: strin
   const qc = useQueryClient(); const focus = useFocusId();
   const [open, setOpen] = useState(focus === 'suggestions'); const [picked, setPicked] = useState<string[]>([]); const [msg, setMsg] = useState('');
   const have = new Set(tasks.map(t => t.template_id).filter(Boolean));
+  const affLib = useQuery(productsByTaskTemplatesQuery(SUGGESTED_TASKS.map(s => s.id)));
   const add = useMutation({
     mutationFn: async (ids: string[]) => { await addSuggestedTasks(weddingId, SUGGESTED_TASKS.filter(s => ids.includes(s.id))); return ids.length; },
     onSuccess: async n => { await qc.invalidateQueries({ queryKey: ['tasks', weddingId] }); setOpen(false); setPicked([]); onAdded(n); },
@@ -123,7 +128,7 @@ function RealSuggestionLibrary({ weddingId, tasks, onAdded }: { weddingId: strin
   const submit = (e: React.FormEvent) => { e.preventDefault(); if (add.isPending) return; const ids = missingTemplates(picked, [...have] as string[]); if (!ids.length) { setMsg('Hãy chọn ít nhất một việc chưa có.'); return; } setMsg(''); add.mutate(ids); };
   return <div className="mt-4"><Panel item="suggestions"><h2 className="text-xl">Thư viện 43 việc gợi ý</h2><p className="mt-1 text-xs text-muted-foreground">Chỉ thêm những việc hai bạn chọn. Đã có {have.size} việc từ thư viện.</p><WriteButton variant="outline" size="lg" className="mt-3 min-h-11" onClick={() => { setMsg(''); setOpen(true); }}><Plus /> Chọn việc gợi ý</WriteButton></Panel>
     <DemoDialog real busy={add.isPending} open={open} onOpenChange={o => { if (!add.isPending) setOpen(o); }} title="Việc gợi ý" description="Đánh dấu việc muốn thêm. Việc đã có từ thư viện sẽ không thêm lại." submitLabel={add.isPending ? 'Đang thêm…' : `Thêm ${picked.length} việc`} onSubmit={submit}>
-      {(['Sớm', '3 tháng trước', '1 tháng trước', 'Tuần cưới'] as const).map(phase => <fieldset key={phase}><legend className="text-xs font-bold uppercase text-primary">{phase}</legend><div className="mt-1 space-y-1">{SUGGESTED_TASKS.filter(s => s.phase === phase).map(s => { const h = have.has(s.id); return <label key={s.id} className={`flex min-h-11 items-center gap-3 rounded-md border border-border px-3 text-sm ${h ? 'opacity-60' : ''}`}><input type="checkbox" className="size-4 accent-primary" disabled={h} checked={h || picked.includes(s.id)} onChange={e => setPicked(e.target.checked ? [...picked, s.id] : picked.filter(x => x !== s.id))} />{s.title}{h ? ' · đã có' : ''}</label>; })}</div></fieldset>)}
+      {(['Sớm', '3 tháng trước', '1 tháng trước', 'Tuần cưới'] as const).map(phase => <fieldset key={phase}><legend className="text-xs font-bold uppercase text-primary">{phase}</legend><div className="mt-1 space-y-1">{SUGGESTED_TASKS.filter(s => s.phase === phase).map(s => { const h = have.has(s.id); const sug = affLib.data?.[s.id]; return <div key={s.id} className={h ? 'opacity-60' : ''}><label className="flex min-h-11 items-center gap-3 rounded-md border border-border px-3 text-sm"><input type="checkbox" className="size-4 accent-primary" disabled={h} checked={h || picked.includes(s.id)} onChange={e => setPicked(e.target.checked ? [...picked, s.id] : picked.filter(x => x !== s.id))} />{s.title}{h ? ' · đã có' : ''}</label>{!!sug?.length && <div className="px-3 pb-1"><AffiliateSuggestionLine label="Gợi ý" products={sug} /></div>}</div>; })}</div></fieldset>)}
       {msg && <p role="alert" className="text-xs font-semibold text-destructive">{msg}</p>}
     </DemoDialog></div>;
 }
@@ -150,6 +155,7 @@ export function RealBudgetScreen() {
     setOpen(true);
   };
   const missing = useRealDeepLink(bq.data, edit, 'khoản chi');
+  const affByCat = useQuery(productsByBudgetCategoriesQuery([...new Set((bq.data ?? []).map(x => x.category))]));
   const save = useMutation({
     mutationFn: async () => { const v = validateCost(f); setErrors(v.errors); if (!v.payload) return null; await saveBudgetItem(w.id, editing?.id ?? null, v.payload); return v.payload.label; },
     onSuccess: async title => { if (!title) return; await refresh(); setMsg(editing ? `Đã lưu “${title}”.` : `Đã thêm “${title}”.`); setOpen(false); },
@@ -188,6 +194,7 @@ export function RealBudgetScreen() {
         <div className="mt-3 grid grid-cols-2 gap-x-4 gap-y-2 text-xs sm:grid-cols-3"><div>Tiền dự tính<br /><strong>{x.estimate_vnd ? fmtVnd(x.estimate_vnd) : 'Chưa ghi'}</strong></div><div>Giá đã chốt (gồm phát sinh)<br /><strong>{x.agreed_vnd === null ? 'Chưa chốt' : fmtVnd(agreedCost(m))}</strong></div><div>Đã cọc<br /><strong>{fmtVnd(x.deposit_vnd)}</strong></div><div>Đã thanh toán<br /><strong>{fmtVnd(x.paid_vnd)}</strong></div><div>Còn phải trả<br /><strong>{x.agreed_vnd === null ? 'Chưa chốt' : fmtVnd(unpaidCost(m))}</strong></div><div>Ngày trả tiếp<br /><strong>{next ? fullDate(next.due_date) : x.installments.length ? 'Chưa ghi ngày trả' : 'Chưa ghi lịch'}</strong></div></div>
         <p className="mt-2 text-xs text-muted-foreground">Tính vào tổng: {fmtVnd(plannedCost(m))}</p>
         {x.extra_vnd > 0 && <p className="mt-1 text-xs">Trong giá đã chốt có phát sinh đã xác nhận: {fmtVnd(x.extra_vnd)}</p>}{x.vendor && <p className="mt-1 text-xs text-muted-foreground">Đối tác: {x.vendor}</p>}
+        <AffiliateSuggestionLine label="Mua ở đây" products={affByCat.data?.[x.category]} />
       </Panel>; })}</div></div> : null; })}</section>
     <p className="mt-5 text-xs text-muted-foreground">Tiền cọc và thanh toán nhà cung cấp được theo dõi riêng, không liên quan đến việc mua gói thiệp cưới.</p>
     <DemoDialog real busy={save.isPending || del.isPending} open={open} onOpenChange={o => { if (!save.isPending && !del.isPending) setOpen(o); }} title={editing ? 'Sửa khoản chi' : 'Thêm khoản chi'} description="Khoản chi được lưu vào tài khoản; cả hai người quản lý cùng thấy." submitLabel={save.isPending ? 'Đang lưu…' : editing ? 'Lưu thay đổi' : 'Thêm khoản chi'} onSubmit={e => { e.preventDefault(); if (!save.isPending) { setSaveErr(''); save.mutate(); } }}>
