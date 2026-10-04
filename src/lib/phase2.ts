@@ -2,7 +2,6 @@
  * Phase 2 pure state logic (client-safe, no I/O). Phase 3/4 server adapters
  * should reuse these shapes; nothing here sends data anywhere.
  */
-import type { Order } from './contracts';
 
 // ---------- CSV ----------
 export type CsvTable = { headers: string[]; rows: string[][] };
@@ -126,19 +125,6 @@ export function matchResponse(r: { name: string; phone?: string }, guests: Exist
   if (byName.length > 1) return { kind: 'ambiguous', guestIds: byName.map(g => g.id), reason: `${byName.length} khách cùng tên — cần chọn đúng người` };
   if (byName.length === 1) return { kind: 'ambiguous', guestIds: [byName[0]!.id], reason: 'Chỉ trùng tên — cần hai bạn xác nhận' };
   return { kind: 'none', reason: 'Không có khách trùng trong sổ' };
-}
-
-// ---------- Order (demo) ----------
-export type OrderStatus = Order['status'];
-/** Client-side demo transitions. 'paid_verified' can only come from a server-verified payment. */
-export const CLIENT_TRANSITIONS: Record<OrderStatus, OrderStatus[]> = {
-  order_pending: ['verifying', 'needs_support'],
-  verifying: ['needs_support', 'order_pending'],
-  needs_support: ['order_pending'],
-  paid_verified: [],
-};
-export function canClientSet(from: OrderStatus, to: OrderStatus) {
-  return to !== 'paid_verified' && CLIENT_TRANSITIONS[from].includes(to);
 }
 
 // ---------- Link readiness ----------
