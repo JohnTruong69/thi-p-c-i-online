@@ -1,6 +1,5 @@
-/** Typed adapters from Phase 2 tab-session shapes to Phase 3/4 API payloads (contracts.ts). No requests are made. */
-import type { EventInput, EventSide, Guest, Link, RsvpInput } from './contracts';
-import { linkReadiness, type ReadinessEvent } from './phase2';
+/** Typed adapters from Phase 2 tab-session shapes to API payloads (contracts.ts). No requests are made. */
+import type { EventInput, EventSide, Guest } from './contracts';
 
 export const toSide = (label: string): EventSide => (label === 'Nhà trai' ? 'nha-trai' : label === 'Nhà gái' ? 'nha-gai' : 'chung');
 export type SessionEvent = { id: string; name: string; side: string; date: string; time: string; venue: string; address: string; confirmed: boolean };
@@ -16,10 +15,3 @@ export function toGuest(g: SessionGuest, weddingId: string): Guest {
   return out;
 }
 export type SessionLink = { side: EventSide; enabled: boolean; eventIds: string[] };
-/** Publication is always 'unpublished' from the client; only the server may set published. */
-export function toLink(l: SessionLink, invitationId: string, events: ReadinessEvent[]): Link {
-  return { id: `${invitationId}-${l.side}`, invitationId, side: l.side, token: '', enabled: l.enabled, eventIds: l.eventIds, readiness: linkReadiness(l.enabled, l.eventIds, events).readiness, publication: 'unpublished' };
-}
-export function toRsvpInput(token: string, name: string, answers: Record<string, { choice: 'yes' | 'no'; count: number }>): RsvpInput {
-  return { token, guestName: name.trim(), answers: Object.entries(answers).map(([eventId, a]) => (a.choice === 'yes' ? { eventId, attending: true, partySize: a.count } : { eventId, attending: false })) };
-}

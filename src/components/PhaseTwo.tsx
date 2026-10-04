@@ -1,10 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from '@tanstack/react-router';
 import { ArrowRight, Check, Download, Plus, Undo2, Upload } from 'lucide-react';
 import { useDemoSession } from '@/lib/demo-session';
-import { collectReceipts, applyResponse, guestFingerprint, pageCount, pageSlice, planUndo, setManual as setManualStatus, summaryState, type Answer, type StatusMap } from '@/lib/phase2d';
-import { buildPreview, guessColumns, parseCsv, summarize, PREVIEW_LIMIT, SAMPLE_CSV, SUGGESTED_TASKS, matchResponse, canClientSet, type ColumnMap, type CsvRow, type CsvTable, type OrderStatus } from '@/lib/phase2';
-import { Action, DemoAction, DemoDialog, Header, Note, Panel, Row, SmallLabel, Status, inputCls, initialGuests, validGuests, initialTasks, validTasks, readDemoReceipt, useEventNames, type DemoGuest, type DemoTask } from './PhaseOne';
+import { buildPreview, guessColumns, parseCsv, summarize, PREVIEW_LIMIT, SAMPLE_CSV, SUGGESTED_TASKS, type ColumnMap, type CsvRow, type CsvTable } from '@/lib/phase2';
+import { Action, DemoAction, DemoDialog, Header, Note, Panel, Row, SmallLabel, Status, inputCls, initialGuests, validGuests, initialTasks, validTasks, useEventNames, type DemoGuest, type DemoTask } from './PhaseOne';
 
 /* ---------------- CSV import ---------------- */
 type DemoBatch = { id: string; filename: string; addedIds: string[]; skipped: number; invalid: number; undone: boolean; at: string; snapshot?: Record<string, string>; kept?: number; removed?: number };
@@ -154,81 +153,3 @@ export function SuggestionLibrary({ autoOpen = false }: { autoOpen?: boolean }) 
     </DemoDialog></div>;
 }
 
-/* ---------------- RSVP reconciliation ---------------- */
-type Resp = { id: string; name: string; phone?: string; link: string; answers: Record<string, Answer>; at: string };
-type Links = Record<string, string | 'separate'>;
-const SAMPLE_RESPONSES: Resp[] = [
-  { id: 'r1', name: 'Mai Nguyễn', link: 'Link chung', answers: { e1: { choice: 'yes', count: 2 }, e2: { choice: 'no', count: 1 } }, at: '2027-09-20T09:15:00Z' },
-  { id: 'r2', name: 'Quang Tùng', link: 'Link chung', answers: { e2: { choice: 'yes', count: 1 } }, at: '2027-09-21T12:40:00Z' },
-];
-const validLinks = (v: unknown): v is Links => !!v && typeof v === 'object' && !Array.isArray(v);
-const validStatus = (v: unknown): v is StatusMap => !!v && typeof v === 'object' && !Array.isArray(v);
-const LINK_NAME: Record<string, string> = { demo: 'Link chung', 'demo-chung': 'Link chung', 'demo-nha-gai': 'Link nhà gái', 'demo-nha-trai': 'Link nhà trai' };
-const fmtAt = (iso: string) => { const d = new Date(iso); return Number.isNaN(d.getTime()) ? '' : d.toLocaleString('vi-VN', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit' }); };
-const ansText = (a: { choice: 'yes' | 'no'; count: number }) => (a.choice === 'yes' ? `Có đến · ${a.count} người` : 'Không đến');
-
-export function OwnerRsvpReconcile() {
-  const [guests, setGuests] = useDemoSession<DemoGuest[]>('guests', initialGuests, validGuests);
-  const [links, setLinks] = useDemoSession<Links>('rsvp-links', {}, validLinks);
-  const [status, setStatus] = useDemoSession<StatusMap>('rsvp-status', {}, validStatus);
-  const events = useEventNames();
-  const evName = (id: string) => events.find(e => e.id === id)?.name ?? 'Buổi đã bỏ';
-  const [responses, setResponses] = useState<Resp[]>(SAMPLE_RESPONSES);
-  const [choice, setChoice] = useState<Record<string, string>>({});
-  const [msg, setMsg] = useState('');
-  useEffect(() => {
-    const extra: Resp[] = [];
-    try { const all = collectReceipts(Object.keys(sessionStorage).map(k => [k, sessionStorage.getItem(k)])); for (const r of all) extra.push({ id: `tab-${r.token}-${r.id}`, name: r.name, link: LINK_NAME[r.token] ?? 'Link thử', answers: r.answers, at: r.at || new Date().toISOString() }); } catch { /* storage unavailable */ }
-    setResponses([...extra, ...SAMPLE_RESPONSES]);
-  }, []);
-  const eventIdsOf = (g: DemoGuest) => g.events.map(x => events.find(e => e.id === x || e.name === x)?.id ?? x);
-  const pending = responses.filter(r => !links[r.id]);
-  const done = responses.filter(r => links[r.id]);
-  const confirm = (r: Resp) => {
-    const id = choice[r.id];
-    if (!id) { setMsg(`Hãy chọn khách để nối phản hồi của ${r.name}.`); return; }
-    setLinks(l => ({ ...l, [r.id]: id }));
-    if (id === 'separate') { setMsg(`Đã giữ riêng phản hồi của ${r.name}.`); return; }
-    const res = applyResponse(status, id, r.answers, r.at, r.link);
-    setStatus(res.map);
-    setGuests(g => g.map(x => (x.id === id ? { ...x, state: summaryState(res.map[id], eventIdsOf(x), x.state) } : x)));
-    setMsg(`Đã cập nhật ${res.applied.length} buổi theo phản hồi.${res.skipped.length ? ` Giữ nguyên ${res.skipped.map(evName).join(', ')} vì hai bạn đã cập nhật tay.` : ''}`);
-  };
-  const manual = (g: DemoGuest, eventId: string, v: 'yes' | 'no' | '') => {
-    const next = setManualStatus(status, g.id, eventId, v, new Date().toISOString());
-    setStatus(next);
-    setGuests(gs => gs.map(x => (x.id === g.id ? { ...x, state: summaryState(next[g.id], eventIdsOf(x), 'Chưa trả lời') } : x)));
-  };
-  return <div className="max-w-4xl"><Header name="Phản hồi tham dự" subtitle="PHẢN HỒI THAM DỰ" />
-    <p className="-mt-3 mb-5 text-muted-foreground">Nối từng phản hồi với khách trong sổ. Mỗi buổi được ghi riêng. Tên trùng không bao giờ tự gộp.</p>
-    <p role="status" className="mb-3 text-xs font-semibold text-sage-strong">{msg}</p>
-    <SmallLabel>CẦN ĐỐI CHIẾU · {pending.length}</SmallLabel>
-    {pending.length === 0 && <Note>Mọi phản hồi đã được đối chiếu.</Note>}
-    <div className="space-y-3">{pending.map(r => { const m = matchResponse(r, guests.map(g => ({ id: g.id, name: g.name, phone: g.phone }))); const cands = m.kind === 'exact' ? [m.guestId] : m.kind === 'ambiguous' ? m.guestIds : []; return <Panel key={r.id} item={r.id}>
-      <div className="font-display text-lg font-semibold">{r.name} · {r.link}</div>
-      <ul className="mt-1 space-y-0.5 text-xs">{Object.entries(r.answers).map(([eid, a]) => <li key={eid}><strong>{evName(eid)}:</strong> {ansText(a)}</li>)}</ul>
-      <p className="text-[11px] text-muted-foreground">Nhận lúc {fmtAt(r.at)} (minh họa)</p>
-      <p className="mt-1 text-xs font-semibold text-primary">{m.reason}</p>
-      <div className="mt-3 grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto]"><select aria-label={`Nối phản hồi của ${r.name}`} className={inputCls + ' mt-0'} value={choice[r.id] ?? ''} onChange={e => setChoice({ ...choice, [r.id]: e.target.value })}><option value="">— Chọn khách trong sổ —</option>{cands.length > 0 && <optgroup label="Gợi ý">{cands.map(id => { const g = guests.find(x => x.id === id); return g ? <option key={id} value={id}>{g.name} · {g.side}</option> : null; })}</optgroup>}<optgroup label="Tất cả khách">{guests.filter(g => !cands.includes(g.id)).map(g => <option key={g.id} value={g.id}>{g.name} · {g.side}</option>)}</optgroup><option value="separate">Giữ riêng, không nối với ai</option></select><DemoAction className="sm:mt-0" onClick={() => confirm(r)}>Xác nhận</DemoAction></div>
-    </Panel>; })}</div>
-    {done.length > 0 && <><div className="mt-6"><SmallLabel>ĐÃ ĐỐI CHIẾU · {done.length}</SmallLabel></div><Panel>{done.map(r => <Row key={r.id} title={r.name} detail={links[r.id] === 'separate' ? 'Giữ riêng' : `Nối với ${guests.find(g => g.id === links[r.id])?.name ?? 'khách đã xóa'}`} right={<DemoAction variant="ghost" onClick={() => setLinks(l => { const n = { ...l }; delete n[r.id]; return n; })}>Bỏ nối</DemoAction>} />)}<p className="mt-2 text-xs text-muted-foreground">Bỏ nối không xóa trạng thái đã ghi cho từng buổi; hãy sửa tay bên dưới nếu cần.</p></Panel></>}
-    <div className="mt-6"><SmallLabel>TRẠNG THÁI THEO TỪNG BUỔI</SmallLabel></div>
-    <Panel>{guests.map(g => <div key={g.id} className="border-b border-border py-3 last:border-0" data-guest={g.id}><div className="flex flex-wrap items-center justify-between gap-2"><span className="min-w-0 break-words text-sm font-semibold">{g.name}</span><Status tone={g.state === 'Có đến' ? 'sage' : 'warm'}>{g.state}</Status></div>
-      <div className="mt-2 space-y-2">{eventIdsOf(g).map(eid => { const st = status[g.id]?.[eid]; return <div key={eid} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2"><div className="min-w-0 text-xs"><div className="font-semibold">{evName(eid)}</div><div className="text-muted-foreground">{st ? `${st.source === 'manual' ? 'Hai bạn nhập tay' : `Phản hồi · ${st.from ?? ''}`} · ${fmtAt(st.at)}` : 'Chưa có câu trả lời'}</div></div><select aria-label={`${g.name} · ${evName(eid)}`} className="h-11 rounded-md border border-border bg-background px-2 text-xs" value={st?.choice ?? ''} onChange={e => manual(g, eid, e.target.value as 'yes' | 'no' | '')}><option value="">Chưa trả lời</option><option value="yes">Có đến</option><option value="no">Không đến</option></select></div>; })}
-        {eventIdsOf(g).length === 0 && <p className="text-xs text-muted-foreground">Chưa được mời buổi nào.</p>}</div></div>)}
-      <p className="mt-2 text-xs text-muted-foreground">Cập nhật tay luôn được giữ; phản hồi đến sau không ghi đè (trong phiên).</p></Panel>
-    <p className="mt-4 text-xs text-muted-foreground">Phản hồi mẫu và phản hồi thử trong tab này; chưa có phản hồi thật từ khách.</p>
-  </div>;
-}
-
-/* ---------------- Order status ---------------- */
-const LABEL: Record<OrderStatus, string> = { order_pending: 'Đang chờ chuyển khoản', verifying: 'Đang xác minh', needs_support: 'Cần hỗ trợ', paid_verified: 'Đã xác minh' };
-const validOrder = (v: unknown): v is OrderStatus => typeof v === 'string' && v in LABEL;
-export function OrderStatusDemo() {
-  const [status, setStatus] = useDemoSession<OrderStatus>('order', 'order_pending', validOrder);
-  return <Panel className="mt-4"><SmallLabel>TRẠNG THÁI ĐƠN MINH HỌA</SmallLabel><div role="status" className="font-display text-2xl">{LABEL[status]}</div>
-    <p className="mt-1 text-xs text-muted-foreground">{status === 'verifying' ? 'Trong bản thật, hệ thống tự đối chiếu giao dịch; trang này không tự chuyển sang đã trả.' : status === 'needs_support' ? 'Trong bản thật, hai bạn gửi mã đơn để được hỗ trợ. Bản dùng thử chưa có kênh hỗ trợ.' : 'Chưa ghi nhận giao dịch.'}</p>
-    <div className="mt-3 flex flex-wrap gap-2">{(['order_pending', 'verifying', 'needs_support'] as OrderStatus[]).filter(s => s !== status).map(s => <DemoAction key={s} variant="outline" onClick={() => canClientSet(status, s) && setStatus(s)} className={canClientSet(status, s) ? '' : 'hidden'}>Xem “{LABEL[s]}”</DemoAction>)}
-      </div>
-    <p className="mt-2 text-xs text-muted-foreground">Trạng thái “Đã xác minh” chỉ có thể đến từ giao dịch thật được hệ thống xác nhận, không bật được trong bản dùng thử.</p></Panel>;
-}
