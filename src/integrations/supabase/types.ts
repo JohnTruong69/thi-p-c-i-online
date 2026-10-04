@@ -14,6 +14,171 @@ export type Database = {
   }
   public: {
     Tables: {
+      affiliate_admins: {
+        Row: {
+          created_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      affiliate_clicks: {
+        Row: {
+          code: string
+          created_at: string
+          id: string
+          product_id: string | null
+          vendor_id: string | null
+          wedding_id: string | null
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          id?: string
+          product_id?: string | null
+          vendor_id?: string | null
+          wedding_id?: string | null
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          id?: string
+          product_id?: string | null
+          vendor_id?: string | null
+          wedding_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "affiliate_clicks_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "affiliate_products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "affiliate_clicks_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "affiliate_vendors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "affiliate_clicks_wedding_id_fkey"
+            columns: ["wedding_id"]
+            isOneToOne: false
+            referencedRelation: "weddings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      affiliate_products: {
+        Row: {
+          budget_category: string | null
+          code: string
+          created_at: string
+          id: string
+          is_active: boolean
+          name: string
+          price_hint: string | null
+          sort_order: number
+          target_url: string
+          task_template_id: string | null
+          updated_at: string
+          vendor_id: string | null
+        }
+        Insert: {
+          budget_category?: string | null
+          code: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name: string
+          price_hint?: string | null
+          sort_order?: number
+          target_url: string
+          task_template_id?: string | null
+          updated_at?: string
+          vendor_id?: string | null
+        }
+        Update: {
+          budget_category?: string | null
+          code?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          price_hint?: string | null
+          sort_order?: number
+          target_url?: string
+          task_template_id?: string | null
+          updated_at?: string
+          vendor_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "affiliate_products_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "affiliate_vendors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      affiliate_vendors: {
+        Row: {
+          affiliate_url: string
+          category: string
+          code: string
+          commission_note: string
+          coupon_code: string | null
+          created_at: string
+          description: string
+          id: string
+          is_active: boolean
+          logo_url: string | null
+          name: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          affiliate_url: string
+          category: string
+          code: string
+          commission_note?: string
+          coupon_code?: string | null
+          created_at?: string
+          description?: string
+          id?: string
+          is_active?: boolean
+          logo_url?: string | null
+          name: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          affiliate_url?: string
+          category?: string
+          code?: string
+          commission_note?: string
+          coupon_code?: string | null
+          created_at?: string
+          description?: string
+          id?: string
+          is_active?: boolean
+          logo_url?: string | null
+          name?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       audit_log: {
         Row: {
           action: string
@@ -1238,6 +1403,16 @@ export type Database = {
     Functions: {
       accept_partner_invite: { Args: { p_token: string }; Returns: string }
       accept_viewer_invite: { Args: { p_token: string }; Returns: string }
+      affiliate_click_stats: {
+        Args: { p_days?: number }
+        Returns: {
+          code: string
+          label: string
+          kind: string
+          total: number
+          recent: number
+        }[]
+      }
       can_manage_photo_path: { Args: { p_name: string }; Returns: boolean }
       can_write_photo_path: { Args: { p_name: string }; Returns: boolean }
       create_partner_invite: {
@@ -1316,6 +1491,7 @@ export type Database = {
         }[]
       }
       invitation_snapshot: { Args: { p_invitation_id: string }; Returns: Json }
+      is_affiliate_admin: { Args: never; Returns: boolean }
       is_wedding_manager: { Args: { _wedding_id: string }; Returns: boolean }
       photo_slot_available: { Args: { p_wedding: string }; Returns: boolean }
       public_invitation: { Args: { p_token: string }; Returns: Json }
@@ -1389,6 +1565,7 @@ export type Database = {
         }
         Returns: Json
       }
+      track_affiliate_click: { Args: { p_code: string }; Returns: string }
       undo_guest_batch: { Args: { p_batch_id: string }; Returns: Json }
       unmatch_rsvp: { Args: { p_response_id: string }; Returns: undefined }
       update_event_with_impact: {
