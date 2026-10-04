@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { groupProducts, validateProductInput, validateVendorInput, type AffiliateProduct, type ProductInput, type VendorInput } from './affiliate';
+import { groupProducts, validateLeadInput, validateProductInput, validateVendorInput, type AffiliateProduct, type ProductInput, type VendorInput } from './affiliate';
 
 const goodVendor: VendorInput = {
   name: 'Studio Ánh Sáng', category: 'Studio ảnh cưới', description: '',
@@ -50,5 +50,22 @@ describe('validateProductInput', () => {
   it('validates the suggested-task template id shape', () => {
     expect(validateProductInput({ ...goodProduct, task_template_id: 'abc' })['task_template_id']).toBeTruthy();
     expect(validateProductInput({ ...goodProduct, task_template_id: '' })).toEqual({});
+  });
+});
+describe('validateLeadInput', () => {
+  const good = { name: 'Lan Anh', phone: '0901234567', note: '' };
+  it('accepts a valid lead', () => expect(validateLeadInput(good)).toEqual({}));
+  it('requires name and a valid phone', () => {
+    const errs = validateLeadInput({ name: '', phone: 'abc', note: '' });
+    expect(errs['name']).toBeTruthy();
+    expect(errs['phone']).toBeTruthy();
+  });
+  it('accepts common phone formats', () => {
+    for (const phone of ['0901234567', '+84 901 234 567', '090-123-4567', '(028) 1234 5678']) {
+      expect(validateLeadInput({ ...good, phone })).toEqual({});
+    }
+  });
+  it('rejects an overlong note', () => {
+    expect(validateLeadInput({ ...good, note: 'x'.repeat(501) })['note']).toBeTruthy();
   });
 });

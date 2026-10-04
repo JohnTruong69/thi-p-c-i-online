@@ -5,9 +5,10 @@ import { WriteButton } from './AccessStateBanner';
 import { DemoDialog, FormField, Header, Note, Panel, SmallLabel, inputCls } from './PhaseOne';
 import { CATEGORIES } from '@/lib/planner';
 import {
-  adminQuery, clickStats, deleteProduct, deleteVendor, saveProduct, saveVendor,
-  validateProductInput, validateVendorInput,
-  type AffiliateProduct, type AffiliateVendor, type ClickStat, type ProductInput, type VendorInput,
+  adminQuery, clickStats, deleteProduct, deleteVendor, leadsQuery, saveProduct, saveVendor,
+  updateLeadStatus, validateLeadInput, validateProductInput, validateVendorInput,
+  type AffiliateLead, type AffiliateProduct, type AffiliateVendor, type ClickStat, type LeadStatus,
+  type ProductInput, type VendorInput,
 } from '@/lib/affiliate';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -69,6 +70,7 @@ function VendorManager() {
       {save.isError && (save.error as Error).message !== 'validation' && <Note tone="copper">Không lưu được. Mã link có thể đã bị trùng.</Note>}
       <FormField label="Tên *" id="v-name" error={errs['name']}><input id="v-name" className={inputCls} value={f.name} maxLength={120} onChange={e => setF({ ...f, name: e.target.value })} /></FormField>
       <FormField label="Hạng mục *" id="v-cat" error={errs['category']}><input id="v-cat" className={inputCls} value={f.category} maxLength={60} placeholder="Ví dụ: Studio ảnh cưới" onChange={e => setF({ ...f, category: e.target.value })} /></FormField>
+      <p className="-mt-2 text-xs text-muted-foreground">Đặt hạng mục là “Trăng mật” cho đối tác đặt phòng/tour — họ sẽ hiện ở trang Trăng mật thay vì danh bạ cưới.</p>
       <FormField label="Link giới thiệu (affiliate) *" id="v-url" error={errs['affiliate_url']}><input id="v-url" className={inputCls} value={f.affiliate_url} inputMode="url" placeholder="https://…" onChange={e => setF({ ...f, affiliate_url: e.target.value })} /></FormField>
       <FormField label="Mã link * (/r/mã)" id="v-code" error={errs['code']}><input id="v-code" className={inputCls} value={f.code} maxLength={32} placeholder="vd: studio-anh-sang" onChange={e => setF({ ...f, code: e.target.value })} /></FormField>
       <div className="grid gap-4 sm:grid-cols-2">
@@ -196,9 +198,37 @@ function ClickStats() {
   </div>;
 }
 
+function LeadManager() {
+  const qc = useQueryClient();
+  const q = useQuery(leadsQuery);
+  const setStatus = useMutation({
+    mutationFn: ({ id, status }: { id: string; status: LeadStatus }) => updateLeadStatus(id, status),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['affiliate-leads'] }),
+  });
+  const label: Record<LeadStatus, string> = { new: 'Mới', contacted: 'Đã liên hệ', done: 'Chốt', cancelled: 'Hủy' };
+  return <div>
+    <div className="mb-4"><SmallLabel>YÊU CẦU TƯ VẤN · ĐỐI SOÁT HOA HỒNG</SmallLabel>
+      <p className="text-xs text-muted-foreground">Khách bấm “Đặt lịch tư vấn” ở danh bạ sẽ vào đây. Cập nhật trạng thái để đối soát với nhà cung cấp.</p></div>
+    {q.isPending ? <Loading /> : q.isError ? <Note tone="copper">Không tải được danh sách.</Note> :
+      q.data.length === 0 ? <Note tone="warm">Chưa có yêu cầu tư vấn nào.</Note> :
+      <Panel><div className="space-y-3">{q.data.map(l => <div key={l.id} className="border-b border-border pb-3 last:border-0 last:pb-0">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div><span className="font-semibold">{l.name}</span> <span className="text-sm text-muted-foreground">· {l.phone}</span>
+            <p className="mt-0.5 text-xs text-muted-foreground">{l.vendor_name ?? 'Nhà cung cấp đã gỡ'} · {new Date(l.created_at).toLocaleString('vi-VN')}</p></div>
+          <select className={`${inputCls} mt-0 w-auto`} value={l.status} disabled={setStatus.isPending}
+            aria-label={`Trạng thái yêu cầu của ${l.name}`}
+            onChange={e => setStatus.mutate({ id: l.id, status: e.target.value as LeadStatus })}>
+            {(Object.keys(label) as LeadStatus[]).map(s => <option key={s} value={s}>{label[s]}</option>)}
+          </select>
+        </div>
+        {l.note && <p className="mt-1 text-sm">Ghi chú: {l.note}</p>}
+      </div>)}</div></Panel>}
+  </div>;
+}
+
 export function AffiliateAdminScreen() {
   const admin = useQuery(adminQuery);
-  const [tab, setTab] = useState<'vendors' | 'products' | 'stats'>('vendors');
+  const [tab, setTab] = useState<'vendors' | 'products' | 'leads' | 'stats'>('vendors');
 
   if (admin.isPending) return <div className="max-w-4xl"><Header name="Quản trị affiliate" subtitle="QUẢN TRỊ" /><Loading /></div>;
   if (!admin.data) return <div className="mx-auto max-w-xl"><Header name="Quản trị affiliate" subtitle="QUẢN TRỊ" />
@@ -206,11 +236,12 @@ export function AffiliateAdminScreen() {
 
   return <div className="max-w-4xl"><Header name="Quản trị affiliate" subtitle="QUẢN TRỊ" />
     <div className="mb-6 flex gap-2" role="tablist" aria-label="Quản trị affiliate">
-      {([['vendors', 'Nhà cung cấp'], ['products', 'Sản phẩm'], ['stats', 'Thống kê click']] as const).map(([id, label]) =>
+      {([['vendors', 'Nhà cung cấp'], ['products', 'Sản phẩm'], ['leads', 'Yêu cầu tư vấn'], ['stats', 'Thống kê click']] as const).map(([id, label]) =>
         <WriteButton key={id} variant={tab === id ? 'default' : 'outline'} size="lg" className="min-h-11" role="tab" aria-selected={tab === id} onClick={() => setTab(id)}>{label}</WriteButton>)}
     </div>
     {tab === 'vendors' && <VendorManager />}
     {tab === 'products' && <ProductManager />}
+    {tab === 'leads' && <LeadManager />}
     {tab === 'stats' && <ClickStats />}
   </div>;
 }

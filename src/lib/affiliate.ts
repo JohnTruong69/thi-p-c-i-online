@@ -154,3 +154,41 @@ export async function saveProduct(id: string | null, p: ProductInput) {
   else must(await supabase.from('affiliate_products').insert(row));
 }
 export async function deleteProduct(id: string) { must(await supabase.from('affiliate_products').delete().eq('id', id)); }
+
+/* ---------- leads (GĐ D: vendor directory consultation requests) ---------- */
+export type LeadStatus = 'new' | 'contacted' | 'done' | 'cancelled';
+export type AffiliateLead = {
+  id: string; vendor_id: string; vendor_name?: string | undefined; wedding_id: string | null;
+  name: string; phone: string; note: string; status: LeadStatus; created_at: string;
+};
+export type LeadInput = { name: string; phone: string; note: string };
+
+export function validateLeadInput(l: LeadInput): Record<string, string> {
+  const n: Record<string, string> = {};
+  if (!l.name.trim()) n['name'] = 'Hãy nhập tên của bạn.';
+  else if (l.name.trim().length > 120) n['name'] = 'Tên quá dài (tối đa 120 ký tự).';
+  if (!/^[+\d\s.()-]{8,20}$/.test(l.phone.trim())) n['phone'] = 'Số điện thoại chưa hợp lệ.';
+  if (l.note.trim().length > 500) n['note'] = 'Ghi chú quá dài (tối đa 500 ký tự).';
+  return n;
+}
+
+export async function insertLead(weddingId: string | null, vendorId: string, l: LeadInput) {
+  must(await supabase.from('affiliate_leads').insert({
+    wedding_id: weddingId, vendor_id: vendorId,
+    name: l.name.trim(), phone: l.phone.trim(), note: l.note.trim(),
+  }));
+}
+
+export const leadsQuery = queryOptions({
+  queryKey: ['affiliate-leads'],
+  queryFn: async (): Promise<AffiliateLead[]> => {
+    const rows = must(await supabase.from('affiliate_leads')
+      .select('*, affiliate_vendors(name)').order('created_at', { ascending: false }).limit(200));
+    return (rows as (Omit<AffiliateLead, 'vendor_name'> & { affiliate_vendors: { name: string } | null })[])
+      .map(r => ({ ...r, vendor_name: r.affiliate_vendors?.name }));
+  },
+});
+
+export async function updateLeadStatus(id: string, status: LeadStatus) {
+  must(await supabase.from('affiliate_leads').update({ status }).eq('id', id));
+}
