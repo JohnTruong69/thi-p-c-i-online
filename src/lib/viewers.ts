@@ -1,12 +1,12 @@
 /** Pure rules for read-only family viewers. The server re-validates everything; these only drive the UI. */
-export const VIEWER_MODULES = ['events', 'tasks', 'budget', 'guests', 'rsvp'] as const;
+export const VIEWER_MODULES = ['events', 'tasks', 'budget', 'guests'] as const;
 export const VIEWER_SIDES = ['chung', 'nha-trai', 'nha-gai'] as const;
 export type ViewerModule = (typeof VIEWER_MODULES)[number];
 export type ViewerSide = (typeof VIEWER_SIDES)[number];
 export const MAX_VIEWERS = 2;
 
 export const MODULE_TEXT: Record<ViewerModule, string> = {
-  events: 'Buổi lễ', tasks: 'Việc cần làm', budget: 'Ngân sách', guests: 'Sổ khách (không có số điện thoại)', rsvp: 'Số người trả lời tham dự',
+  events: 'Buổi lễ', tasks: 'Việc cần làm', budget: 'Ngân sách', guests: 'Sổ khách (không có số điện thoại)',
 };
 export const SIDE_LABEL: Record<ViewerSide, string> = { chung: 'Chung', 'nha-trai': 'Nhà trai', 'nha-gai': 'Nhà gái' };
 
