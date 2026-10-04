@@ -29,6 +29,54 @@ export type Database = {
         }
         Relationships: []
       }
+      affiliate_leads: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          note: string
+          phone: string
+          status: string
+          vendor_id: string
+          wedding_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          note?: string
+          phone: string
+          status?: string
+          vendor_id: string
+          wedding_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          note?: string
+          phone?: string
+          status?: string
+          vendor_id?: string
+          wedding_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "affiliate_leads_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "affiliate_vendors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "affiliate_leads_wedding_id_fkey"
+            columns: ["wedding_id"]
+            isOneToOne: false
+            referencedRelation: "weddings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       affiliate_clicks: {
         Row: {
           code: string
