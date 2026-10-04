@@ -1,9 +1,7 @@
 import { useState } from 'react';
-import { Download, Copy, QrCode } from 'lucide-react';
-import { Action, DemoAction, FormField, Header, Note, Panel, Row, SmallLabel, Status, inputCls, initialGuests, validGuests, useEventNames, type DemoGuest } from './PhaseOne';
-import { useLinks, SIDE_LABEL } from './PhaseTwoB';
+import { Download } from 'lucide-react';
+import { Action, DemoAction, FormField, Header, Note, Panel, inputCls, initialGuests, validGuests, useEventNames, type DemoGuest } from './PhaseOne';
 import { useDemoSession } from '@/lib/demo-session';
-import { linkReadiness } from '@/lib/phase2';
 import { guestsToCsv, validateLogin, validateEmail } from '@/lib/phase2c';
 
 /* F02 — đăng nhập / khôi phục mật khẩu (minh họa) */
@@ -54,39 +52,5 @@ export function GuestsExportScreen() {
     </Panel>
     <Note tone="warm">Đây không phải bản xuất dữ liệu tài khoản. Xuất toàn bộ dữ liệu thật nằm ở Tài khoản và dữ liệu và cần hệ thống lưu trữ thật.</Note>
     <Action to="/guests" variant="outline" className="mt-4 w-full">Quay lại danh sách khách</Action>
-  </div>;
-}
-
-/* F23 — lịch sử link, chia sẻ, QR (chưa công bố) */
-export function HistoryScreen() {
-  const [links] = useLinks();
-  const [snap] = useDemoSession<{ revision: number } | null>('sent-snapshot', null, (v): v is { revision: number } | null => v === null || (!!v && typeof (v as { revision: number }).revision === 'number'));
-  return <div className="max-w-3xl"><Header name="Chia sẻ và lịch sử thiệp" subtitle="THIỆP · CHIA SẺ" />
-    <Note tone="warm">Chưa có link nào được công bố, nên chưa có địa chỉ để sao chép và chưa có mã QR. Hai việc này chỉ mở sau khi gói thiệp cưới được xác minh thanh toán và hai bạn công bố.</Note>
-    <div className="mt-5"><SmallLabel>CÁC LINK</SmallLabel></div>
-    <Panel>{links.map(l => <div key={l.side} className="border-b border-border py-3 last:border-0">
-      <div className="flex flex-wrap items-center justify-between gap-2"><strong>{SIDE_LABEL[l.side]}</strong><Status tone="warm">{l.enabled ? 'Chưa công bố' : 'Đang tắt'}</Status></div>
-      <div className="mt-2 flex flex-wrap gap-2"><DemoAction variant="outline" disabled><Copy /> Sao chép link</DemoAction><DemoAction variant="outline" disabled><QrCode /> Tải mã QR</DemoAction></div>
-      <p className="mt-1 text-xs text-muted-foreground">Không bấm được: link chưa công bố.</p>
-    </div>)}</Panel>
-    <div className="mt-5"><SmallLabel>LỊCH SỬ PHIÊN BẢN (MINH HỌA)</SmallLabel></div>
-    <Panel>{snap ? <Row title={`Bản ${snap.revision}`} detail="Mốc “bản đã gửi” đặt trong phiên xem này — chưa gửi cho khách." to="/invitation/changes" /> : <Row title="Chưa có phiên bản" detail="Đặt mốc ở trang Thay đổi sau khi gửi để xem lịch sử." to="/invitation/changes" />}</Panel>
-    <Action to="/publish" className="mt-5 w-full">Xem lại trước khi công bố</Action>
-  </div>;
-}
-
-/* F19 — kiểm thiếu thông tin nguồn cho từng link */
-export function CheckScreen() {
-  const events = useEventNames();
-  const [links] = useLinks();
-  const rows = links.map(l => ({ l, r: linkReadiness(l.enabled, l.eventIds, events) }));
-  const eventGaps = events.map(e => ({ e, gaps: [!e.date && 'ngày', !e.time && 'giờ', !e.venue.trim() && 'nơi tổ chức', !e.address.trim() && 'địa chỉ'].filter(Boolean) as string[] })).filter(x => x.gaps.length);
-  return <div className="max-w-3xl"><Header name="Kiểm tra thiệp" subtitle="THIỆP · THÔNG TIN CÒN THIẾU" />
-    <p className="-mt-3 mb-5 text-muted-foreground">Những gì cần bổ sung trước khi một link có thể được công bố. Kiểm tra từ dữ liệu trong phiên xem này.</p>
-    <SmallLabel>THEO TỪNG LINK</SmallLabel>
-    <Panel>{rows.map(({ l, r }) => <Row key={l.side} title={SIDE_LABEL[l.side]} detail={r.readiness === 'ready' ? 'Đủ thông tin' : r.readiness === 'off' ? 'Đang tắt — không công bố' : `Còn thiếu: ${r.missing.join(', ')}`} right={<Status tone={r.readiness === 'ready' ? 'sage' : r.readiness === 'off' ? 'warm' : 'copper'}>{r.readiness === 'ready' ? 'Sẵn sàng' : r.readiness === 'off' ? 'Đang tắt' : 'Cần sửa'}</Status>} to="/invitation/variants" />)}</Panel>
-    <div className="mt-5"><SmallLabel>THEO TỪNG BUỔI LỄ</SmallLabel></div>
-    <Panel>{eventGaps.length ? eventGaps.map(({ e, gaps }) => <div key={e.id} className="flex flex-wrap items-center justify-between gap-2 border-b border-border py-3 last:border-0"><div><strong>{e.name}</strong><p className="text-xs text-muted-foreground">Thiếu {gaps.join(', ')}</p></div><Action to="/wedding/events/$id" params={{ id: e.id }} variant="outline">Sửa buổi này</Action></div>) : <p className="text-sm">Mọi buổi lễ đã có ngày, giờ, nơi và địa chỉ.</p>}</Panel>
-    <Action to="/invitation/preview" variant="outline" className="mt-5 w-full">Xem trước thiệp</Action>
   </div>;
 }
