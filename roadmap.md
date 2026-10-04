@@ -44,4 +44,10 @@
 ## Phase 3 family viewers
 - [x] Up to 2 read-only family viewers: migration 0011 (grants, hashed invites, projection), team UI, /view routes, DB + browser QA
 - [x] Phase 3: trial / read-only write gate staged OFF (migration 0012, service-role activation only, QA-verified)
-- [ ] Activate write gate for real weddings — blocked on verified checkout/payment continuation
+- [ ] ~~Activate write gate for real weddings — blocked on verified checkout/payment continuation~~ → **hủy**: app chuyển sang miễn phí, không thu phí
+
+## Pivot 2026-10: app miễn phí, kiếm tiền bằng affiliate
+- [x] GĐ A — Xóa thiệp online + thu phí: 16 routes (invitation/i.$token/checkout/plans/publish/rsvp/admin), InvitationReal/RsvpReal, lib invitation*/rsvp*, AccessStateBanner → WriteButton thuần, contracts/viewers tinh gọn, migration 0013 (drop 9 bảng + bucket invitation-photos + functions/triggers; sửa undo_guest_batch, export_wedding_data, viewer modules bỏ 'rsvp'); đóng PR #6 (SePay checkout, không merge)
+- [ ] GĐ B — Nền tảng affiliate: bảng affiliate_vendors/products/clicks, admin quản lý link, redirect tracking /r/:code
+- [ ] GĐ C — Tích hợp Planner: "Mua ở đây" trong ngân sách, gợi ý vendor trong 43 việc mẫu, nhãn "Liên kết tiếp thị"
+- [ ] GĐ D — Danh bạ nhà cung cấp, Trăng mật (Booking/Agoda/Mytour/ACCESSTRADE), Blog SEO (tùy chọn sau)

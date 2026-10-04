@@ -1,5 +1,7 @@
 # Thiệp Cưới Online
 
+> **Định hướng hiện tại (2026-10):** app miễn phí, không thu phí, không thiệp online. Kiếm tiền bằng affiliate (link sản phẩm trong ngữ cảnh, vendor cưới, trăng mật). Thiệp/RSVP công khai/checkout/SePay đã xóa khỏi code (migration 0013) và PR SePay #6 đã đóng không merge. Nội dung spec Phase 1 bên dưới chỉ còn giá trị lịch sử.
+
 Hãy tạo dự án mới “Thiệp Cưới Online Việt” và THỰC HIỆN CHỈ PHASE 1 của gói App Core đính kèm. Đây là website responsive cho cô dâu/chú rể Việt Nam. Product Structure V3 và Product Experience V2 đã khóa; file markdown và 5 bảng ảnh đính kèm là nguồn bắt buộc. Bảng 11 màn + hai bảng R/C có tổng cộng 23 ảnh authority. Đọc kỹ trước khi code.
 
 Mục tiêu Phase 1: dựng design system và shell thật đẹp, toàn bộ route/màn UI theo inventory; desktop sidebar trái, mobile bottom navigation 5 mục Tổng quan/Kế hoạch/Thiệp/Khách/Khác, guest invitation/RSVP shell riêng. Dùng Be Vietnam Pro + Spectral, nền #F7F3EC, mực #203A45, đồng #985748, sage #DDE9DF. Lấy A04 và A18 ở mẫu UI mới trên bảng. Các màn R01-R06 và C01-C06 thay thế các ảnh V3 mâu thuẫn. Giữ câu chữ tiếng Việt tự nhiên, không nêu thanh toán ở màn bắt đầu.
