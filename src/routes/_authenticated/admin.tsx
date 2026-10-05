@@ -2,9 +2,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import { PhaseOne } from "@/components/PhaseOne";
 export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({ meta: [
-    { title: "Quản trị affiliate | Thiệp Cưới Online Việt" },
+    { title: "Quản trị affiliate | Wedding Planner Việt" },
     { name: "description", content: "Quản lý nhà cung cấp, sản phẩm affiliate và thống kê click." },
-    { property: "og:title", content: "Quản trị affiliate | Thiệp Cưới Online Việt" },
+    { property: "og:title", content: "Quản trị affiliate | Wedding Planner Việt" },
     { property: "og:description", content: "Quản lý nhà cung cấp, sản phẩm affiliate và thống kê click." },
     { property: "og:type", content: "website" },
     { name: "twitter:card", content: "summary" },

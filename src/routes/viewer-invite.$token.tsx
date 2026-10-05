@@ -3,9 +3,9 @@ import { ViewerInviteAcceptPage } from "@/components/ViewerScreens";
 export const Route = createFileRoute("/viewer-invite/$token")({
   ssr: false,
   head: () => ({ meta: [
-    { title: "Lời mời xem kế hoạch cưới | Thiệp Cưới Online Việt" },
+    { title: "Lời mời xem kế hoạch cưới | Wedding Planner Việt" },
     { name: "description", content: "Chấp nhận lời mời xem một phần kế hoạch cưới." },
-    { property: "og:title", content: "Lời mời xem kế hoạch cưới | Thiệp Cưới Online Việt" },
+    { property: "og:title", content: "Lời mời xem kế hoạch cưới | Wedding Planner Việt" },
     { property: "og:description", content: "Chấp nhận lời mời xem một phần kế hoạch cưới." },
     { property: "og:type", content: "website" },
     { name: "twitter:card", content: "summary" },

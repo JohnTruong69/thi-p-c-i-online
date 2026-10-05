@@ -140,7 +140,7 @@ export function ViewerInviteAcceptPage({ token }: { token: string }) {
 /* ---------- Read-only viewer shell (no owner navigation, no edit controls) ---------- */
 function ViewerShell({ children }: { children: React.ReactNode }) {
   return <div className="min-h-screen bg-background"><div className="sticky top-0 z-10 flex h-[62px] items-center justify-between border-b border-border bg-card px-5">
-    <Link to="/view" className="text-[11px] font-extrabold uppercase leading-tight">THIỆP CƯỚI<br />ONLINE</Link>
+    <Link to="/view" className="text-[11px] font-extrabold uppercase leading-tight">WEDDING<br />PLANNER</Link>
     <div className="flex items-center gap-2"><Status><Eye className="mr-1 size-3" />Chỉ xem</Status><SignOutButton /></div>
   </div><main className="mx-auto w-full max-w-3xl px-5 pb-16 pt-7">{children}</main></div>;
 }

@@ -6,9 +6,9 @@ export const Route = createFileRoute("/login")({
     ...(typeof s['reason'] === "string" ? { reason: s['reason'] } : {}),
   }),
   head: () => ({ meta: [
-    { title: "Đăng nhập | Thiệp Cưới Online Việt" },
+    { title: "Đăng nhập | Wedding Planner Việt" },
     { name: "description", content: "Đăng nhập để cùng chuẩn bị đám cưới của hai bạn." },
-    { property: "og:title", content: "Đăng nhập | Thiệp Cưới Online Việt" },
+    { property: "og:title", content: "Đăng nhập | Wedding Planner Việt" },
     { property: "og:description", content: "Đăng nhập để cùng chuẩn bị đám cưới của hai bạn." },
     { property: "og:type", content: "website" },
     { name: "twitter:card", content: "summary" },

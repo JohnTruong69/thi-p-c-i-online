@@ -298,7 +298,7 @@ export function RealHomeScreen() {
         <Panel><div className="mb-3"><Status>{nextPay ? 'KHOẢN SẮP PHẢI TRẢ' : 'CHƯA GHI HẠN TRẢ'}</Status></div><h2 className="text-xl">{nextPay ? fmtVnd(nextPay.i.amount_vnd) : unpaid > 0 ? fmtVnd(unpaid) : 'Chưa có khoản cần trả'}</h2><p className="mt-1 text-xs text-muted-foreground">{nextPay ? `${nextPay.c.label} · ${nextPay.i.label} · ${fullDate(nextPay.i.due_date)}` : unpaid > 0 ? 'Còn phải trả, chưa ghi hạn' : 'Xem sổ chi tiêu'}</p>{nextPay ? <Button asChild variant="ghost" className="mt-2 min-h-11 px-0 text-primary"><Link to="/plan/budget/$id" params={{ id: nextPay.c.id }}>Xem khoản <ArrowRight /></Link></Button> : <Button asChild variant="ghost" className="mt-2 min-h-11 px-0 text-primary"><Link to="/plan/budget">Xem ngân sách <ArrowRight /></Link></Button>}</Panel></div></div></div>
       <div><SmallLabel>KHÁCH MỜI</SmallLabel><Panel className="bg-sage">{gsq.isPending ? <p className="text-sm">Đang tải sổ khách…</p> : gsq.isError ? <p className="text-sm">Chưa tải được sổ khách. <button className="underline" onClick={() => gsq.refetch()}>Thử lại</button></p> : (() => { const t = guestTotals(gsq.data); const att = events.reduce((s, e) => s + eventTotals(gsq.data, e.id).attendingPeople, 0); return t.records ? <><h2 className="text-xl">{t.records} hồ sơ khách · {t.plannedPeople} người dự kiến</h2><p className="mt-1 text-xs">Mỗi khách đếm một lần dù mời nhiều buổi. Đã ghi {att} lượt người sẽ đến (cộng theo từng buổi).</p></> : <p className="text-sm">Sổ khách còn trống.</p>; })()}<Button asChild variant="ghost" className="mt-3 min-h-11 px-0 text-primary"><Link to="/guests">Xem sổ khách <ArrowRight /></Link></Button></Panel>
         <div className="mt-7"><SmallLabel>HÀNH TRÌNH CỦA MÌNH</SmallLabel><Panel><p className="text-sm">{events.length} buổi lễ · {(tq.data ?? []).length} việc · {(bq.data ?? []).length} khoản chi đã lưu</p><Button asChild variant="ghost" className="mt-2 min-h-11 px-0 text-primary"><Link to="/wedding/events">Các buổi lễ <ArrowRight /></Link></Button></Panel></div></div></div>
-      {weddingPassed && <div className="mt-7"><SmallLabel>SAU NGÀY CƯỚI</SmallLabel><Panel className="border-l-[3px] border-l-sage-strong"><h2 className="font-display text-xl font-semibold">Trăng mật của hai bạn</h2><p className="mt-1 text-sm text-muted-foreground">Ngày cưới đã qua — giờ là lúc nghỉ ngơi. Xem điểm đến gợi ý, đặt phòng và tour.</p><Button asChild variant="ghost" className="mt-2 min-h-11 px-0 text-primary"><Link to="/honeymoon">Xem gợi ý trăng mật <ArrowRight /></Link></Button></Panel></div>}</div>;
+      <div className="mt-7"><SmallLabel>{weddingPassed ? 'SAU NGÀY CƯỚI' : 'LÊN Ý TƯỞNG'}</SmallLabel><Panel className="border-l-[3px] border-l-sage-strong"><h2 className="font-display text-xl font-semibold">Trăng mật của hai bạn</h2><p className="mt-1 text-sm text-muted-foreground">{weddingPassed ? 'Ngày cưới đã qua — giờ là lúc nghỉ ngơi. Xem điểm đến gợi ý, đặt phòng và tour.' : 'Ngày cưới còn ở phía trước — xem trước điểm đến để lên ý tưởng cho chuyến đi.'}</p><Button asChild variant="ghost" className="mt-2 min-h-11 px-0 text-primary"><Link to="/honeymoon">Xem gợi ý trăng mật <ArrowRight /></Link></Button></Panel></div></div>;
 }
 
 /* ================= Vendor directory (GĐ D1) ================= */
@@ -310,8 +310,11 @@ export function RealVendorsScreen() {
   const [msg, setMsg] = useState('');
   if (vq.isPending) return <Loading label="Đang tải nhà cung cấp…" />;
   if (vq.isError) return <LoadError error={vq.error} retry={() => vq.refetch()} />;
-  // Honeymoon partners live on the honeymoon page, not in the wedding directory.
-  const vendors = vq.data.filter(v => v.category !== 'Trăng mật');
+  // Honeymoon partners live on the honeymoon page, and marketplace product
+  // vendors (e.g. Shopee) sell through affiliate product links — the directory
+  // is for service vendors offering consultation.
+  const HIDDEN_VENDOR_CATEGORIES = ['Trăng mật', 'thuong-mai-dien-tu'];
+  const vendors = vq.data.filter(v => !HIDDEN_VENDOR_CATEGORIES.includes(v.category));
   const cats = ['Tất cả', ...Array.from(new Set(vendors.map(v => v.category)))];
   const shown = vendors.filter(v => cat === 'Tất cả' || v.category === cat);
   return <div className="max-w-4xl"><Header name="Nhà cung cấp đề xuất" subtitle={`KẾ HOẠCH · ${coupleName(w).toUpperCase()}`} /><PlannerTabs active="vendors" />
