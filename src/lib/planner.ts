@@ -23,6 +23,15 @@ export function missingTemplates(picked: string[], existingTemplateIds: (string 
 }
 
 export const MAX_VND = 10_000_000_000;
+
+/** Market reference prices (VNĐ) so couples can sanity-check their budget. 2025–2026 market; varies by city and choices. */
+export const PRICE_REFERENCES = [
+  { id: 'tiec', label: 'Tiệc & địa điểm', range: '5–8 triệu/bàn', detail: 'Tiệc 20–30 bàn thường hết 100–240 triệu tùy nhà hàng và thực đơn.' },
+  { id: 'le', label: 'Lễ gia tiên/ăn hỏi', range: '8–20 triệu', detail: 'Tráp lễ truyền thống; chưa gồm sính lễ hai gia đình chuẩn bị.' },
+  { id: 'anh', label: 'Ảnh & trang phục', range: '15–50 triệu', detail: 'Chụp ảnh cưới 8–20 triệu; thuê váy 2,5–10 triệu; vest 1–5 triệu; nhẫn cưới 5–40 triệu/cặp.' },
+  { id: 'trangtri', label: 'Di chuyển/hoa/trang trí', range: '10–25 triệu', detail: 'Hoa và trang trí 7–10 triệu; xe hoa 3–8 triệu tùy quãng đường.' },
+] as const;
+export const PRICE_NOTE = 'Giá tham khảo thị trường 2025–2026; thực tế chênh lệch theo tỉnh thành, thời điểm và lựa chọn của hai bạn.';
 export const CATEGORIES = [
   { id: 'tiec', label: 'Tiệc & địa điểm' }, { id: 'le', label: 'Lễ gia tiên/ăn hỏi' }, { id: 'anh', label: 'Ảnh & trang phục' },
   { id: 'trangtri', label: 'Di chuyển/hoa/trang trí' }, { id: 'khac', label: 'Khác' },

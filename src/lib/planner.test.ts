@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { budgetTotals, dueWindow, missingTemplates, parseVnd, validateCap, validateCost, toStatusUi, type CostDraft } from './planner';
+import { budgetTotals, dueWindow, missingTemplates, parseVnd, validateCap, validateCost, toStatusUi, CATEGORIES, PRICE_REFERENCES, type CostDraft } from './planner';
 import { inTaskFilter, taskDue, validateTableCount, type DemoTask } from './task-demo';
 
 const draft = (o: Partial<CostDraft> = {}): CostDraft => ({ title: 'Tiệc', category: 'tiec', categoryDetail: '', eventId: '', payer: 'couple', estimate: '', agreed: '', paid: '0', deposit: '0', extra: '0', vendor: '', installments: [], ...o });
@@ -62,5 +62,17 @@ describe('tasks', () => {
   it('table count allows 0 reserve, done needs planned>0', () => {
     expect(validateTableCount('table-count', '12', '0', 'Xong')).toBe('');
     expect(validateTableCount('table-count', '0', '', 'Xong')).toBeTruthy();
+  });
+});
+
+describe('PRICE_REFERENCES', () => {
+  it('covers every budget category except "khac"', () => {
+    for (const c of CATEGORIES) {
+      if (c.id === 'khac') continue;
+      const ref = PRICE_REFERENCES.find(r => r.id === c.id);
+      expect(ref, `missing price reference for ${c.id}`).toBeTruthy();
+      expect(ref!.range.length).toBeGreaterThan(0);
+      expect(ref!.detail.length).toBeGreaterThan(0);
+    }
   });
 });

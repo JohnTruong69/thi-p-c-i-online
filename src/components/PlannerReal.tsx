@@ -8,7 +8,7 @@ import { WriteButton } from './AccessStateBanner';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { eventsQuery, friendlyError, useMyWedding, type EventForm, type EventRow, type WeddingRow } from '@/lib/wedding-api';
 import { addSuggestedTasks, budgetQuery, deleteBudgetItem, eventImpactData, saveBudgetItem, setBudgetCap, tasksQuery, insertTask, updateTask, type BudgetItemWithSchedule, type TaskRow } from '@/lib/planner-api';
-import { CATEGORIES, INSTALLMENT_LABELS, PAYERS, STATUS_FROM_UI, agreedCost, budgetTotals, dueWindow, fmtVnd, missingTemplates, payerLabel, plannedCost, toStatusUi, unpaidCost, validateCap, validateCost, type CostDraft, type CostMoney } from '@/lib/planner';
+import { CATEGORIES, INSTALLMENT_LABELS, PAYERS, PRICE_NOTE, PRICE_REFERENCES, STATUS_FROM_UI, agreedCost, budgetTotals, dueWindow, fmtVnd, missingTemplates, payerLabel, plannedCost, toStatusUi, unpaidCost, validateCap, validateCost, type CostDraft, type CostMoney } from '@/lib/planner';
 import { inTaskFilter, taskDue, validateTableCount, vietnamToday, type DemoTask } from '@/lib/task-demo';
 import { SUGGESTED_TASKS, dayDiff, shiftDate } from '@/lib/phase2';
 import { DemoDialog, FormField, Header, Note, Panel, PlannerTabs, SmallLabel, Status, fmtDate, inputCls, useFocusId } from './PhaseOne';
@@ -171,6 +171,7 @@ export function RealBudgetScreen() {
   const [open, setOpen] = useState(false), [editing, setEditing] = useState<BudgetItemWithSchedule | null>(null), [f, setF] = useState<CostDraft>(emptyCost());
   const [errors, setErrors] = useState<Record<string, string>>({}), [saveErr, setSaveErr] = useState(''), [msg, setMsg] = useState('');
   const [capOpen, setCapOpen] = useState(false), [capDraft, setCapDraft] = useState(''), [capErr, setCapErr] = useState('');
+  const [priceOpen, setPriceOpen] = useState(false);
   const [removing, setRemoving] = useState(false);
   const events = eq.data ?? [];
   const evName = (id: string | null) => (id ? events.find(e => e.id === id)?.name ?? SHARED : SHARED);
@@ -199,7 +200,7 @@ export function RealBudgetScreen() {
   return <div className="max-w-4xl"><Header name="Tiền bạc rõ ràng hơn" subtitle={`KẾ HOẠCH · ${coupleName(w).toUpperCase()}`} /><PlannerTabs active="budget" />
     {missing && <div role="alert" className="mb-4"><Note tone="copper">{missing}</Note></div>}
     <h2 className="font-display text-2xl">Đám cưới của mình đang dự tính hết bao nhiêu?</h2><p className="mb-5 mt-2 text-sm text-muted-foreground">Ghi từng khoản để hai bạn và hai gia đình dễ cùng theo dõi. Mọi khoản được lưu vào tài khoản.</p>
-    <div className="mb-5 flex flex-wrap gap-2"><WriteButton size="lg" className="min-h-11" onClick={() => edit()}><Plus /> Thêm khoản chi</WriteButton><Button variant="outline" size="lg" className="min-h-11" onClick={() => { setCapDraft(capV ? String(capV) : ''); setCapErr(''); setCapOpen(true); }}><Pencil /> {capV ? 'Đổi mức dự định chi' : 'Đặt mức dự định chi'}</Button></div>
+    <div className="mb-5 flex flex-wrap gap-2"><WriteButton size="lg" className="min-h-11" onClick={() => edit()}><Plus /> Thêm khoản chi</WriteButton><Button variant="outline" size="lg" className="min-h-11" onClick={() => setPriceOpen(true)}>Bảng giá tham khảo</Button><Button variant="outline" size="lg" className="min-h-11" onClick={() => { setCapDraft(capV ? String(capV) : ''); setCapErr(''); setCapOpen(true); }}><Pencil /> {capV ? 'Đổi mức dự định chi' : 'Đặt mức dự định chi'}</Button></div>
     <p role="status" className="mb-2 text-xs font-semibold text-sage-strong">{msg}</p>
     <section aria-label="Tổng hợp ngân sách" className="rounded-lg bg-foreground p-4 text-primary-foreground sm:p-5"><div className="text-xs font-semibold">Mức hai bạn dự định chi</div><div className="mt-1 break-words font-display text-4xl font-semibold" data-testid="budget-cap">{capV ? fmtVnd(capV) : 'Chưa đặt'}</div><p className="mt-2 text-xs opacity-85">Mức hai bạn tự đặt để theo dõi; có thể đổi bất cứ lúc nào.</p>
       <dl className="mt-5 space-y-1.5 border-t border-primary-foreground/25 pt-4 text-xs sm:text-sm" aria-live="polite">{[
@@ -227,6 +228,7 @@ export function RealBudgetScreen() {
       <FormField label="Tên khoản chi *" id="cost-title" error={errors['title']}><input id="cost-title" autoFocus maxLength={120} value={f.title} onChange={e => setF({ ...f, title: e.target.value })} className={inputCls} aria-invalid={!!errors['title']} /></FormField>
       <FormField label="Nhóm chi" id="cost-group"><select id="cost-group" value={f.category} onChange={e => setF({ ...f, category: e.target.value as CostDraft['category'], categoryDetail: e.target.value === 'khac' ? f.categoryDetail : '' })} className={inputCls}>{CATEGORIES.map(c => <option key={c.id} value={c.id}>{c.label}</option>)}</select></FormField>
       {f.category === 'khac' && <FormField label="Cụ thể là khoản gì? *" id="cost-group-detail" error={errors['categoryDetail']}><input id="cost-group-detail" value={f.categoryDetail} onChange={e => setF({ ...f, categoryDetail: e.target.value })} className={inputCls} maxLength={120} placeholder="Ví dụ: Quà cảm ơn / Phí phục vụ" aria-invalid={!!errors['categoryDetail']} /></FormField>}
+      {(() => { const ref = PRICE_REFERENCES.find(r => r.id === f.category); return ref ? <p className="text-xs leading-relaxed text-muted-foreground">Giá tham khảo thị trường: <strong className="text-foreground">{ref.range}</strong> — {ref.detail}</p> : null; })()}
       <div><FormField label="Khoản chi này dành cho buổi nào?" id="cost-event"><select id="cost-event" value={f.eventId} onChange={e => setF({ ...f, eventId: e.target.value })} className={inputCls}><option value="">{SHARED}</option>{events.map(x => <option key={x.id} value={x.id}>{x.name}</option>)}</select></FormField><p className="mt-2 text-xs leading-relaxed text-muted-foreground">Ảnh cưới có thể dùng chung; tiền tiệc chọn đúng buổi tiệc. Mỗi khoản chỉ tính một lần.</p></div>
       <FormField label="Ai sẽ trả" id="cost-payer"><select id="cost-payer" value={f.payer} onChange={e => setF({ ...f, payer: e.target.value as CostDraft['payer'] })} className={inputCls}>{PAYERS.map(p => <option key={p.id} value={p.id}>{p.label}</option>)}</select></FormField>
       <div className="grid gap-4 sm:grid-cols-2">{([['estimate', 'Tiền dự tính (đ)'], ['agreed', 'Giá đã chốt (đ)'], ['paid', 'Đã thanh toán, gồm cọc (đ)'], ['deposit', 'Trong đó tiền cọc (đ)'], ['extra', 'Phát sinh đã xác nhận (đ)']] as const).map(([key, label]) => <FormField key={key} label={label} id={`cost-${key}`} error={errors[key]}><input id={`cost-${key}`} inputMode="numeric" value={f[key]} onChange={e => setF({ ...f, [key]: e.target.value })} className={inputCls} aria-invalid={!!errors[key]} /></FormField>)}</div>
@@ -245,6 +247,11 @@ export function RealBudgetScreen() {
     <DemoDialog real busy={cap.isPending} open={capOpen} onOpenChange={o => { if (!cap.isPending) setCapOpen(o); }} title="Mức dự định chi" description="Mức này do hai bạn tự đặt, không phải số tiền mặt." submitLabel={cap.isPending ? 'Đang lưu…' : 'Lưu mức'} onSubmit={e => { e.preventDefault(); if (cap.isPending) return; const v = validateCap(capDraft); if (typeof v === 'string') { setCapErr(v); return; } setCapErr(''); cap.mutate(v); }}>
       <FormField label="Mức hai bạn dự định chi (đ) *" id="cap-value" error={capErr}><input id="cap-value" autoFocus inputMode="numeric" value={capDraft} onChange={e => setCapDraft(e.target.value)} className={inputCls} /></FormField>
     </DemoDialog>
+    <Dialog open={priceOpen} onOpenChange={setPriceOpen}><DialogContent className="max-h-[92vh] w-[calc(100vw-24px)] max-w-lg overflow-y-auto rounded-lg bg-card p-5 text-foreground sm:p-6">
+      <DialogHeader className="text-left"><DialogTitle className="font-display text-2xl">Bảng giá tham khảo</DialogTitle><DialogDescription>Giá thị trường để hai bạn ước tính ngân sách cho từng nhóm chi.</DialogDescription></DialogHeader>
+      <div className="space-y-3">{PRICE_REFERENCES.map(r => <div key={r.id} className="rounded-lg border border-border p-4"><p className="text-xs font-bold uppercase text-primary">{r.label}</p><p className="mt-1 font-display text-xl font-bold">{r.range}</p><p className="mt-1 text-xs leading-relaxed text-muted-foreground">{r.detail}</p></div>)}</div>
+      <p className="text-xs text-muted-foreground">{PRICE_NOTE}</p>
+    </DialogContent></Dialog>
   </div>;
 }
 
