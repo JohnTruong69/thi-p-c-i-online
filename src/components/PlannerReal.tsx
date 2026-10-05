@@ -17,6 +17,8 @@ import { eventTotals, followupCount, guestTotals, needsFollowup } from '@/lib/gu
 import { LoadError, Loading, coupleName } from './PhaseThree';
 import { AffiliateSuggestionLine } from './AffiliateSuggestions';
 import { AffiliateLink } from './Affiliate';
+import { ReviewDialog, VendorRatingLine } from './ReviewsReal';
+import { vendorRatingTotalsQuery } from '@/lib/reviews-api';
 import { insertLead, productsByBudgetCategoriesQuery, productsByTaskTemplatesQuery, validateLeadInput, vendorsQuery, type AffiliateVendor, type LeadInput } from '@/lib/affiliate';
 
 const fullDate = (d: string | null) => (d ? `${d.slice(8, 10)}/${d.slice(5, 7)}/${d.slice(0, 4)}` : 'Chưa ghi ngày');
@@ -355,8 +357,10 @@ export function RealHomeScreen() {
 export function RealVendorsScreen() {
   const w = useMyWedding().data!;
   const vq = useQuery(vendorsQuery);
+  const rtq = useQuery(vendorRatingTotalsQuery());
   const [cat, setCat] = useState('Tất cả');
   const [leadFor, setLeadFor] = useState<AffiliateVendor | null>(null);
+  const [reviewFor, setReviewFor] = useState<AffiliateVendor | null>(null);
   const [msg, setMsg] = useState('');
   if (vq.isPending) return <Loading label="Đang tải nhà cung cấp…" />;
   if (vq.isError) return <LoadError error={vq.error} retry={() => vq.refetch()} />;
@@ -373,15 +377,17 @@ export function RealVendorsScreen() {
     {cats.length > 2 && <div className="mb-5 flex flex-wrap gap-2" role="group" aria-label="Lọc theo hạng mục">{cats.map(c => <Button key={c} aria-pressed={cat === c} variant={cat === c ? 'default' : 'outline'} className="min-h-11 rounded-full px-3 text-xs" onClick={() => setCat(c)}>{c}</Button>)}</div>}
     {shown.length === 0 ? <Note tone="warm">Chưa có nhà cung cấp nào trong hạng mục này.</Note> :
       <div className="grid gap-3 sm:grid-cols-2">{shown.map(v => <Panel key={v.id}>
-        <div className="flex items-start gap-3">{v.logo_url && <img src={v.logo_url} alt="" loading="lazy" className="size-12 shrink-0 rounded-md border border-border object-cover" />}<div className="min-w-0"><h2 className="break-words font-display text-xl font-semibold">{v.name}</h2><p className="mt-0.5 text-xs text-muted-foreground">{v.category}</p></div></div>
+        <div className="flex items-start gap-3">{v.logo_url && <img src={v.logo_url} alt="" loading="lazy" className="size-12 shrink-0 rounded-md border border-border object-cover" />}<div className="min-w-0"><h2 className="break-words font-display text-xl font-semibold">{v.name}</h2><p className="mt-0.5 text-xs text-muted-foreground">{v.category}</p><VendorRatingLine vendorId={v.id} totals={rtq.data} /></div></div>
         {v.description && <p className="mt-2 text-sm leading-relaxed">{v.description}</p>}
         {v.coupon_code && <p className="mt-2 text-xs font-semibold text-primary">Mã giảm giá: {v.coupon_code}</p>}
         <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-border pt-3">
           <AffiliateLink code={v.code}>Xem ưu đãi</AffiliateLink>
+          <Button variant="ghost" size="sm" className="min-h-11" onClick={() => setReviewFor(v)}>Đánh giá</Button>
           <WriteButton variant="outline" size="sm" className="min-h-11" onClick={() => setLeadFor(v)}>Đặt lịch tư vấn</WriteButton>
         </div>
       </Panel>)}</div>}
     {leadFor && <LeadDialog vendor={leadFor} weddingId={w.id} onClose={() => setLeadFor(null)} onSent={name => { setLeadFor(null); setMsg(`Đã gửi yêu cầu tư vấn tới “${name}”. Họ sẽ liên hệ lại với hai bạn.`); }} />}
+    {reviewFor && <ReviewDialog vendor={reviewFor} weddingId={w.id} onClose={() => setReviewFor(null)} />}
   </div>;
 }
 

@@ -1280,6 +1280,51 @@ export type Database = {
           },
         ]
       }
+      vendor_reviews: {
+        Row: {
+          comment: string
+          created_at: string
+          id: string
+          rating: number
+          updated_at: string
+          vendor_id: string
+          wedding_id: string
+        }
+        Insert: {
+          comment?: string
+          created_at?: string
+          id?: string
+          rating: number
+          updated_at?: string
+          vendor_id: string
+          wedding_id: string
+        }
+        Update: {
+          comment?: string
+          created_at?: string
+          id?: string
+          rating?: number
+          updated_at?: string
+          vendor_id?: string
+          wedding_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vendor_reviews_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "affiliate_vendors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vendor_reviews_wedding_id_fkey"
+            columns: ["wedding_id"]
+            isOneToOne: false
+            referencedRelation: "weddings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       wedding_entitlements: {
         Row: {
           created_at: string
