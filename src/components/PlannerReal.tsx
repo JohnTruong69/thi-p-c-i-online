@@ -82,23 +82,48 @@ export function RealTasksScreen() {
   if (tq.isError) return <LoadError error={tq.error} retry={() => tq.refetch()} />;
   if (eq.isError) return <LoadError error={eq.error} retry={() => eq.refetch()} />;
   const tasks = tq.data; const shown = tasks.filter(t => inTaskFilter(asDemo(t), filter, today));
+  const taskCard = (t: TaskRow, extraCls = '') => { const due = taskDue(asDemo(t), today); const st = toStatusUi(t.status); return <Panel key={t.id} item={t.id} className={extraCls}>
+    <div className="flex flex-wrap items-start justify-between gap-3"><div className="min-w-0 flex-1"><h2 className="break-words text-xl">{t.title}</h2><p className="mt-1 text-xs text-muted-foreground">{evName(t.event_id)} · {assigneeLabel(t.assignee, w)} phụ trách{t.source === 'suggested' ? ' · Từ việc gợi ý' : ''}</p></div><Status tone={st === 'Xong' ? 'sage' : st === 'Chờ chốt' ? 'warm' : 'copper'}>{st === 'Xong' ? 'Đã xong' : st}</Status></div>
+    <p className={`mt-2 text-sm ${due.group === 'overdue' ? 'font-semibold text-destructive' : 'text-muted-foreground'}`}>{due.label}</p>
+    {t.kind === 'table-count' && <><p className="mt-2 text-sm"><span className="font-semibold">Số bàn dự kiến:</span> {t.planned_tables === null ? 'Chưa nhập' : `${t.planned_tables} bàn`} · <span className="font-semibold">Số bàn dự phòng:</span> {t.reserve_tables === null ? 'Chưa nhập' : `${t.reserve_tables} bàn`}</p><p className="mt-1 text-xs text-muted-foreground">Hai bạn tự dự tính số bàn; không tự tính từ phản hồi tham dự, không thay đổi sổ khách hay ngân sách.</p></>}
+    {t.outcome && <p className="mt-2 break-words text-sm"><span className="font-semibold">Kết quả cần chốt:</span> {t.outcome}</p>}{t.note && <p className="mt-1 break-words text-sm"><span className="font-semibold">Ghi chú:</span> {t.note}</p>}
+    {t.template_id && <AffiliateSuggestionLine label="Gợi ý cho việc này" products={affByTask.data?.[t.template_id]} />}
+    <div className="mt-1 flex flex-wrap gap-x-3"><Button variant="ghost" className="min-h-11 px-0 text-primary" onClick={() => edit(t)}><Pencil className="size-4" /> Sửa việc</Button>
+      {st !== 'Xong' && <WriteButton variant="ghost" className="min-h-11 px-0 text-primary" disabled={quickDone.isPending} title={t.kind === 'table-count' && !t.planned_tables ? 'Cần nhập số bàn dự kiến lớn hơn 0 trước' : undefined} onClick={() => { if (t.kind === 'table-count' && !t.planned_tables) { edit(t); setF(p => ({ ...p, status: 'Xong' })); setCountErr('Cần nhập số bàn dự kiến lớn hơn 0 trước khi đánh dấu đã xong.'); return; } quickDone.mutate(t); }}>Đánh dấu xong</WriteButton>}</div>
+  </Panel>; };
+  const TASK_GROUPS = [
+    { key: 'overdue', label: 'Quá hạn' },
+    { key: 'seven_days', label: 'Tuần này' },
+    { key: 'thirty_days', label: 'Trong 30 ngày tới' },
+    { key: 'later', label: 'Còn xa' },
+    { key: 'unknown', label: 'Chưa đặt hạn' },
+  ] as const;
+  const openTasks = tasks.filter(t => t.status !== 'done');
+  const grouped = TASK_GROUPS.map(g => ({ ...g, items: openTasks.filter(t => dueWindow(t.due_date, today) === g.key) })).filter(g => g.items.length > 0);
+  const doneTasks = tasks.filter(t => t.status === 'done');
   return <div className="max-w-4xl"><div className="flex flex-wrap items-end justify-between gap-x-3"><Header name="Việc của hai bạn" subtitle={`KẾ HOẠCH · ${coupleName(w).toUpperCase()}`} /><WriteButton size="lg" className="mb-6 min-h-11" onClick={() => edit()}><Plus /> Thêm việc</WriteButton></div><PlannerTabs active="tasks" />
     {missing && <div role="alert" className="mb-4"><Note tone="copper">{missing}</Note></div>}
-    <p className="mb-6 text-muted-foreground">“Hôm nay” là việc đến hạn hôm nay; “Sắp hạn” gồm việc quá hạn và đến hạn trong 14 ngày tới, không gồm hôm nay hay việc đã xong. Việc xa hơn và chưa đặt hạn vẫn ở “Tất cả”.</p>
+    <p className="mb-6 text-muted-foreground">“Tất cả” xếp việc theo thời gian — quá hạn, tuần này, 30 ngày tới — để hai bạn luôn biết việc nào cần trước. Dùng “Hôm nay”, “Sắp hạn”, “Chờ chốt” để lọc nhanh.</p>
     <div className="mb-6 grid grid-cols-4 gap-1.5 sm:flex sm:gap-2" role="group" aria-label="Lọc việc">{['Hôm nay', 'Sắp hạn', 'Chờ chốt', 'Tất cả'].map(x => <Button key={x} aria-pressed={filter === x} variant={filter === x ? 'default' : 'outline'} className="min-h-11 min-w-0 rounded-full px-1 text-[11px] sm:px-4 sm:text-sm" onClick={() => setFilter(x)}>{x}</Button>)}</div>
-    <SmallLabel>{filter === 'Tất cả' ? `TẤT CẢ · ${tasks.length} VIỆC` : filter === 'Hôm nay' ? 'ĐẾN HẠN HÔM NAY' : filter === 'Sắp hạn' ? 'QUÁ HẠN HOẶC TRONG 14 NGÀY TỚI' : 'ĐANG CHỜ CHỐT'}</SmallLabel><p role="status" className="mb-2 text-xs font-semibold text-sage-strong">{done}</p>
-    <div className="space-y-3" aria-live="polite">
-      {shown.length === 0 && <Note tone="warm">{tasks.length === 0 ? 'Chưa có việc nào. Hãy thêm việc đầu tiên hoặc chọn từ thư viện việc gợi ý bên dưới.' : filter === 'Hôm nay' ? 'Không có việc chưa xong nào đến hạn hôm nay.' : filter === 'Sắp hạn' ? 'Không có việc quá hạn hay đến hạn trong 14 ngày tới. Việc có hạn xa hơn và chưa đặt hạn vẫn ở Tất cả.' : 'Chưa có việc nào đang chờ chốt.'}</Note>}
-      {shown.map(t => { const due = taskDue(asDemo(t), today); const st = toStatusUi(t.status); return <Panel key={t.id} item={t.id}>
-        <div className="flex flex-wrap items-start justify-between gap-3"><div className="min-w-0 flex-1"><h2 className="break-words text-xl">{t.title}</h2><p className="mt-1 text-xs text-muted-foreground">{evName(t.event_id)} · {assigneeLabel(t.assignee, w)} phụ trách{t.source === 'suggested' ? ' · Từ việc gợi ý' : ''}</p></div><Status tone={st === 'Xong' ? 'sage' : st === 'Chờ chốt' ? 'warm' : 'copper'}>{st === 'Xong' ? 'Đã xong' : st}</Status></div>
-        <p className={`mt-2 text-sm ${due.group === 'overdue' ? 'font-semibold text-destructive' : 'text-muted-foreground'}`}>{due.label}</p>
-        {t.kind === 'table-count' && <><p className="mt-2 text-sm"><span className="font-semibold">Số bàn dự kiến:</span> {t.planned_tables === null ? 'Chưa nhập' : `${t.planned_tables} bàn`} · <span className="font-semibold">Số bàn dự phòng:</span> {t.reserve_tables === null ? 'Chưa nhập' : `${t.reserve_tables} bàn`}</p><p className="mt-1 text-xs text-muted-foreground">Hai bạn tự dự tính số bàn; không tự tính từ phản hồi tham dự, không thay đổi sổ khách hay ngân sách.</p></>}
-        {t.outcome && <p className="mt-2 break-words text-sm"><span className="font-semibold">Kết quả cần chốt:</span> {t.outcome}</p>}{t.note && <p className="mt-1 break-words text-sm"><span className="font-semibold">Ghi chú:</span> {t.note}</p>}
-        {t.template_id && <AffiliateSuggestionLine label="Gợi ý cho việc này" products={affByTask.data?.[t.template_id]} />}
-        <div className="mt-1 flex flex-wrap gap-x-3"><Button variant="ghost" className="min-h-11 px-0 text-primary" onClick={() => edit(t)}><Pencil className="size-4" /> Sửa việc</Button>
-          {st !== 'Xong' && <WriteButton variant="ghost" className="min-h-11 px-0 text-primary" disabled={quickDone.isPending} title={t.kind === 'table-count' && !t.planned_tables ? 'Cần nhập số bàn dự kiến lớn hơn 0 trước' : undefined} onClick={() => { if (t.kind === 'table-count' && !t.planned_tables) { edit(t); setF(p => ({ ...p, status: 'Xong' })); setCountErr('Cần nhập số bàn dự kiến lớn hơn 0 trước khi đánh dấu đã xong.'); return; } quickDone.mutate(t); }}>Đánh dấu xong</WriteButton>}</div>
-      </Panel>; })}
-    </div>
+    <p role="status" className="mb-2 text-xs font-semibold text-sage-strong">{done}</p>
+    {filter === 'Tất cả' ? <div aria-live="polite">
+      {tasks.length === 0 ? <><div className="thread-divider mb-4" aria-hidden="true"><span /></div><Note tone="warm">Chưa có việc nào cả — mọi đám cưới đều bắt đầu từ việc đầu tiên. Thêm một việc, hoặc chọn từ thư viện 43 việc gợi ý bên dưới nhé.</Note></> : <>
+        {grouped.map(g => <section key={g.key} className="mb-6" aria-label={g.label}>
+          <SmallLabel>{g.label.toUpperCase()} · {g.items.length}</SmallLabel>
+          <div className="space-y-3">{g.items.map(t => taskCard(t, g.key === 'overdue' ? 'border-l-[3px] border-l-destructive' : ''))}</div>
+        </section>)}
+        {doneTasks.length > 0 && <section aria-label="Đã xong">
+          <SmallLabel>ĐÃ XONG · {doneTasks.length}</SmallLabel>
+          <div className="space-y-3">{doneTasks.map(t => taskCard(t, 'opacity-75'))}</div>
+        </section>}
+      </>}
+    </div> : <>
+      <SmallLabel>{filter === 'Hôm nay' ? 'ĐẾN HẠN HÔM NAY' : filter === 'Sắp hạn' ? 'QUÁ HẠN HOẶC TRONG 14 NGÀY TỚI' : 'ĐANG CHỜ CHỐT'}</SmallLabel>
+      <div className="space-y-3" aria-live="polite">
+        {shown.length === 0 && <Note tone="warm">{filter === 'Hôm nay' ? 'Hôm nay thảnh thơi — không có việc nào đến hạn.' : filter === 'Sắp hạn' ? 'Không có việc quá hạn hay đến hạn trong 14 ngày tới. Thở phào nhẹ nhõm nhé!' : 'Chưa có việc nào đang chờ chốt.'}</Note>}
+        {shown.map(t => taskCard(t))}
+      </div>
+    </>}
     <RealSuggestionLibrary weddingId={w.id} tasks={tasks} onAdded={n => setDone(`Đã thêm ${n} việc gợi ý.`)} />
     <Button asChild variant="outline" size="lg" className="mt-5 min-h-11"><Link to="/plan/budget">Xem ngân sách <ArrowRight /></Link></Button>
     <DemoDialog real busy={save.isPending} open={open} onOpenChange={o => { if (!save.isPending) setOpen(o); }} title={editing ? 'Sửa việc' : 'Thêm việc'} description="Ghi việc cần làm và kết quả hai bạn muốn chốt. Lưu vào tài khoản cho cả hai người." submitLabel={save.isPending ? 'Đang lưu…' : editing ? 'Lưu thay đổi' : 'Thêm việc'} onSubmit={submit}>
@@ -189,7 +214,7 @@ export function RealBudgetScreen() {
     <section className="mt-8"><SmallLabel>CÁC KHOẢN ĐÃ GHI · {visible.length}/{items.length}</SmallLabel>
       <div className="flex flex-wrap gap-2" role="group" aria-label="Lọc khoản theo buổi hoặc nhà">{filters.map(([id, label]) => <Button key={id} aria-pressed={filter === id} variant={filter === id ? 'default' : 'outline'} className="min-h-11 rounded-full px-3 text-xs" onClick={() => setFilter(id)}>{label}</Button>)}</div>
       <label className="mt-3 block max-w-xs text-xs font-semibold">Bên trả<select className={inputCls} value={payerFilter} onChange={e => setPayerFilter(e.target.value)}><option value="all">Tất cả</option>{PAYERS.map(p => <option key={p.id} value={p.id}>{p.label}</option>)}</select></label>
-      {items.length === 0 ? <div className="mt-4"><Note tone="warm">Chưa có khoản chi nào. Hãy thêm khoản đầu tiên, ví dụ tiền tiệc hoặc ảnh cưới.</Note></div> : visible.length === 0 && <div className="mt-4"><Note tone="warm">Chưa có khoản nào phù hợp bộ lọc.</Note></div>}
+      {items.length === 0 ? <div className="mt-4"><Note tone="warm">Chưa có khoản chi nào. Thêm khoản đầu tiên nhé — ví dụ tiền tiệc hoặc ảnh cưới.</Note></div> : visible.length === 0 && <div className="mt-4"><Note tone="warm">Chưa có khoản nào phù hợp bộ lọc.</Note></div>}
       {CATEGORIES.map(c => { const list = visible.filter(x => x.category === c.id); return list.length ? <div key={c.id} className="mt-6"><h3 className="mb-2 font-display text-xl">{c.label}</h3><div className="space-y-2">{list.map(x => { const m = money(x); const next = x.installments.filter(i => i.due_date && !i.paid_at).sort((a, b) => a.due_date!.localeCompare(b.due_date!))[0]; return <Panel key={x.id} item={x.id}>
         <div className="flex flex-wrap items-start justify-between gap-2"><div className="min-w-0"><h4 className="font-semibold">{x.label}</h4>{x.category === 'khac' && <p className="mt-1 text-xs font-medium text-primary">Khác: {x.category_detail}</p>}<p className="mt-1 text-xs text-muted-foreground">{evName(x.event_id)} · {payerLabel(x.payer)} trả</p></div><Button variant="outline" className="min-h-11 px-3 text-xs" onClick={() => edit(x)}><Pencil className="size-4" /> Sửa</Button></div>
         <div className="mt-3 grid grid-cols-2 gap-x-4 gap-y-2 text-xs sm:grid-cols-3"><div>Tiền dự tính<br /><strong>{x.estimate_vnd ? fmtVnd(x.estimate_vnd) : 'Chưa ghi'}</strong></div><div>Giá đã chốt (gồm phát sinh)<br /><strong>{x.agreed_vnd === null ? 'Chưa chốt' : fmtVnd(agreedCost(m))}</strong></div><div>Đã cọc<br /><strong>{fmtVnd(x.deposit_vnd)}</strong></div><div>Đã thanh toán<br /><strong>{fmtVnd(x.paid_vnd)}</strong></div><div>Còn phải trả<br /><strong>{x.agreed_vnd === null ? 'Chưa chốt' : fmtVnd(unpaidCost(m))}</strong></div><div>Ngày trả tiếp<br /><strong>{next ? fullDate(next.due_date) : x.installments.length ? 'Chưa ghi ngày trả' : 'Chưa ghi lịch'}</strong></div></div>

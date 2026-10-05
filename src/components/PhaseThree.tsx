@@ -197,7 +197,7 @@ export function RealEventsScreen() {
     <div className="mt-4 space-y-3" aria-live="polite">
       {q.isPending && <Loading />}
       {q.isError && <LoadError error={q.error} retry={() => q.refetch()} />}
-      {q.data?.length === 0 && <Note tone="warm">Chưa có buổi lễ nào. Hãy thêm buổi đầu tiên.</Note>}
+      {q.data?.length === 0 && <Note tone="warm">Chưa có buổi lễ nào — thêm buổi đầu tiên để bắt đầu nhé.</Note>}
       {q.data?.map(x => <Panel key={x.id} item={x.id}>
         <div className="flex flex-wrap items-start justify-between gap-2"><h2 className="text-xl">{x.name}</h2><Status tone={x.status === 'confirmed' ? 'sage' : 'warm'}>{x.status === 'confirmed' ? 'Đã chốt' : 'Chưa chốt'}</Status></div>
         <p className="mt-2 text-xs leading-6">{SIDE_TEXT[x.side as EventSideDb]} · {x.event_date ? fmtDate(x.event_date) : 'Chưa ghi ngày'} · {x.event_time ? x.event_time.slice(0, 5) : 'Chưa chốt giờ'}<br />{x.venue || 'Chưa ghi nơi'}{x.address ? ` · ${x.address}` : ''}</p>
