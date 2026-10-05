@@ -14,21 +14,24 @@
   --color-accent: var(--accent); --color-accent-foreground: var(--foreground);
   --color-border: var(--border); --color-input: var(--border); --color-ring: var(--primary);
   --color-sage: var(--sage); --color-sage-strong: var(--sage-strong);
+  --color-gold: var(--gold); --color-gold-soft: var(--gold-soft);
   --color-warm: var(--warm); --color-copper-soft: var(--copper-soft);
   --color-stat-blue-soft: var(--stat-blue-soft);
   --color-destructive: var(--destructive); --color-destructive-foreground: var(--card);
   --radius-sm: 4px; --radius-md: 6px; --radius-lg: 8px;
 }
 :root {
-  --background: oklch(0.969 0.012 82); --foreground: oklch(0.333 0.036 220);
-  --card: oklch(0.997 0.005 82); --primary: oklch(0.504 0.096 28);
-  --primary-foreground: oklch(0.997 0.005 82); --secondary: oklch(0.927 0.016 83);
-  --muted: oklch(0.941 0.011 83); --muted-foreground: oklch(0.516 0.027 216);
-  --accent: oklch(0.898 0.036 151); --border: oklch(0.877 0.018 77);
+  /* Se Duyên — hệ màu "Tơ Hồng": nền kem ấm, đỏ hỷ chủ đạo, điểm vàng gold */
+  --background: oklch(0.965 0.014 85); --foreground: oklch(0.30 0.025 55);
+  --card: oklch(0.995 0.006 85); --primary: oklch(0.47 0.155 24);
+  --primary-foreground: oklch(0.985 0.008 85); --secondary: oklch(0.92 0.02 85);
+  --muted: oklch(0.938 0.014 85); --muted-foreground: oklch(0.50 0.03 65);
+  --accent: oklch(0.90 0.05 88); --border: oklch(0.87 0.022 80);
   --sage: oklch(0.905 0.037 151); --sage-strong: oklch(0.49 0.057 155);
+  --gold: oklch(0.74 0.115 88); --gold-soft: oklch(0.945 0.035 88);
   --warm: oklch(0.955 0.041 77); --copper-soft: oklch(0.931 0.032 29);
   --stat-blue-soft: oklch(0.93 0.018 230);
-  --destructive: oklch(0.504 0.096 28);
+  --destructive: oklch(0.44 0.16 18);
 }
 @layer base {
   * { border-color: var(--border); }
@@ -36,6 +39,26 @@
   body { margin: 0; background: var(--background); color: var(--foreground); font-family: var(--font-sans); font-size: 14px; }
   h1,h2,h3,.serif { font-family: var(--font-display); letter-spacing: 0; }
   input,textarea,select { color: var(--foreground); }
-  ::selection { background: var(--sage); }
+  ::selection { background: oklch(0.90 0.06 30); }
+}
+
+/* Họa tiết Se Duyên: đường tơ vàng với nút thắt đỏ ở giữa */
+@layer components {
+  .thread-divider { display: flex; align-items: center; gap: 10px; }
+  .thread-divider::before, .thread-divider::after {
+    content: ""; height: 1px; flex: 1;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  }
+  .thread-divider > span {
+    width: 7px; height: 7px; transform: rotate(45deg);
+    background: var(--primary); border-radius: 1.5px; flex-shrink: 0;
+  }
+  /* Panel chào mừng trang chủ: ánh ấm lan tỏa */
+  .hero-panel {
+    background:
+      radial-gradient(120% 90% at 85% 10%, oklch(0.94 0.05 88) 0%, transparent 55%),
+      radial-gradient(100% 80% at 10% 90%, oklch(0.93 0.06 30) 0%, transparent 50%),
+      var(--card);
+  }
 }
 @media (prefers-reduced-motion: reduce) { *,*::before,*::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; } }
