@@ -688,6 +688,76 @@ export type Database = {
           },
         ]
       }
+      gift_records: {
+        Row: {
+          amount_vnd: number
+          created_at: string
+          event_id: string | null
+          gift_detail: string | null
+          giver_name: string
+          guest_id: string | null
+          id: string
+          method: string
+          note: string | null
+          side: string
+          thanked: boolean
+          updated_at: string
+          wedding_id: string
+        }
+        Insert: {
+          amount_vnd: number
+          created_at?: string
+          event_id?: string | null
+          gift_detail?: string | null
+          giver_name: string
+          guest_id?: string | null
+          id?: string
+          method?: string
+          note?: string | null
+          side?: string
+          thanked?: boolean
+          updated_at?: string
+          wedding_id: string
+        }
+        Update: {
+          amount_vnd?: number
+          created_at?: string
+          event_id?: string | null
+          gift_detail?: string | null
+          giver_name?: string
+          guest_id?: string | null
+          id?: string
+          method?: string
+          note?: string | null
+          side?: string
+          thanked?: boolean
+          updated_at?: string
+          wedding_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gift_records_wedding_id_fkey"
+            columns: ["wedding_id"]
+            isOneToOne: false
+            referencedRelation: "weddings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "gift_records_guest_id_fkey"
+            columns: ["guest_id"]
+            isOneToOne: false
+            referencedRelation: "guests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "gift_records_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       invitation_links: {
         Row: {
           created_at: string

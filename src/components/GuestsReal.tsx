@@ -30,8 +30,8 @@ function useGuestData() {
   const gq = useQuery(guestsQuery(w.id)), eq = useQuery(eventsQuery(w.id));
   return { w, gq, eq, events: eq.data ?? [], guests: gq.data };
 }
-function GuestTabs({ active }: { active: 'list' | 'import' | 'export' }) {
-  const t = [['list', '/guests', 'Sổ khách'], ['import', '/guests/import', 'Nhập CSV'], ['export', '/guests/export', 'Xuất CSV']] as const;
+export function GuestTabs({ active }: { active: 'list' | 'import' | 'export' | 'gifts' }) {
+  const t = [['list', '/guests', 'Sổ khách'], ['gifts', '/guests/gifts', 'Tiền mừng'], ['import', '/guests/import', 'Nhập CSV'], ['export', '/guests/export', 'Xuất CSV']] as const;
   return <nav aria-label="Sổ khách" className="mb-5 flex gap-2 overflow-x-auto">{t.map(([k, to, l]) => <Link key={k} to={to} aria-current={k === active ? 'page' : undefined} className={`min-h-11 shrink-0 rounded-full px-4 py-2.5 text-xs font-semibold ${k === active ? 'bg-foreground text-primary-foreground' : 'bg-card'}`}>{l}</Link>)}</nav>;
 }
 

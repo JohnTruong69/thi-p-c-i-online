@@ -28,6 +28,7 @@ import { Route as RCodeRouteImport } from './routes/r.$code'
 import { Route as ViewerInviteTokenRouteImport } from './routes/viewer-invite.$token'
 import { Route as AuthenticatedGuestsIdRouteImport } from './routes/_authenticated/guests_.$id'
 import { Route as AuthenticatedGuestsExportRouteImport } from './routes/_authenticated/guests_.export'
+import { Route as AuthenticatedGuestsGiftsRouteImport } from './routes/_authenticated/guests_.gifts'
 import { Route as AuthenticatedGuestsImportRouteImport } from './routes/_authenticated/guests_.import'
 import { Route as AuthenticatedPlanBudgetRouteImport } from './routes/_authenticated/plan.budget'
 import { Route as AuthenticatedPlanTasksRouteImport } from './routes/_authenticated/plan.tasks'
@@ -137,6 +138,12 @@ const AuthenticatedGuestsExportRoute =
     path: '/guests/export',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedGuestsGiftsRoute =
+  AuthenticatedGuestsGiftsRouteImport.update({
+    id: '/guests_/gifts',
+    path: '/guests/gifts',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedGuestsImportRoute =
   AuthenticatedGuestsImportRouteImport.update({
     id: '/guests_/import',
@@ -232,6 +239,7 @@ export interface FileRoutesByFullPath {
   '/viewer-invite/$token': typeof ViewerInviteTokenRoute
   '/guests/$id': typeof AuthenticatedGuestsIdRoute
   '/guests/export': typeof AuthenticatedGuestsExportRoute
+  '/guests/gifts': typeof AuthenticatedGuestsGiftsRoute
   '/guests/import': typeof AuthenticatedGuestsImportRoute
   '/plan/budget': typeof AuthenticatedPlanBudgetRoute
   '/plan/tasks': typeof AuthenticatedPlanTasksRoute
@@ -265,6 +273,7 @@ export interface FileRoutesByTo {
   '/viewer-invite/$token': typeof ViewerInviteTokenRoute
   '/guests/$id': typeof AuthenticatedGuestsIdRoute
   '/guests/export': typeof AuthenticatedGuestsExportRoute
+  '/guests/gifts': typeof AuthenticatedGuestsGiftsRoute
   '/guests/import': typeof AuthenticatedGuestsImportRoute
   '/plan/budget': typeof AuthenticatedPlanBudgetRoute
   '/plan/tasks': typeof AuthenticatedPlanTasksRoute
@@ -300,6 +309,7 @@ export interface FileRoutesById {
   '/viewer-invite/$token': typeof ViewerInviteTokenRoute
   '/_authenticated/guests_/$id': typeof AuthenticatedGuestsIdRoute
   '/_authenticated/guests_/export': typeof AuthenticatedGuestsExportRoute
+  '/_authenticated/guests_/gifts': typeof AuthenticatedGuestsGiftsRoute
   '/_authenticated/guests_/import': typeof AuthenticatedGuestsImportRoute
   '/_authenticated/plan/budget': typeof AuthenticatedPlanBudgetRoute
   '/_authenticated/plan/tasks': typeof AuthenticatedPlanTasksRoute
@@ -335,6 +345,7 @@ export interface FileRouteTypes {
     | '/viewer-invite/$token'
     | '/guests/$id'
     | '/guests/export'
+    | '/guests/gifts'
     | '/guests/import'
     | '/plan/budget'
     | '/plan/tasks'
@@ -368,6 +379,7 @@ export interface FileRouteTypes {
     | '/viewer-invite/$token'
     | '/guests/$id'
     | '/guests/export'
+    | '/guests/gifts'
     | '/guests/import'
     | '/plan/budget'
     | '/plan/tasks'
@@ -402,6 +414,7 @@ export interface FileRouteTypes {
     | '/viewer-invite/$token'
     | '/_authenticated/guests_/$id'
     | '/_authenticated/guests_/export'
+    | '/_authenticated/guests_/gifts'
     | '/_authenticated/guests_/import'
     | '/_authenticated/plan/budget'
     | '/_authenticated/plan/tasks'
@@ -565,6 +578,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedGuestsExportRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/guests_/gifts': {
+      id: '/_authenticated/guests_/gifts'
+      path: '/guests/gifts'
+      fullPath: '/guests/gifts'
+      preLoaderRoute: typeof AuthenticatedGuestsGiftsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/guests_/import': {
       id: '/_authenticated/guests_/import'
       path: '/guests/import'
@@ -669,6 +689,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedViewRoute: typeof AuthenticatedViewRoute
   AuthenticatedGuestsIdRoute: typeof AuthenticatedGuestsIdRoute
   AuthenticatedGuestsExportRoute: typeof AuthenticatedGuestsExportRoute
+  AuthenticatedGuestsGiftsRoute: typeof AuthenticatedGuestsGiftsRoute
   AuthenticatedGuestsImportRoute: typeof AuthenticatedGuestsImportRoute
   AuthenticatedPlanBudgetRoute: typeof AuthenticatedPlanBudgetRoute
   AuthenticatedPlanTasksRoute: typeof AuthenticatedPlanTasksRoute
@@ -694,6 +715,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedViewRoute: AuthenticatedViewRoute,
   AuthenticatedGuestsIdRoute: AuthenticatedGuestsIdRoute,
   AuthenticatedGuestsExportRoute: AuthenticatedGuestsExportRoute,
+  AuthenticatedGuestsGiftsRoute: AuthenticatedGuestsGiftsRoute,
   AuthenticatedGuestsImportRoute: AuthenticatedGuestsImportRoute,
   AuthenticatedPlanBudgetRoute: AuthenticatedPlanBudgetRoute,
   AuthenticatedPlanTasksRoute: AuthenticatedPlanTasksRoute,
