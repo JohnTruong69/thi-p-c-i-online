@@ -15,6 +15,8 @@ import {
 } from '@/lib/wedding-api';
 import { EventDateImpactDialog, EventRemovalSummary } from './PlannerReal';
 import { removeEvent, updateEventWithImpact } from '@/lib/planner-api';
+import { addSuggestedTasks } from '@/lib/planner-api';
+import { shiftDate } from '@/lib/phase2';
 import { DemoDialog, FormField, Header, Note, Panel, PlannerTabs, Row, Status, fmtDate, inputCls, useDeepLink } from './PhaseOne';
 
 const isEmptyWedding = (w: WeddingRow | null | undefined): w is null | undefined => !w;
@@ -39,8 +41,86 @@ export function WeddingGate({ children, allowWithout }: { children: React.ReactN
   const q = useMyWedding();
   if (q.isPending) return <Loading label="Đang mở đám cưới của hai bạn…" />;
   if (q.isError) return <LoadError error={q.error} retry={() => q.refetch()} />;
-  if (isEmptyWedding(q.data) && !allowWithout) return <div className="mx-auto max-w-xl"><Header name="Bắt đầu đám cưới của hai bạn" subtitle="CHƯA CÓ ĐÁM CƯỚI" /><Note>Tài khoản này chưa có đám cưới nào. Hãy ghi tên hai bạn và buổi lễ đầu tiên; mọi thứ sẽ được lưu vào tài khoản. Nếu người còn lại đã mời bạn, hãy mở đường dẫn lời mời họ gửi.</Note><Button asChild size="lg" className="mt-5 min-h-11 w-full"><Link to="/wedding/new">Tạo đám cưới <ArrowRight /></Link></Button><Button asChild size="lg" variant="outline" className="mt-2 min-h-11 w-full"><Link to="/view">Xem kế hoạch người thân chia sẻ</Link></Button></div>;
+  if (isEmptyWedding(q.data) && !allowWithout) return <div className="mx-auto max-w-xl"><WeddingOnboardingWizard /></div>;
   return <>{children}</>;
+}
+
+/* ---------- Onboarding wizard: 3 warm steps for a brand-new couple ---------- */
+const STARTER_TASKS = [
+  { id: 's1', title: 'Chốt ngày cưới với hai gia đình' },
+  { id: 's3', title: 'Ước tính ngân sách chung' },
+  { id: 's4', title: 'Lập danh sách khách sơ bộ' },
+];
+const WIZARD_STEPS = ['Tên hai bạn', 'Ngày cưới', 'Buổi lễ đầu tiên'];
+
+export function WeddingOnboardingWizard() {
+  const qc = useQueryClient(); const navigate = useNavigate();
+  const [step, setStep] = useState(0);
+  const [f, setF] = useState({ one: '', two: '', plannedDate: '', eventName: 'Lễ cưới', eventDate: '' });
+  const [err, setErr] = useState<Record<string, string>>({});
+  const m = useMutation({
+    mutationFn: async () => {
+      const id = await createWeddingDraft({ one: f.one.trim(), two: f.two.trim(), plannedDate: f.plannedDate, eventName: f.eventName.trim() || 'Lễ cưới', eventSide: 'chung', eventDate: f.eventDate });
+      const due = f.plannedDate ? shiftDate(f.plannedDate, -90) : undefined;
+      await addSuggestedTasks(id, STARTER_TASKS.map(s => ({ ...s, due_date: due })));
+      return id;
+    },
+    onSuccess: async () => { await qc.invalidateQueries(); navigate({ to: '/home', replace: true }); },
+    onError: e => setErr({ form: friendlyError(e) }),
+  });
+  const next = () => {
+    if (step === 0) {
+      const n: Record<string, string> = {};
+      if (!f.one.trim()) n['one'] = 'Hãy nhập tên cô dâu.';
+      if (!f.two.trim()) n['two'] = 'Hãy nhập tên chú rể.';
+      setErr(n); if (Object.keys(n).length) return;
+    }
+    setErr({}); setStep(s => Math.min(2, s + 1));
+  };
+  return <div>
+    <div className="mb-6 text-center">
+      <img src="/logo-se-duyen.webp" alt="Se Duyên" className="mx-auto size-16 rounded-2xl object-cover" />
+      <p className="mt-3 text-xs font-bold uppercase tracking-widest text-primary">Chào mừng đến với Se Duyên</p>
+      <h1 className="mt-1 font-display text-3xl font-bold">Cùng nhau se duyên cho ngày trọng đại</h1>
+    </div>
+    <ol className="mb-6 flex items-center gap-2" aria-label="Tiến trình">
+      {WIZARD_STEPS.map((label, i) => <li key={label} className="flex flex-1 items-center gap-2 last:flex-none">
+        <span aria-current={i === step ? 'step' : undefined} className={`flex size-7 shrink-0 items-center justify-center rounded-full text-xs font-bold ${i <= step ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'}`}>{i + 1}</span>
+        <span className={`hidden text-xs font-semibold sm:block ${i <= step ? 'text-foreground' : 'text-muted-foreground'}`}>{label}</span>
+        {i < 2 && <span className={`h-px flex-1 ${i < step ? 'bg-primary' : 'bg-border'}`} aria-hidden="true" />}
+      </li>)}
+    </ol>
+    <Panel className="hero-panel">
+      {step === 0 && <>
+        <h2 className="font-display text-2xl font-semibold">Hai bạn là ai?</h2>
+        <p className="mb-5 mt-1 text-sm text-muted-foreground">Bắt đầu bằng tên hai bạn — mọi kế hoạch sẽ mang dấu ấn của hai người.</p>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <FormField label="Tên cô dâu *" id="wz-one" error={err['one']}><input id="wz-one" autoFocus className={inputCls} maxLength={60} value={f.one} onChange={e => setF({ ...f, one: e.target.value })} /></FormField>
+          <FormField label="Tên chú rể *" id="wz-two" error={err['two']}><input id="wz-two" className={inputCls} maxLength={60} value={f.two} onChange={e => setF({ ...f, two: e.target.value })} /></FormField>
+        </div>
+      </>}
+      {step === 1 && <>
+        <h2 className="font-display text-2xl font-semibold">Ngày cưới dự kiến</h2>
+        <p className="mb-5 mt-1 text-sm text-muted-foreground">Có ngày cưới, Se Duyên sẽ đếm ngược từng ngày và tự đặt hạn cho các việc cần làm. Chưa chốt cũng không sao — bổ sung sau vẫn được.</p>
+        <FormField label="Ngày cưới dự kiến" id="wz-date"><input id="wz-date" autoFocus type="date" className={inputCls} value={f.plannedDate} onChange={e => setF({ ...f, plannedDate: e.target.value })} /></FormField>
+      </>}
+      {step === 2 && <>
+        <h2 className="font-display text-2xl font-semibold">Buổi lễ đầu tiên</h2>
+        <p className="mb-5 mt-1 text-sm text-muted-foreground">Mỗi đám cưới thường có vài buổi lễ. Cứ ghi buổi đầu tiên, thêm các buổi khác sau.</p>
+        <FormField label="Tên buổi lễ *" id="wz-ev"><input id="wz-ev" autoFocus className={inputCls} maxLength={80} value={f.eventName} onChange={e => setF({ ...f, eventName: e.target.value })} placeholder="Lễ cưới" /></FormField>
+        <FormField label="Ngày (nếu đã biết)" id="wz-evdate"><input id="wz-evdate" type="date" className={inputCls} value={f.eventDate} onChange={e => setF({ ...f, eventDate: e.target.value })} /></FormField>
+      </>}
+      {err['form'] && <div role="alert" className="mt-4"><Note tone="copper">{err['form']}</Note></div>}
+      <div className="mt-6 flex gap-2">
+        {step > 0 && <Button variant="outline" size="lg" className="min-h-11" onClick={() => { setErr({}); setStep(s => s - 1); }}>Quay lại</Button>}
+        {step < 2
+          ? <Button size="lg" className="min-h-11 flex-1" onClick={next}>Tiếp tục <ArrowRight /></Button>
+          : <WriteButton size="lg" className="min-h-11 flex-1" disabled={m.isPending} aria-busy={m.isPending} onClick={() => { setErr({}); m.mutate(); }}>{m.isPending ? 'Đang chuẩn bị…' : 'Bắt đầu se duyên'} <ArrowRight /></WriteButton>}
+      </div>
+    </Panel>
+    <p className="mt-4 text-center text-xs text-muted-foreground">Se Duyên sẽ tự thêm 3 việc đầu tiên để hai bạn bắt đầu ngay.</p>
+    <Button asChild variant="ghost" size="lg" className="mt-2 min-h-11 w-full text-muted-foreground"><Link to="/view">Xem kế hoạch người thân chia sẻ</Link></Button>
+  </div>;
 }
 
 /* ---------- Onboarding: create (or edit) the single Wedding draft ---------- */

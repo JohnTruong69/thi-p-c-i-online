@@ -23,9 +23,9 @@ export type TaskInput = {
 export async function insertTask(weddingId: string, t: TaskInput) { must(await supabase.from('tasks').insert({ wedding_id: weddingId, source: 'manual', ...t })); }
 export async function updateTask(id: string, t: Partial<TaskInput>) { must(await supabase.from('tasks').update(t).eq('id', id)); }
 /** Adds chosen suggestions; the unique (wedding, template_id) index makes retries/double-clicks harmless. */
-export async function addSuggestedTasks(weddingId: string, items: { id: string; title: string }[]) {
+export async function addSuggestedTasks(weddingId: string, items: { id: string; title: string; due_date?: string | undefined }[]) {
   if (!items.length) return;
-  must(await supabase.from('tasks').upsert(items.map(s => ({ wedding_id: weddingId, title: s.title, template_id: s.id, source: 'suggested' })), { onConflict: 'wedding_id,template_id', ignoreDuplicates: true }));
+  must(await supabase.from('tasks').upsert(items.map(s => ({ wedding_id: weddingId, title: s.title, template_id: s.id, source: 'suggested', due_date: s.due_date || null })), { onConflict: 'wedding_id,template_id', ignoreDuplicates: true }));
 }
 
 export const budgetQuery = (weddingId: string) => queryOptions({
