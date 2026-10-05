@@ -11,7 +11,7 @@ import { FormField, Header, Note, Panel, inputCls } from './PhaseOne';
 
 export function PublicShell({ children }: { children: React.ReactNode }) {
   return <div className="min-h-screen bg-background"><div className="mx-auto max-w-xl px-5 pb-16 pt-8 sm:px-8">
-    <Link to="/" className="mb-8 block text-[11px] font-extrabold uppercase leading-tight">WEDDING<br />PLANNER</Link>{children}</div></div>;
+    <Link to="/" className="mb-8 flex items-center gap-2.5"><img src="/logo-se-duyen.webp" alt="Se Duyên" className="size-10 rounded-xl object-cover" /><span className="text-lg font-extrabold">Se Duyên</span></Link>{children}</div></div>;
 }
 function Submit({ busy, children }: { busy: boolean; children: React.ReactNode }) {
   return <Button type="submit" size="lg" className="min-h-11 w-full" disabled={busy} aria-busy={busy}>{busy && <Loader2 className="animate-spin" />}{children}</Button>;

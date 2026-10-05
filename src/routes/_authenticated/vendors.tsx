@@ -2,9 +2,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import { PhaseOne } from "@/components/PhaseOne";
 export const Route = createFileRoute("/_authenticated/vendors")({
   head: () => ({ meta: [
-    { title: "Nhà cung cấp đề xuất | Wedding Planner Việt" },
+    { title: "Nhà cung cấp đề xuất | Se Duyên" },
     { name: "description", content: "Danh bạ nhà cung cấp cưới được đề xuất: studio ảnh cưới, makeup, nhà hàng tiệc cưới — xem ưu đãi và đặt lịch tư vấn." },
-    { property: "og:title", content: "Nhà cung cấp đề xuất | Wedding Planner Việt" },
+    { property: "og:title", content: "Nhà cung cấp đề xuất | Se Duyên" },
     { property: "og:description", content: "Danh bạ nhà cung cấp cưới được đề xuất: studio ảnh cưới, makeup, nhà hàng tiệc cưới — xem ưu đãi và đặt lịch tư vấn." },
     { property: "og:type", content: "website" },
     { name: "twitter:card", content: "summary" },

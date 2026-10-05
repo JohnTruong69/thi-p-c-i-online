@@ -79,16 +79,21 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Wedding Planner Việt" },
-      { name: "description", content: "Cùng nhau chuẩn bị ngày vui: kế hoạch, ngân sách và khách mời." },
+      { title: "Se Duyên" },
+      { name: "description", content: "Se duyên cho ngày trọng đại: kế hoạch, ngân sách và khách mời." },
       { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Wedding Planner Việt" },
-      { property: "og:description", content: "Cùng nhau chuẩn bị ngày vui: kế hoạch, ngân sách và khách mời." },
+      { property: "og:title", content: "Se Duyên" },
+      { property: "og:description", content: "Se duyên cho ngày trọng đại: kế hoạch, ngân sách và khách mời." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:site", content: "@Lovable" },
     ],
     links: [
+      {
+        rel: "icon",
+        type: "image/webp",
+        href: "/logo-se-duyen.webp",
+      },
       {
         rel: "stylesheet",
         href: appCss,

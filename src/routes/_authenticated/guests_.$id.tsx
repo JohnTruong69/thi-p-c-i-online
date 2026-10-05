@@ -2,10 +2,10 @@ import { createFileRoute } from "@tanstack/react-router";
 import { PhaseOne } from "@/components/PhaseOne";
 export const Route = createFileRoute("/_authenticated/guests_/$id")({
   head: () => ({ meta: [
-    { title: "Hồ sơ khách | Wedding Planner Việt" },
-    { name: "description", content: "Hồ sơ khách của hai bạn Wedding Planner Việt." },
-    { property: "og:title", content: "Hồ sơ khách | Wedding Planner Việt" },
-    { property: "og:description", content: "Hồ sơ khách của hai bạn Wedding Planner Việt." },
+    { title: "Hồ sơ khách | Se Duyên" },
+    { name: "description", content: "Hồ sơ khách của hai bạn Se Duyên." },
+    { property: "og:title", content: "Hồ sơ khách | Se Duyên" },
+    { property: "og:description", content: "Hồ sơ khách của hai bạn Se Duyên." },
     { property: "og:type", content: "website" },
     { name: "twitter:card", content: "summary" },
   ] }),

@@ -3,9 +3,9 @@ import { ResetPasswordPage } from "@/components/AuthScreens";
 export const Route = createFileRoute("/reset-password")({
   ssr: false,
   head: () => ({ meta: [
-    { title: "Chọn mật khẩu mới | Wedding Planner Việt" },
+    { title: "Chọn mật khẩu mới | Se Duyên" },
     { name: "description", content: "Đặt mật khẩu mới cho tài khoản của bạn." },
-    { property: "og:title", content: "Chọn mật khẩu mới | Wedding Planner Việt" },
+    { property: "og:title", content: "Chọn mật khẩu mới | Se Duyên" },
     { property: "og:description", content: "Đặt mật khẩu mới cho tài khoản của bạn." },
     { property: "og:type", content: "website" },
     { name: "twitter:card", content: "summary" },
