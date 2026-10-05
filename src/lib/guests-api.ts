@@ -12,7 +12,7 @@ export const guestsQuery = (weddingId: string) => queryOptions({
   queryKey: ['guests', weddingId],
   queryFn: async (): Promise<GuestRecord[]> => {
     const rows = must(await supabase.from('guests')
-      .select('id,name,phone,side,party_size,note,created_at,guest_event_assignments(event_id,invite_status,rsvp_status,attending_count,invitation_method,attendance_intent,expected_count,response_source,responded_at,response_by)')
+      .select('id,name,phone,side,party_size,note,created_at,guest_event_assignments(event_id,table_id,invite_status,rsvp_status,attending_count,invitation_method,attendance_intent,expected_count,response_source,responded_at,response_by)')
       .eq('wedding_id', weddingId).order('created_at', { ascending: false }).range(0, 9999));
     return rows.map(r => ({ id: r.id, name: r.name, phone: r.phone, side: r.side as GuestSideDb, party_size: r.party_size, note: r.note, assignments: (r.guest_event_assignments ?? []) as GuestAssignment[] }));
   },

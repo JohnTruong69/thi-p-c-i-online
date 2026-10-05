@@ -7,7 +7,7 @@ export type RsvpStatus = 'pending' | 'attending' | 'declined';
 export type InvitationMethod = 'not_invited' | 'met' | 'called' | 'link_sent';
 export type AttendanceIntent = 'unknown' | 'maybe' | 'confirmed' | 'declined';
 export type ResponseSource = 'none' | 'in_person' | 'phone' | 'online_rsvp' | 'manual';
-export type GuestAssignment = { event_id: string; invite_status: InviteStatus; rsvp_status: RsvpStatus; attending_count: number | null; invitation_method?: InvitationMethod; attendance_intent?: AttendanceIntent; expected_count?: number | null; response_source?: ResponseSource; responded_at?: string | null; response_by?: string | null };
+export type GuestAssignment = { event_id: string; table_id: string | null; invite_status: InviteStatus; rsvp_status: RsvpStatus; attending_count: number | null; invitation_method?: InvitationMethod; attendance_intent?: AttendanceIntent; expected_count?: number | null; response_source?: ResponseSource; responded_at?: string | null; response_by?: string | null };
 export type GuestRecord = { id: string; name: string; phone: string | null; side: GuestSideDb; party_size: number; note: string | null; assignments: GuestAssignment[] };
 
 export const GUEST_SIDE_TEXT: Record<GuestSideDb, string> = { 'nha-gai': 'Nhà gái', 'nha-trai': 'Nhà trai', chung: 'Cả hai' };

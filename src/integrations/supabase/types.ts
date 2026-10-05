@@ -487,6 +487,7 @@ export type Database = {
           response_by: string | null
           response_source: string
           rsvp_status: string
+          table_id: string | null
           updated_at: string
           updated_by: string | null
           wedding_id: string
@@ -504,6 +505,7 @@ export type Database = {
           response_by?: string | null
           response_source?: string
           rsvp_status?: string
+          table_id?: string | null
           updated_at?: string
           updated_by?: string | null
           wedding_id: string
@@ -521,6 +523,7 @@ export type Database = {
           response_by?: string | null
           response_source?: string
           rsvp_status?: string
+          table_id?: string | null
           updated_at?: string
           updated_by?: string | null
           wedding_id?: string
@@ -1063,6 +1066,51 @@ export type Database = {
             columns: ["link_id"]
             isOneToOne: false
             referencedRelation: "invitation_links"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      seating_tables: {
+        Row: {
+          capacity: number
+          created_at: string
+          event_id: string
+          id: string
+          name: string
+          position: number
+          wedding_id: string
+        }
+        Insert: {
+          capacity?: number
+          created_at?: string
+          event_id: string
+          id?: string
+          name: string
+          position?: number
+          wedding_id: string
+        }
+        Update: {
+          capacity?: number
+          created_at?: string
+          event_id?: string
+          id?: string
+          name?: string
+          position?: number
+          wedding_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "seating_tables_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "seating_tables_wedding_id_fkey"
+            columns: ["wedding_id"]
+            isOneToOne: false
+            referencedRelation: "weddings"
             referencedColumns: ["id"]
           },
         ]

@@ -42,6 +42,7 @@ import { Route as AuthenticatedPlanBudgetIdRouteImport } from './routes/_authent
 import { Route as AuthenticatedPlanTasksIdRouteImport } from './routes/_authenticated/plan.tasks_.$id'
 import { Route as AuthenticatedPlanTasksSuggestionsRouteImport } from './routes/_authenticated/plan.tasks_.suggestions'
 import { Route as AuthenticatedWeddingEventsIdRouteImport } from './routes/_authenticated/wedding.events_.$id'
+import { Route as AuthenticatedWeddingEventsSeatingEventIdRouteImport } from './routes/_authenticated/wedding.events_.seating.$eventId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -219,6 +220,12 @@ const AuthenticatedWeddingEventsIdRoute =
     path: '/wedding/events/$id',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedWeddingEventsSeatingEventIdRoute =
+  AuthenticatedWeddingEventsSeatingEventIdRouteImport.update({
+    id: '/wedding/events_/seating/$eventId',
+    path: '/wedding/events/seating/$eventId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -253,6 +260,7 @@ export interface FileRoutesByFullPath {
   '/plan/tasks/$id': typeof AuthenticatedPlanTasksIdRoute
   '/plan/tasks/suggestions': typeof AuthenticatedPlanTasksSuggestionsRoute
   '/wedding/events/$id': typeof AuthenticatedWeddingEventsIdRoute
+  '/wedding/events/seating/$eventId': typeof AuthenticatedWeddingEventsSeatingEventIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -287,6 +295,7 @@ export interface FileRoutesByTo {
   '/plan/tasks/$id': typeof AuthenticatedPlanTasksIdRoute
   '/plan/tasks/suggestions': typeof AuthenticatedPlanTasksSuggestionsRoute
   '/wedding/events/$id': typeof AuthenticatedWeddingEventsIdRoute
+  '/wedding/events/seating/$eventId': typeof AuthenticatedWeddingEventsSeatingEventIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -323,6 +332,7 @@ export interface FileRoutesById {
   '/_authenticated/plan/tasks_/$id': typeof AuthenticatedPlanTasksIdRoute
   '/_authenticated/plan/tasks_/suggestions': typeof AuthenticatedPlanTasksSuggestionsRoute
   '/_authenticated/wedding/events_/$id': typeof AuthenticatedWeddingEventsIdRoute
+  '/_authenticated/wedding/events_/seating/$eventId': typeof AuthenticatedWeddingEventsSeatingEventIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -359,6 +369,7 @@ export interface FileRouteTypes {
     | '/plan/tasks/$id'
     | '/plan/tasks/suggestions'
     | '/wedding/events/$id'
+    | '/wedding/events/seating/$eventId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -393,6 +404,7 @@ export interface FileRouteTypes {
     | '/plan/tasks/$id'
     | '/plan/tasks/suggestions'
     | '/wedding/events/$id'
+    | '/wedding/events/seating/$eventId'
   id:
     | '__root__'
     | '/'
@@ -428,6 +440,7 @@ export interface FileRouteTypes {
     | '/_authenticated/plan/tasks_/$id'
     | '/_authenticated/plan/tasks_/suggestions'
     | '/_authenticated/wedding/events_/$id'
+    | '/_authenticated/wedding/events_/seating/$eventId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -676,6 +689,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedWeddingEventsIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/wedding/events_/seating/$eventId': {
+      id: '/_authenticated/wedding/events_/seating/$eventId'
+      path: '/wedding/events/seating/$eventId'
+      fullPath: '/wedding/events/seating/$eventId'
+      preLoaderRoute: typeof AuthenticatedWeddingEventsSeatingEventIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
@@ -703,6 +723,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedPlanTasksIdRoute: typeof AuthenticatedPlanTasksIdRoute
   AuthenticatedPlanTasksSuggestionsRoute: typeof AuthenticatedPlanTasksSuggestionsRoute
   AuthenticatedWeddingEventsIdRoute: typeof AuthenticatedWeddingEventsIdRoute
+  AuthenticatedWeddingEventsSeatingEventIdRoute: typeof AuthenticatedWeddingEventsSeatingEventIdRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -730,6 +751,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedPlanTasksSuggestionsRoute:
     AuthenticatedPlanTasksSuggestionsRoute,
   AuthenticatedWeddingEventsIdRoute: AuthenticatedWeddingEventsIdRoute,
+  AuthenticatedWeddingEventsSeatingEventIdRoute:
+    AuthenticatedWeddingEventsSeatingEventIdRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =

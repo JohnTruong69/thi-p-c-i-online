@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from '@tanstack/react-router';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { ArrowRight, Copy, Loader2, LogOut, Pencil, Plus } from 'lucide-react';
+import { Armchair, ArrowRight, Copy, Loader2, LogOut, Pencil, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { WriteButton } from './AccessStateBanner';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -201,7 +201,7 @@ export function RealEventsScreen() {
       {q.data?.map(x => <Panel key={x.id} item={x.id}>
         <div className="flex flex-wrap items-start justify-between gap-2"><h2 className="text-xl">{x.name}</h2><Status tone={x.status === 'confirmed' ? 'sage' : 'warm'}>{x.status === 'confirmed' ? 'Đã chốt' : 'Chưa chốt'}</Status></div>
         <p className="mt-2 text-xs leading-6">{SIDE_TEXT[x.side as EventSideDb]} · {x.event_date ? fmtDate(x.event_date) : 'Chưa ghi ngày'} · {x.event_time ? x.event_time.slice(0, 5) : 'Chưa chốt giờ'}<br />{x.venue || 'Chưa ghi nơi'}{x.address ? ` · ${x.address}` : ''}</p>
-        <div className="mt-3 flex flex-wrap gap-2"><Button variant="outline" size="lg" className="min-h-11" onClick={() => edit(x)}><Pencil className="size-4" /> Sửa</Button><WriteButton variant="ghost" size="lg" className="min-h-11" onClick={() => setRemoving(x)}>Bỏ buổi</WriteButton></div>
+        <div className="mt-3 flex flex-wrap gap-2"><Button variant="outline" size="lg" className="min-h-11" onClick={() => edit(x)}><Pencil className="size-4" /> Sửa</Button><Button asChild variant="outline" size="lg" className="min-h-11"><Link to="/wedding/events/seating/$eventId" params={{ eventId: x.id }}><Armchair className="size-4" /> Xếp bàn</Link></Button><WriteButton variant="ghost" size="lg" className="min-h-11" onClick={() => setRemoving(x)}>Bỏ buổi</WriteButton></div>
       </Panel>)}
     </div>
     <p className="mt-4 text-xs text-muted-foreground">Buổi lễ đã lưu có thể được chọn cho việc cần làm, khoản chi, khách mời và các link thiệp.</p>

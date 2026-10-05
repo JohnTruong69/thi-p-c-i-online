@@ -3,7 +3,7 @@ import { csvCell, eventTotals, filterGuests, followupCount, guestTotals, guestsC
 import { buildPreview, parseCsv } from './phase2';
 
 const g = (id: string, o: Partial<GuestRecord> = {}): GuestRecord => ({ id, name: id, phone: null, side: 'nha-gai', party_size: 2, note: null, assignments: [], ...o });
-const A = (event_id: string, rsvp_status: 'pending' | 'attending' | 'declined' = 'pending', attending_count: number | null = null) => ({ event_id, invite_status: 'not_sent' as const, rsvp_status, attending_count });
+const A = (event_id: string, rsvp_status: 'pending' | 'attending' | 'declined' = 'pending', attending_count: number | null = null) => ({ event_id, table_id: null, invite_status: 'not_sent' as const, rsvp_status, attending_count });
 describe('guest counts', () => {
   const gs = [g('Lan', { assignments: [A('e1', 'attending', 1), A('e2')] }), g('Bình', { party_size: 3, side: 'nha-trai', assignments: [A('e1', 'declined')] }), g('Mai')];
   it('counts shared guests once', () => { expect(guestTotals(gs)).toEqual({ records: 3, plannedPeople: 7, unassigned: 1 }); });
