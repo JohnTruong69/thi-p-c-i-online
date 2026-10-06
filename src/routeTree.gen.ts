@@ -33,6 +33,7 @@ import { Route as AuthenticatedGuestsImportRouteImport } from './routes/_authent
 import { Route as AuthenticatedPlanBudgetRouteImport } from './routes/_authenticated/plan.budget'
 import { Route as AuthenticatedPlanTasksRouteImport } from './routes/_authenticated/plan.tasks'
 import { Route as AuthenticatedSettingsDataRouteImport } from './routes/_authenticated/settings.data'
+import { Route as AuthenticatedSettingsRemindersRouteImport } from './routes/_authenticated/settings.reminders'
 import { Route as AuthenticatedSettingsTeamRouteImport } from './routes/_authenticated/settings.team'
 import { Route as AuthenticatedViewWeddingIdRouteImport } from './routes/_authenticated/view_.$weddingId'
 import { Route as AuthenticatedWeddingEventsRouteImport } from './routes/_authenticated/wedding.events'
@@ -167,6 +168,12 @@ const AuthenticatedSettingsDataRoute =
     path: '/settings/data',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedSettingsRemindersRoute =
+  AuthenticatedSettingsRemindersRouteImport.update({
+    id: '/settings/reminders',
+    path: '/settings/reminders',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedSettingsTeamRoute =
   AuthenticatedSettingsTeamRouteImport.update({
     id: '/settings/team',
@@ -251,6 +258,7 @@ export interface FileRoutesByFullPath {
   '/plan/budget': typeof AuthenticatedPlanBudgetRoute
   '/plan/tasks': typeof AuthenticatedPlanTasksRoute
   '/settings/data': typeof AuthenticatedSettingsDataRoute
+  '/settings/reminders': typeof AuthenticatedSettingsRemindersRoute
   '/settings/team': typeof AuthenticatedSettingsTeamRoute
   '/view/$weddingId': typeof AuthenticatedViewWeddingIdRoute
   '/wedding/events': typeof AuthenticatedWeddingEventsRoute
@@ -286,6 +294,7 @@ export interface FileRoutesByTo {
   '/plan/budget': typeof AuthenticatedPlanBudgetRoute
   '/plan/tasks': typeof AuthenticatedPlanTasksRoute
   '/settings/data': typeof AuthenticatedSettingsDataRoute
+  '/settings/reminders': typeof AuthenticatedSettingsRemindersRoute
   '/settings/team': typeof AuthenticatedSettingsTeamRoute
   '/view/$weddingId': typeof AuthenticatedViewWeddingIdRoute
   '/wedding/events': typeof AuthenticatedWeddingEventsRoute
@@ -323,6 +332,7 @@ export interface FileRoutesById {
   '/_authenticated/plan/budget': typeof AuthenticatedPlanBudgetRoute
   '/_authenticated/plan/tasks': typeof AuthenticatedPlanTasksRoute
   '/_authenticated/settings/data': typeof AuthenticatedSettingsDataRoute
+  '/_authenticated/settings/reminders': typeof AuthenticatedSettingsRemindersRoute
   '/_authenticated/settings/team': typeof AuthenticatedSettingsTeamRoute
   '/_authenticated/view_/$weddingId': typeof AuthenticatedViewWeddingIdRoute
   '/_authenticated/wedding/events': typeof AuthenticatedWeddingEventsRoute
@@ -360,6 +370,7 @@ export interface FileRouteTypes {
     | '/plan/budget'
     | '/plan/tasks'
     | '/settings/data'
+    | '/settings/reminders'
     | '/settings/team'
     | '/view/$weddingId'
     | '/wedding/events'
@@ -395,6 +406,7 @@ export interface FileRouteTypes {
     | '/plan/budget'
     | '/plan/tasks'
     | '/settings/data'
+    | '/settings/reminders'
     | '/settings/team'
     | '/view/$weddingId'
     | '/wedding/events'
@@ -431,6 +443,7 @@ export interface FileRouteTypes {
     | '/_authenticated/plan/budget'
     | '/_authenticated/plan/tasks'
     | '/_authenticated/settings/data'
+    | '/_authenticated/settings/reminders'
     | '/_authenticated/settings/team'
     | '/_authenticated/view_/$weddingId'
     | '/_authenticated/wedding/events'
@@ -626,6 +639,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSettingsDataRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/settings/reminders': {
+      id: '/_authenticated/settings/reminders'
+      path: '/settings/reminders'
+      fullPath: '/settings/reminders'
+      preLoaderRoute: typeof AuthenticatedSettingsRemindersRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/settings/team': {
       id: '/_authenticated/settings/team'
       path: '/settings/team'
@@ -714,6 +734,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedPlanBudgetRoute: typeof AuthenticatedPlanBudgetRoute
   AuthenticatedPlanTasksRoute: typeof AuthenticatedPlanTasksRoute
   AuthenticatedSettingsDataRoute: typeof AuthenticatedSettingsDataRoute
+  AuthenticatedSettingsRemindersRoute: typeof AuthenticatedSettingsRemindersRoute
   AuthenticatedSettingsTeamRoute: typeof AuthenticatedSettingsTeamRoute
   AuthenticatedViewWeddingIdRoute: typeof AuthenticatedViewWeddingIdRoute
   AuthenticatedWeddingEventsRoute: typeof AuthenticatedWeddingEventsRoute
@@ -741,6 +762,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedPlanBudgetRoute: AuthenticatedPlanBudgetRoute,
   AuthenticatedPlanTasksRoute: AuthenticatedPlanTasksRoute,
   AuthenticatedSettingsDataRoute: AuthenticatedSettingsDataRoute,
+  AuthenticatedSettingsRemindersRoute: AuthenticatedSettingsRemindersRoute,
   AuthenticatedSettingsTeamRoute: AuthenticatedSettingsTeamRoute,
   AuthenticatedViewWeddingIdRoute: AuthenticatedViewWeddingIdRoute,
   AuthenticatedWeddingEventsRoute: AuthenticatedWeddingEventsRoute,

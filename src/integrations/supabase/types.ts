@@ -999,6 +999,82 @@ export type Database = {
         }
         Relationships: []
       }
+      reminder_log: {
+        Row: {
+          days_before: number
+          error: string | null
+          id: string
+          kind: string
+          recipient: string
+          ref_id: string
+          sent_at: string
+          status: string
+          wedding_id: string
+        }
+        Insert: {
+          days_before: number
+          error?: string | null
+          id?: string
+          kind: string
+          recipient: string
+          ref_id: string
+          sent_at?: string
+          status: string
+          wedding_id: string
+        }
+        Update: {
+          days_before?: number
+          error?: string | null
+          id?: string
+          kind?: string
+          recipient?: string
+          ref_id?: string
+          sent_at?: string
+          status?: string
+          wedding_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reminder_log_wedding_id_fkey"
+            columns: ["wedding_id"]
+            isOneToOne: false
+            referencedRelation: "weddings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      reminder_prefs: {
+        Row: {
+          created_at: string
+          event_reminders: boolean
+          task_reminders: boolean
+          updated_at: string
+          wedding_id: string
+        }
+        Insert: {
+          created_at?: string
+          event_reminders?: boolean
+          task_reminders?: boolean
+          updated_at?: string
+          wedding_id: string
+        }
+        Update: {
+          created_at?: string
+          event_reminders?: boolean
+          task_reminders?: boolean
+          updated_at?: string
+          wedding_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reminder_prefs_wedding_id_fkey"
+            columns: ["wedding_id"]
+            isOneToOne: true
+            referencedRelation: "weddings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       rsvp_answers: {
         Row: {
           attending: boolean
